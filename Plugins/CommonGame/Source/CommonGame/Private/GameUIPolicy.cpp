@@ -7,7 +7,8 @@
 
 UPrimaryGameLayout* UGameUIPolicy::GetRootLayout(const UCommonLocalPlayer* LocalPlayer) const
 {
-	return nullptr;
+	const FRootViewportLayoutInfo* LayoutInfo = RootViewportLayouts.FindByKey(LocalPlayer);
+	return LayoutInfo ? LayoutInfo->RootLayout : nullptr;
 }
 
 TSubclassOf<UPrimaryGameLayout> UGameUIPolicy::GetLayoutWidgetClass(UCommonLocalPlayer* LocalPlayer)
@@ -47,21 +48,22 @@ void UGameUIPolicy::RemoveLayoutFromViewport(UCommonLocalPlayer* LocalPlayer, UP
 
 void UGameUIPolicy::NotifyPlayerAdded(UCommonLocalPlayer* LocalPlayer)
 {
-	LocalPlayer->OnPlayerControllerSet.AddWeakLambda(this, [this](UCommonLocalPlayer* LocalPlayer, APlayerController* PlayerController)
-	{
-		NotifyPlayerRemoved(LocalPlayer);
+	LocalPlayer->OnPlayerControllerSet.AddWeakLambda(
+		this, [this](UCommonLocalPlayer* LocalPlayer, APlayerController* PlayerController)
+		{
+			NotifyPlayerRemoved(LocalPlayer);
 
-		if (FRootViewportLayoutInfo* LayoutInfo = RootViewportLayouts.FindByKey(LocalPlayer))
-		{
-			AddLayoutToViewport(LocalPlayer, LayoutInfo->RootLayout);
-			LayoutInfo->bAddedToViewport = true;
-		}
-		else
-		{
-			CreateLayoutWidget(LocalPlayer);
-		}
-	});
-	
+			if (FRootViewportLayoutInfo* LayoutInfo = RootViewportLayouts.FindByKey(LocalPlayer))
+			{
+				AddLayoutToViewport(LocalPlayer, LayoutInfo->RootLayout);
+				LayoutInfo->bAddedToViewport = true;
+			}
+			else
+			{
+				CreateLayoutWidget(LocalPlayer);
+			}
+		});
+
 	if (FRootViewportLayoutInfo* LayoutInfo = RootViewportLayouts.FindByKey(LocalPlayer))
 	{
 		AddLayoutToViewport(LocalPlayer, LayoutInfo->RootLayout);

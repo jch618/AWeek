@@ -15,11 +15,12 @@ UCLASS(Abstract, Config = Game)
 class COMMONGAME_API UGameUIManagerSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
+
 public:
 	UGameUIManagerSubsystem();
-	
+
 	void SwitchToPolicy(UGameUIPolicy* InPolicy);
-	
+
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
@@ -27,7 +28,10 @@ public:
 	virtual void NotifyPlayerAdded(UCommonLocalPlayer* LocalPlayer);
 	virtual void NotifyPlayerRemoved(UCommonLocalPlayer* LocalPlayer);
 	virtual void NotifyPlayerDestroyed(UCommonLocalPlayer* LocalPlayer);
-	
+
+	const UGameUIPolicy* GetCurrentPolicy() const { return CurrentPolicy; }
+	UGameUIPolicy* GetCurrentUIPolicy() { return CurrentPolicy; }
+
 	UPROPERTY(Transient)
 	TObjectPtr<UGameUIPolicy> CurrentPolicy = nullptr;
 

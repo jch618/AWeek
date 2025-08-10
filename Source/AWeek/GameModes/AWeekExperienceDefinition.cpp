@@ -3,3 +3,7 @@
 
 #include "AWeekExperienceDefinition.h"
 
+UAWeekExperienceDefinition::UAWeekExperienceDefinition(const FObjectInitializer& ObjectInitializer): Super(
+	ObjectInitializer)
+{
+}

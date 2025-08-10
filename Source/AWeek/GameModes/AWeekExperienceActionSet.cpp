@@ -6,3 +6,10 @@
 UAWeekExperienceActionSet::UAWeekExperienceActionSet()
 {
 }
+
+#if WITH_EDITORONLY_DATA
+void UAWeekExperienceActionSet::UpdateAssetBundleData()
+{
+	Super::UpdateAssetBundleData();
+}
+#endif

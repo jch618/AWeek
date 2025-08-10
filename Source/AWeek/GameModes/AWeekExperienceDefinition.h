@@ -18,6 +18,10 @@ class AWEEK_API UAWeekExperienceDefinition : public UPrimaryDataAsset
 public:
 	UAWeekExperienceDefinition(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+#if WITH_EDITORONLY_DATA
+	virtual void UpdateAssetBundleData() override;
+#endif
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
 	TArray<TObjectPtr<UAWeekExperienceActionSet>> ActionSets;
 

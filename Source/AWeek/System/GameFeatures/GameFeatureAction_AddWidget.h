@@ -16,7 +16,7 @@ struct FAWeekHUDLayoutRequest
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = UI)
+	UPROPERTY(EditAnywhere, Category = UI, meta = (AssetBundles = "Client"))
 	TSoftClassPtr<UCommonActivatableWidget> LayoutClass;
 
 	UPROPERTY(EditAnywhere, Category = UI)
@@ -27,7 +27,7 @@ USTRUCT()
 struct FAWeekHUDElementEntry
 {
 	GENERATED_BODY()
-	UPROPERTY(EditAnywhere, Category = UI)
+	UPROPERTY(EditAnywhere, Category = UI, meta = (AssetBundles = "Client"))
 	TSoftClassPtr<UUserWidget> WidgetClass;
 
 	UPROPERTY(EditAnywhere, Category = UI)

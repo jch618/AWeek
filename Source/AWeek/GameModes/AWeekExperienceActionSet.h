@@ -1,4 +1,4 @@
- // Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,7 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "AWeekExperienceActionSet.generated.h"
 
- class UGameFeatureAction;
+class UGameFeatureAction;
 /**
  * 
  */
@@ -14,9 +14,14 @@ UCLASS()
 class AWEEK_API UAWeekExperienceActionSet : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
+
 public:
 	UAWeekExperienceActionSet();
 
+#if WITH_EDITORONLY_DATA
+	virtual void UpdateAssetBundleData() override;
+#endif
+	
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TObjectPtr<UGameFeatureAction>> Actions;
 };

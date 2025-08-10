@@ -20,4 +20,5 @@ public:
 
 	void ServerSetCurrentExperience(const FPrimaryAssetId& ExperienceId);
 	void StartExperienceLoad();
+	void OnExperienceLoadComplete();
 };

@@ -152,7 +152,27 @@ public:
 	                                                       int32 Priority);
 	FUIExtensionHandle RegisterExtensionAsData(const FGameplayTag& ExtensionPointTag, UObject* ContextObject,
 	                                           UObject* Data, int32 Priority);
+	
+	FUIExtensionRequest CreateExtensionRequest(const TSharedPtr<FUIExtension>& Extension);
+	
+	void UnregisterExtensionPoint(const FUIExtensionPointHandle& ExtensionPointHandle);
+	FUIExtensionPointHandle RegisterExtensionPointForContext(const FGameplayTag& ExtensionPointTag,
+	                                                         UObject* ContextObject,
+	                                                         EUIExtensionPointMatch ExtensionPointTagMatchType,
+	                                                         const TArray<UClass*>& AllowedDataClasses,
+	                                                         FExtendExtensionPointDelegate ExtensionCallback);
 
+	FUIExtensionPointHandle RegisterExtensionPoint(const FGameplayTag& ExtensionPointTag,
+	                                               EUIExtensionPointMatch ExtensionPointTagMatchType,
+	                                               const TArray<UClass*>& AllowedDataClasses,
+	                                               FExtendExtensionPointDelegate ExtensionCallback);
+
+	void NotifyExtensionPointOfExtensions(TSharedPtr<FUIExtensionPoint>& ExtensionPoint);
+	void NotifyExtensionPointOfExtension(EUIExtensionAction Action, TSharedPtr<FUIExtension>& Extension);
+	
 	typedef TArray<TSharedPtr<FUIExtension>> FExtensionList;
 	TMap<FGameplayTag, FExtensionList> ExtensionMap;
+
+	typedef TArray<TSharedPtr<FUIExtensionPoint>> FExtensionPointList;
+	TMap<FGameplayTag, FExtensionPointList> ExtensionPointMap;
 };

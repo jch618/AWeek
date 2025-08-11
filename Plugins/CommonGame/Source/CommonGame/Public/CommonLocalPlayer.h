@@ -16,4 +16,9 @@ class COMMONGAME_API UCommonLocalPlayer : public ULocalPlayer
 public:
 	DECLARE_MULTICAST_DELEGATE_TwoParams(FPlayerControllerSetDelegate, UCommonLocalPlayer* LocalPlayer, APlayerController* PlayerController);
 	FPlayerControllerSetDelegate OnPlayerControllerSet;
+
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FPlayerStateSetDelegate, UCommonLocalPlayer* LocalPlayer, APlayerState* PlayerState)
+	FPlayerStateSetDelegate OnPlayerStateSet;
+
+	FDelegateHandle CallAndRegister_OnPlayerStateSet(FPlayerStateSetDelegate::FDelegate Delegate);
 };

@@ -16,7 +16,7 @@ TOptional<FUIInputConfig> UAWeekActivatableWidget::GetDesiredInputConfig() const
 	case EAWeekWidgetInputMode::Game:
 		return FUIInputConfig(ECommonInputMode::Game, GameMouseCaptureMode);
 	case EAWeekWidgetInputMode::Menu:
-		return FUIInputConfig(ECommonInputMode::Menu, GameMouseCaptureMode);
+		return FUIInputConfig(ECommonInputMode::Menu, EMouseCaptureMode::NoCapture);
 	case EAWeekWidgetInputMode::Default:
 	default:
 		return TOptional<FUIInputConfig>();

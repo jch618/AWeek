@@ -27,7 +27,11 @@ protected:
 	
 public:
 	void PlayDisappearAnimation();
-	void SetProgress(float CurrentStamina);
+	void UpdateProgress(float CurrentStamina)
+	{
+		mProgress->SetPercent(CurrentStamina / 100);
+	}
+	void AfterUseStamina(float CurrentStamina);
 	UFUNCTION()
 	void HideWidget()
 	{

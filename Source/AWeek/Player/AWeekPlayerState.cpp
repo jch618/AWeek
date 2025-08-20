@@ -26,10 +26,8 @@ void AAWeekPlayerState::Tick(float DeltaTime)
 	if (bStaminaRecovery && mStamina < mMaxStamina)
 	{
 		mStamina = FMath::Min(mStamina + mStaminaRecoveryRate * DeltaTime, mMaxStamina);
-		mStaminaWidget->SetProgress(mStamina);
+		mStaminaWidget->UpdateProgress(mStamina);
 	}
-	
-	UE_LOG(AWeekState, Warning, TEXT("%f"), mStamina);
 }
 
 bool AAWeekPlayerState::UseStamina(float Usage)
@@ -38,8 +36,7 @@ bool AAWeekPlayerState::UseStamina(float Usage)
 		return false;
 
 	mStamina -= Usage;
-	mStaminaWidget->SetProgress(mStamina);
-	mStaminaWidget->SetVisibility(ESlateVisibility::Visible);
+	mStaminaWidget->AfterUseStamina(mStamina);
 	bStaminaRecovery = false;
 
 	GetWorldTimerManager().ClearTimer(mStaminaRecoveryTimer);

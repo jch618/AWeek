@@ -4,7 +4,7 @@
 #include "AWeekGameModeBase.h"
 
 #include "AWeekGameStateBase.h"
-#include "AWeek/Character/AWeekCharacter.h"
+#include "AWeek/Character/AWeekPlayerCharacter.h"
 #include "AWeek/Player/AWeekPlayerController.h"
 #include "AWeek/Player/AWeekPlayerState.h"
 #include "AWeek/UI/AWeekHUD.h"
@@ -14,6 +14,6 @@ AAWeekGameModeBase::AAWeekGameModeBase(const FObjectInitializer& ObjectInitializ
 	GameStateClass = AAWeekGameStateBase::StaticClass();
 	PlayerControllerClass = AAWeekPlayerController::StaticClass();
 	PlayerStateClass = AAWeekPlayerState::StaticClass();
-	DefaultPawnClass = AAWeekCharacter::StaticClass();
+	DefaultPawnClass = AAWeekPlayerCharacter::StaticClass();
 	HUDClass = AAWeekHUD::StaticClass();
 }

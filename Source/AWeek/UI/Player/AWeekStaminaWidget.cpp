@@ -28,7 +28,12 @@ void UAWeekStaminaWidget::PlayDisappearAnimation()
 	PlayWidgetAnimation(TEXT("StaminaDisappear"), 0.f, 1.f, true, true);
 }
 
-void UAWeekStaminaWidget::SetProgress(float CurrentStamina)
+void UAWeekStaminaWidget::AfterUseStamina(float CurrentStamina)
 {
-	mProgress->SetPercent(CurrentStamina / 100);
+	SetVisibility(ESlateVisibility::Visible);
+
+	if (IsAnimationPlaying(mAnim))
+		StopAnimation(mAnim);
+
+	UpdateProgress(CurrentStamina);
 }

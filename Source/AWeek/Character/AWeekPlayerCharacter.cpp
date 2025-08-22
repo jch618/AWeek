@@ -4,7 +4,7 @@
 #include "AWeekPlayerCharacter.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "../Player/AWeekPlayerState.h"
+#include "Pakour/AWeekPakourComponent.h"
 #include "../Input/AWeekGameInput.h"
 
 DEFINE_LOG_CATEGORY(AWeekPlayerCharacter);
@@ -43,6 +43,8 @@ AAWeekPlayerCharacter::AAWeekPlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	mPakour = CreateDefaultSubobject<UAWeekPakourComponent>(TEXT("Pakour"));
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +64,7 @@ void AAWeekPlayerCharacter::BeginPlay()
 		Subsystem->AddMappingContext(InputCDO->mContext, 0);
 	}
 
+	mState = Cast<AAWeekPlayerState>(GetPlayerState());
 	mAnimInst = Cast<UAWeekPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
@@ -70,16 +73,15 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AAWeekPlayerState* State = Cast<AAWeekPlayerState>(GetPlayerState());
-
 	if (bSprint)
 	{
-		if (State->UseStamina(mSprintStaminaUsage * DeltaTime) == false || GetVelocity().Size() < 50)
+		if (mState->UseStamina(EStaminaUseType::Sprint) == false || GetVelocity().Size() < 50)
 		{
 			SprintCompleted();
 		}
 		else
 		{
+			mPakour->TriggerPakour();
 			mSprintTime += DeltaTime;
 		}
 	}
@@ -170,9 +172,7 @@ void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 
 void AAWeekPlayerCharacter::SprintStart(const FInputActionValue& Value)
 {
-	AAWeekPlayerState* State = Cast<AAWeekPlayerState>(GetPlayerState());
-
-	if (GetMovementComponent()->IsFalling() || GetVelocity().Size() < 50 || State->GetStamina() < mSprintMinimumStamina)
+	if (GetMovementComponent()->IsFalling() || GetVelocity().Size() < 50 || mState->GetStamina() < mSprintMinimumStamina)
 		return;
 	GetCharacterMovement()->MaxWalkSpeed = mSprintSpeed;
 	bSprint = true;
@@ -192,6 +192,26 @@ void AAWeekPlayerCharacter::SprintCompleted()
 	mSprintTime = 0;
 	bSprint = false;
 }
+
+void AAWeekPlayerCharacter::VaultStart()
+{
+	if (GetVelocity().Size() < 10 || GetCharacterMovement()->IsFalling())
+		return;
+
+	mState->UseStamina(EStaminaUseType::Vault);
+	mAnimInst->PlayVaultMontage();
+	mPakour->SetCanPakour(false);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+}
+
+void AAWeekPlayerCharacter::VaultEnd()
+{
+	mPakour->SetCanPakour(true);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+}
+
 
 void AAWeekPlayerCharacter::FootStepEffect(FName SocketName)
 {

@@ -36,6 +36,7 @@ void UAWeekPlayerAnimInstance::NativeBeginPlay()
 	// 즉 게임 시작시 플레이어의 모든 애니메이션을 갖고오고 이 레퍼런스를 애님인스턴스가 다 들고있도록 한다.
 	// 플레이어의 상태만 키 값으로 딸깍 넘겨주면 애니메이션 오버라이딩 가능
 	ChangeAnimOverride(mStatusKey);
+	OnMontageEnded.AddDynamic(this, &UAWeekPlayerAnimInstance::MontageEnd);
 }
 
 void UAWeekPlayerAnimInstance::NativeInitializeAnimation()
@@ -67,4 +68,13 @@ UAnimMontage* UAWeekPlayerAnimInstance::FindAnimMontage(const FName& Name)
 	TObjectPtr<UAnimMontage>* Montage = mMontageMap.Find(Name);
 
 	return Montage->Get();
+}
+
+void UAWeekPlayerAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage == mOneHandVaultMontage)
+	{
+		AAWeekCharacter* Chara = Cast<AAWeekCharacter>(GetOwningActor());
+		Chara->VaultEnd();
+	}
 }

@@ -11,6 +11,13 @@
  */
 DECLARE_LOG_CATEGORY_EXTERN(AWeekState, Warning, All);
 
+UENUM()
+enum class EStaminaUseType
+{
+	Sprint,
+	Vault
+};
+
 UCLASS()
 class AWEEK_API AAWeekPlayerState : public APlayerState
 {
@@ -20,11 +27,13 @@ public:
 	AAWeekPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
+	float mDeltaTime = 0;
+
 	UPROPERTY(EditAnywhere)
-	float mMaxStamina = 100;
+	float mMaxStamina = 100; // 원래값 100
 
 	UPROPERTY(VisibleAnywhere)
-	float mStamina = 100;
+	float mStamina = 100; // 원래값 100
 
 	UPROPERTY(EditAnywhere)
 	float mStaminaRecoveryRate = 20;
@@ -41,13 +50,20 @@ protected:
 
 	class UAWeekStaminaWidget* mStaminaWidget;
 
+protected:
+	UPROPERTY(EditAnywhere)
+	float mSprintUsage = 20; // 초당 소모량
+
+	UPROPERTY(EditAnywhere)
+	float mVaultUsage = 10;
+
 public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 
 public:
-	bool UseStamina(float Usage);
+	bool UseStamina(EStaminaUseType StaminaUseType);
 	float GetStamina()
 	{
 		return mStamina;

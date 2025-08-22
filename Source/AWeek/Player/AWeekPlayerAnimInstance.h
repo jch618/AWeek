@@ -30,6 +30,8 @@ protected:
 
 	UAnimMontage* mRunToStopMontage;
 
+	UAnimMontage* mOneHandVaultMontage;
+
 public:
 	virtual void NativeBeginPlay();
 	virtual void NativeInitializeAnimation();
@@ -56,6 +58,7 @@ public:
 		mMontageMap = mAnimMap[mStatusKey].MontageMap;
 
 		mRunToStopMontage = FindAnimMontage(TEXT("RunToStop"));
+		mOneHandVaultMontage = FindAnimMontage(TEXT("OneHandVault"));
 	}
 
 	void PlayRunToStopMontage()
@@ -67,4 +70,13 @@ public:
 	{
 		return Montage_IsPlaying(mRunToStopMontage);
 	}
+
+	void PlayVaultMontage()
+	{
+		Montage_Play(mOneHandVaultMontage);
+	}
+
+protected:
+	UFUNCTION()
+	void MontageEnd(UAnimMontage* Montage, bool bInterrupted);
 };

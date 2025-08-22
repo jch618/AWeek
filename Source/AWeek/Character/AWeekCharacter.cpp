@@ -8,7 +8,6 @@ AAWeekCharacter::AAWeekCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -30,5 +29,13 @@ void AAWeekCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AAWeekCharacter::VaultStart()
+{
+}
+
+void AAWeekCharacter::VaultEnd()
+{
 }
 

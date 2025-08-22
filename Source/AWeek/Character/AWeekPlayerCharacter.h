@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "AWeekCharacter.h"
+#include "../Player/AWeekPlayerState.h"
 #include "../Player/AWeekPlayerAnimInstance.h"
 #include "AWeekPlayerCharacter.generated.h"
 
@@ -26,7 +27,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
+	TObjectPtr<AAWeekPlayerState> mState;
 	TObjectPtr<UAWeekPlayerAnimInstance> mAnimInst;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UAWeekPakourComponent> mPakour;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bSprint = false;
@@ -47,7 +52,10 @@ protected:
 	float mSprintTime = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float mSprintStaminaUsage = 25;
+	float mSprintStaminaUsage = 25; // 달리기 초당 스태미나 소모량
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float mVaultStaminaUsage = 20; 
 
 protected:
 	// Called when the game starts or when spawned
@@ -68,20 +76,11 @@ public:
 	void SprintStart(const FInputActionValue& Value);
 	void SprintCompleted();
 
+protected:
+	virtual void VaultStart();
+	virtual void VaultEnd();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void FootStepEffect(FName SocketName);
-
-	UFUNCTION()
-	void AnimNotify_FootStepL()
-	{
-		FootStepEffect(TEXT("foot_l_Socket"));
-	}
-
-	UFUNCTION()
-	void AnimNotify_FootStepR()
-	{
-		FootStepEffect(TEXT("foot_r_Socket"));
-	}
-	
 };

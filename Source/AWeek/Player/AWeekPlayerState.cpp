@@ -23,6 +23,8 @@ void AAWeekPlayerState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	mDeltaTime = DeltaTime;
+
 	if (bStaminaRecovery && mStamina < mMaxStamina)
 	{
 		mStamina = FMath::Min(mStamina + mStaminaRecoveryRate * DeltaTime, mMaxStamina);
@@ -30,8 +32,19 @@ void AAWeekPlayerState::Tick(float DeltaTime)
 	}
 }
 
-bool AAWeekPlayerState::UseStamina(float Usage)
+bool AAWeekPlayerState::UseStamina(EStaminaUseType StaminaUseType)
 {
+	float Usage = 0;
+
+	switch (StaminaUseType)
+	{
+	case EStaminaUseType::Sprint:
+		Usage = mSprintUsage * mDeltaTime;
+		break;
+	case EStaminaUseType::Vault:
+		Usage = mVaultUsage;
+	}
+
 	if (mStamina < Usage)
 		return false;
 

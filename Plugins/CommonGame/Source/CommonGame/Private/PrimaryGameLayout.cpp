@@ -3,10 +3,41 @@
 
 #include "PrimaryGameLayout.h"
 
+#include "CommonLocalPlayer.h"
+#include "GameUIManagerSubsystem.h"
+#include "GameUIPolicy.h"
 #include "Widgets/CommonActivatableWidgetContainer.h"
 
 UPrimaryGameLayout::UPrimaryGameLayout(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+}
+
+UPrimaryGameLayout* UPrimaryGameLayout::GetPrimaryGameLayout(APlayerController* PlayerController)
+{
+	return PlayerController ? GetPrimaryGameLayout(Cast<UCommonLocalPlayer>(PlayerController->Player)) : nullptr;
+}
+
+UPrimaryGameLayout* UPrimaryGameLayout::GetPrimaryGameLayout(ULocalPlayer* LocalPlayer)
+{
+	if (LocalPlayer)
+	{
+		const UCommonLocalPlayer* CommonLocalPlayer = CastChecked<UCommonLocalPlayer>(LocalPlayer);
+		if (const UGameInstance* GameInstance = CommonLocalPlayer->GetGameInstance())
+		{
+			if (UGameUIManagerSubsystem* UIManager = GameInstance->GetSubsystem<UGameUIManagerSubsystem>())
+			{
+				if (const UGameUIPolicy* Policy = UIManager->GetCurrentUIPolicy())
+				{
+					if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CommonLocalPlayer))
+					{
+						return RootLayout;
+					}
+				}
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 UCommonActivatableWidgetContainerBase* UPrimaryGameLayout::GetLayerWidget(FGameplayTag LayerName)

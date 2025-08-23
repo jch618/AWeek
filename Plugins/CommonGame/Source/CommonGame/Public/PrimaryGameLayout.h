@@ -31,6 +31,9 @@ class COMMONGAME_API UPrimaryGameLayout : public UCommonUserWidget
 
 public:
 	UPrimaryGameLayout(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	
+	static UPrimaryGameLayout* GetPrimaryGameLayout(APlayerController* PlayerController);
+	static UPrimaryGameLayout* GetPrimaryGameLayout(ULocalPlayer* LocalPlayer);
 
 	UCommonActivatableWidgetContainerBase* GetLayerWidget(FGameplayTag LayerName);
 
@@ -104,7 +107,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Layer")
 	void RegisterLayer(FGameplayTag LayerTag, UCommonActivatableWidgetContainerBase* LayerWidget);
-
+	
 	UPROPERTY(Transient, meta = (Categories = "UI.Layer"))
 	TMap<FGameplayTag, TObjectPtr<UCommonActivatableWidgetContainerBase>> Layers;
 };

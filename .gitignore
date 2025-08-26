@@ -74,5 +74,4 @@ Plugins/**/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-Content/A_Surface_Footstep/*
-Content/Survival_Character/*
+Content/ThirdParty/*

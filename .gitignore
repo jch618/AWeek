@@ -74,7 +74,5 @@ Plugins/**/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-# Project Assets
-/Content/Assets/**
-/Content/__ExternalActors__/**
-/Content/__ExternalObjects__/**
+Content/A_Surface_Footstep/*
+Content/Survival_Character/*

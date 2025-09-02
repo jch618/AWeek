@@ -7,12 +7,33 @@
 #include "AWeekCharacter.h"
 #include "../Player/AWeekPlayerState.h"
 #include "../Player/AWeekPlayerAnimInstance.h"
+#include "AWeek/Interfaces/AWeekInteractionInterface.h"
 
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
 #include "AWeekPlayerCharacter.generated.h"
+
+
+class UAWeekInventoryComponent;
+class UAWeekItemBase;
+class AAWeekPlayerController;
+struct FAWeekItemSlot;
+
+USTRUCT()
+struct FAWeekInteractionData
+{
+	GENERATED_BODY()
+
+	FAWeekInteractionData() : CurrentInteractable(nullptr), LastInteractionCheckTime(0.0f) {}
+
+	UPROPERTY()
+	AActor* CurrentInteractable;
+
+	UPROPERTY()
+	float LastInteractionCheckTime;
+};
 
 DECLARE_LOG_CATEGORY_EXTERN(AWeekPlayerCharacter, Warning, All);
 
@@ -63,6 +84,30 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float mVaultStaminaUsage = 20; 
 
+	// =====================================================
+	// INVENTORY SYSTEM
+	// ====================================================
+	UPROPERTY()
+	TObjectPtr<AAWeekPlayerController> PlayerController;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
+	TScriptInterface<IAWeekInteractionInterface> TargetInteractable;
+
+	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
+	TObjectPtr<UAWeekInventoryComponent> PlayerInventory;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float InteractionCheckFrequency;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float InteractionCheckDistance;
+
+	UPROPERTY()
+	FTimerHandle TimerHandle_Interaction;
+
+	UPROPERTY()
+	FAWeekInteractionData InteractionData;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -82,9 +127,34 @@ public:
 	void SprintStart(const FInputActionValue& Value);
 	void SprintCompleted();
 
+
+	// =====================================================
+	// INVENTORY SYSTEM
+	// =====================================================
+	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); }
+	FORCEINLINE TObjectPtr<UAWeekInventoryComponent> GetInventory() const { return PlayerInventory; }
+
+	void UpdateInteractionWidget() const;
+	void DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot, const int32 QuantityToDrop);
+	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
+	void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
+	void CloseChestInventory();
+
 protected:
 	virtual void VaultStart();
 	virtual void VaultEnd();
+
+	// =====================================================
+	// INVENTORY SYSTEM
+	// =====================================================
+	void PerformInteractionCheck();
+	void FoundInteractable(TObjectPtr<AActor> NewInteractable);
+	void NoInteractableFound();
+	void BeginInteract();
+	void EndInteract();
+	void Interact();
+
+	void ToggleMenu();
 
 public:
 	UFUNCTION(BlueprintCallable)

@@ -24,5 +24,5 @@ public:
 	TObjectPtr<UInputAction>			mSprint;
 	TObjectPtr<UInputAction>			mAttack;
 	TObjectPtr<UInputAction>			mInventory;
-	
+	TObjectPtr<UInputAction>			mInteract;
 };

@@ -1,27 +1,25 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#pragma once
+#include "AWeek/UI/AWeekActivatableWidget.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekInteractionWidget.generated.h"
 
 class AAWeekPlayerCharacter;
-struct FInteractableData;
+struct FAWeekInteractableData;
 class UTextBlock;
 class UProgressBar;
 
 UCLASS()
-class AWEEK_API UAWeekInteractionWidget : public UUserWidget
+class AWEEK_API UAWeekInteractionWidget : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Interaction Widget | Player Reference")
 	AAWeekPlayerCharacter* PlayerReference;
 
-	void UpdateWidget(const TObjectPtr<FInteractableData> InteractableData) const;
+	void UpdateWidget(const FAWeekInteractableData* FInteractableData) const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction Widget | Interactable Data")

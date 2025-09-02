@@ -5,12 +5,10 @@
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 
-void UAWeekInventoryToolTip::NativeConstruct()
+void UAWeekInventoryToolTip::InitializeToolTip(TObjectPtr<UAWeekInventoryItemSlot> NewItemSlotWidget)
 {
-	Super::NativeConstruct();
-
-	const UAWeekItemBase* ItemBeingHovered = InventorySlotBeingHovered->GetItemReference();
-	if (!ItemBeingHovered)
+	const UAWeekItemBase* ItemBeingHovered = NewItemSlotWidget->GetItemReference();
+	if (!IsValid(ItemBeingHovered))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("InventoryTooTip: ItemBeingHovered is null!"));
 		return;
@@ -18,29 +16,29 @@ void UAWeekInventoryToolTip::NativeConstruct()
 
 	switch (ItemBeingHovered->ItemType)
 	{
-	case EItemType::Armor:
+	case EAWeekItemType::Armor:
 		break;
 
-	case EItemType::Weapon:
+	case EAWeekItemType::Weapon:
 		break;
 
-	case EItemType::Shield:
+	case EAWeekItemType::Shield:
 		break;
 
-	case EItemType::Spell:
+	case EAWeekItemType::Spell:
 		break;
 
-	case EItemType::Consumable:
+	case EAWeekItemType::Consumable:
 		ItemType->SetText(FText::FromString("Consumable"));
 		DamageValue->SetVisibility(ESlateVisibility::Collapsed);
 		ArmorRating->SetVisibility(ESlateVisibility::Collapsed);
 		//SellValue->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 
-	case EItemType::Quest:
+	case EAWeekItemType::Quest:
 		break;
 
-	case EItemType::Mundane:
+	case EAWeekItemType::Mundane:
 		ItemType->SetText(FText::FromString("Mundane Item"));
 		DamageValue->SetVisibility(ESlateVisibility::Collapsed);
 		ArmorRating->SetVisibility(ESlateVisibility::Collapsed);

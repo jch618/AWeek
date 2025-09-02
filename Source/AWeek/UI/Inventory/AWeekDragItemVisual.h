@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "AWeek/UI/AWeekActivatableWidget.h"
+
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekDragItemVisual.generated.h"
@@ -12,7 +14,7 @@ class UBorder;
 class UImage;
 
 UCLASS()
-class AWEEK_API UAWeekDragItemVisual : public UUserWidget
+class AWEEK_API UAWeekDragItemVisual : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
 

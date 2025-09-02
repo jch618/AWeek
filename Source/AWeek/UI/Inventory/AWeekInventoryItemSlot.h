@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AWeek/UI/AWeekActivatableWidget.h"
+
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekInventoryItemSlot.generated.h"
@@ -12,11 +14,11 @@ class UImage;
 class UAWeekDragItemVisual;
 class UAWeekItemBase;
 class UAWeekInventoryToolTip;
-struct FItemSlot;
+struct FAWeekItemSlot;
 class UAWeekInventoryComponent;
 
 UCLASS()
-class AWEEK_API UAWeekInventoryItemSlot : public UUserWidget
+class AWEEK_API UAWeekInventoryItemSlot : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
 
@@ -27,6 +29,7 @@ public:
 	FORCEINLINE void SetInventory(TObjectPtr<UAWeekInventoryComponent> Inventory) { OwningInventory = Inventory; }
 	const TObjectPtr<UAWeekItemBase> GetItemReference() const;
 
+	void InitializeItemSlot();
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory Slot")
 	TSubclassOf<UAWeekDragItemVisual> DragItemVisualClass;
@@ -50,6 +53,6 @@ protected:
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, TObjectPtr<UDragDropOperation>& OutOperation) override;
-	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, TObjectPtr<UDragDropOperation> InOperation) override;
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 };

@@ -11,29 +11,27 @@
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 
-const UAWeekItemBase* UAWeekInventoryItemSlot::GetItemReference() const
+const TObjectPtr<UAWeekItemBase> UAWeekInventoryItemSlot::GetItemReference() const
 {
 	return OwningInventory->GetItemSlotAt(ItemSlotIndex).Item;
 }
 
-void UAWeekInventoryItemSlot::NativeOnInitialized()
+void UAWeekInventoryItemSlot::InitializeItemSlot()
 {
-	Super::NativeOnInitialized();
-
-}
-
-void UAWeekInventoryItemSlot::NativeConstruct()
-{
-	Super::NativeConstruct();
-
 	if (ItemSlotIndex == -1) return;
 	// set ToolTip
 	//if (!ItemSlotReference->bIsEmpty && ToolTipClass)
-	const FItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
+	if (OwningInventory == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Item slot: OwningInventory is null!"));
+		return;
+
+	}
+	const FAWeekItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
 	if (!ItemSlot.bIsEmpty && ToolTipClass)
 	{
 		UAWeekInventoryToolTip* ToolTip = CreateWidget<UAWeekInventoryToolTip>(this, ToolTipClass);
-		ToolTip->InventorySlotBeingHovered = this;
+		ToolTip->InitializeToolTip(this);
 		SetToolTip(ToolTip);
 	}
 
@@ -42,19 +40,19 @@ void UAWeekInventoryItemSlot::NativeConstruct()
 	{
 		switch (ItemReference->ItemQuality)
 		{
-		case EItemQuality::Shoddy:
+		case EAWeekItemQuality::Shoddy:
 			ItemBorder->SetBrushColor(FLinearColor::Gray);
 			break;
-		case EItemQuality::Common:
+		case EAWeekItemQuality::Common:
 			ItemBorder->SetBrushColor(FLinearColor::White);
 			break;
-		case EItemQuality::Quality:
+		case EAWeekItemQuality::Quality:
 			ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.51f, 0.169f));
 			break;
-		case EItemQuality::Masterwork:
+		case EAWeekItemQuality::Masterwork:
 			ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.4f, 0.75f));
 			break;
-		case EItemQuality::Grandmaster:
+		case EAWeekItemQuality::Grandmaster:
 			ItemBorder->SetBrushColor(FLinearColor(1.0f, 0.45f, 0.0f)); // orange
 			break;
 		default:
@@ -78,6 +76,76 @@ void UAWeekInventoryItemSlot::NativeConstruct()
 		ItemIcon->SetVisibility(ESlateVisibility::Collapsed);
 		ItemBorder->SetBrushColor(FLinearColor(0.1f, 0.1f, 0.1f));
 	}
+}
+
+void UAWeekInventoryItemSlot::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+}
+
+void UAWeekInventoryItemSlot::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	//if (ItemSlotIndex == -1) return;
+	//// set ToolTip
+	////if (!ItemSlotReference->bIsEmpty && ToolTipClass)
+	//if (OwningInventory == nullptr)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Item slot: OwningInventory is null!"));
+	//	return;
+
+	//}
+	//const FAWeekItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
+	//if (!ItemSlot.bIsEmpty && ToolTipClass)
+	//{
+	//	UAWeekInventoryToolTip* ToolTip = CreateWidget<UAWeekInventoryToolTip>(this, ToolTipClass);
+	//	ToolTip->InventorySlotBeingHovered = this;
+	//	SetToolTip(ToolTip);
+	//}
+
+	//const UAWeekItemBase* ItemReference = ItemSlot.Item;
+	//if (ItemReference)
+	//{
+	//	switch (ItemReference->ItemQuality)
+	//	{
+	//	case EAWeekItemQuality::Shoddy:
+	//		ItemBorder->SetBrushColor(FLinearColor::Gray);
+	//		break;
+	//	case EAWeekItemQuality::Common:
+	//		ItemBorder->SetBrushColor(FLinearColor::White);
+	//		break;
+	//	case EAWeekItemQuality::Quality:
+	//		ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.51f, 0.169f));
+	//		break;
+	//	case EAWeekItemQuality::Masterwork:
+	//		ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.4f, 0.75f));
+	//		break;
+	//	case EAWeekItemQuality::Grandmaster:
+	//		ItemBorder->SetBrushColor(FLinearColor(1.0f, 0.45f, 0.0f)); // orange
+	//		break;
+	//	default:
+	//		break;
+	//	}
+
+	//	ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);
+
+	//	if (ItemReference->NumericData.bIsStackable)
+	//	{
+	//		ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
+	//	}
+	//	else
+	//	{
+	//		ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
+	//	}
+	//}
+	//else
+	//{
+	//	ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
+	//	ItemIcon->SetVisibility(ESlateVisibility::Collapsed);
+	//	ItemBorder->SetBrushColor(FLinearColor(0.1f, 0.1f, 0.1f));
+	//}
 }
 
 FReply UAWeekInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -109,7 +177,7 @@ void UAWeekInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, 
 		UE_LOG(LogTemp, Warning, TEXT("ItemSlotIndex is -1!"));
 		return;
 	}
-	const FItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
+	const FAWeekItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
 	if (ItemSlotIndex != -1 && !ItemSlot.bIsEmpty && DragItemVisualClass)
 	{
 		const UAWeekItemBase* ItemReference = ItemSlot.Item;

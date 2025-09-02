@@ -21,36 +21,36 @@ void UAWeekInteractionWidget::NativeConstruct()
 	CurrentInteractionDuration = 0.0f;
 }
 
-void UAWeekInteractionWidget::UpdateWidget(const TObjectPtr<FInteractableData> InteractableData) const
+void UAWeekInteractionWidget::UpdateWidget(const FAWeekInteractableData* FInteractableData) const
 {
-	switch (InteractableData->InteractableType)
+	switch (FInteractableData->InteractableType)
 	{
-	case EInteractableType::Pickup:
+	case EAWeekInteractableType::Pickup:
 		KeyPressText->SetText(FText::FromString("Press"));
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 
-		if (InteractableData->Quantity < 2)
+		if (FInteractableData->Quantity < 2)
 		{
 			QuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{
 			QuantityText->SetText(FText::Format(NSLOCTEXT("InteractionWidget", "QuantityText", "x{0}"),
-				InteractableData->Quantity));
+				FInteractableData->Quantity));
 			QuantityText->SetVisibility(ESlateVisibility::Visible);
 		}
 		break;
 
-	case EInteractableType::NonplayerCharacter:
+	case EAWeekInteractableType::NonplayerCharacter:
 		break;
 
-	case EInteractableType::Device:
+	case EAWeekInteractableType::Device:
 		break;
 
-	case EInteractableType::Toggle:
+	case EAWeekInteractableType::Toggle:
 		break;
 
-	case EInteractableType::Chest:
+	case EAWeekInteractableType::Chest:
 		KeyPressText->SetText(FText::FromString("Press"));
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 
@@ -60,8 +60,8 @@ void UAWeekInteractionWidget::UpdateWidget(const TObjectPtr<FInteractableData> I
 		break;
 	}
 
-	ActionText->SetText(InteractableData->Action);
-	NameText->SetText(InteractableData->Name);
+	ActionText->SetText(FInteractableData->Action);
+	NameText->SetText(FInteractableData->Name);
 }
 
 float UAWeekInteractionWidget::UpdateInteractionProgress()

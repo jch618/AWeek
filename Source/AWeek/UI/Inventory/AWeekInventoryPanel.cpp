@@ -8,6 +8,8 @@
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/Items/AWeekItemBase.h"
 
+#include "CommonUIExtensions.h"
+
 // engine
 #include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
@@ -23,6 +25,8 @@ void UAWeekInventoryPanel::NativeOnInitialized()
 
 void UAWeekInventoryPanel::LinkToInventory(TObjectPtr<UAWeekInventoryComponent> InputInventory, TObjectPtr<AAWeekPlayerCharacter> InputCharacter)
 {
+	UE_LOG(LogTemp, Error, TEXT("Link To Inventory"));
+
 	// InputCharacter is null by default, but if linking to a player then
 	// create the submenu and link it to the input inventory
 	//if (InputCharacter)
@@ -55,6 +59,7 @@ void UAWeekInventoryPanel::LinkToInventory(TObjectPtr<UAWeekInventoryComponent> 
 		if (this->InventoryReference != InputInventory)
 		{
 			this->InventoryReference = InputInventory;
+			this->InventoryReference->SetIsLinkedToInventoryPanel(true);
 			// bind the delegate so that changes in the linked inventory call RefreshInventory
 			this->InventoryReference->OnInventoryUpdated.AddUObject(this, &UAWeekInventoryPanel::RefreshInventory);
 
@@ -87,6 +92,9 @@ void UAWeekInventoryPanel::LinkToInventory(TObjectPtr<UAWeekInventoryComponent> 
 
 void UAWeekInventoryPanel::UnlinkFromInventory()
 {
+	UE_LOG(LogTemp, Error, TEXT("Unlink To Inventory"));
+	
+	InventoryReference->SetIsLinkedToInventoryPanel(false);
 	// removes all functions from the delegate's invocation list that are bound to the specified UserObject
 	const uint8 DelegatesRemoved = InventoryReference->OnInventoryUpdated.RemoveAll(this);
 	if (DelegatesRemoved > 0)
@@ -110,18 +118,23 @@ void UAWeekInventoryPanel::RefreshInventory()
 	{
 		InventoryGridPanel->ClearChildren();
 
-		//TArray<UItemBase*> InventoryContents = InventoryReference->GetInventoryContents();
-		TArray<FItemSlot>& InventoryContents = InventoryReference->GetInventoryContents();
+		TArray<FAWeekItemSlot>& InventoryContents = InventoryReference->GetInventoryContents();
 		UE_LOG(LogTemp, Warning, TEXT("Refresh Inventory: InventorySlots = %d"), InventoryContents.Num());
+		if (InventorySlotClass == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("InventorySlotClass is null!"), InventoryContents.Num());
+			return;
+		}
 		for (int32 i = 0; i < InventoryContents.Num(); i++)
 		{
 			TObjectPtr<UAWeekInventoryItemSlot> ItemSlot = CreateWidget<UAWeekInventoryItemSlot>(this, InventorySlotClass);
-			//ItemSlot->SetItemReference(InventoryContents[i]);
-			//ItemSlot->SetItemSlotReference(&InventoryContents[i]);
+			//TObjectPtr<UAWeekInventoryItemSlot> ItemSlot = Cast<UAWeekInventoryItemSlot, UCommonActivatableWidget>(
+			//	UCommonUIExtensions::PushContentToLayer_ForPlayer(GetOwningLocalPlayer(),
+			//	FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventorySlotClass));
+			
 			ItemSlot->SetItemSlotIndex(i);
 			ItemSlot->SetInventory(InventoryReference);
-			//UE_LOG(LogTemp, Warning, TEXT("InventoryContents[%d]: Row=%d, Col=%d"), i, 
-				//InventoryContents[i].Row, InventoryContents[i].Col);
+			ItemSlot->InitializeItemSlot();
 
 			UUniformGridSlot* GridSlot = InventoryGridPanel->AddChildToUniformGrid(ItemSlot,
 				InventoryContents[i].Row,
@@ -153,7 +166,7 @@ bool UAWeekInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 		UE_LOG(LogTemp, Warning, TEXT("Invalid ItemSlotIndex: %d"), ItemDragDrop->ItemSlotIndex);
 		return false;
 	}
-	const FItemSlot& ItemSlot = ItemDragDrop->SourceInventory->GetItemSlotAt(ItemDragDrop->ItemSlotIndex);
+	const FAWeekItemSlot& ItemSlot = ItemDragDrop->SourceInventory->GetItemSlotAt(ItemDragDrop->ItemSlotIndex);
 
 	if (!ItemSlot.bIsEmpty && InventoryReference)
 	{

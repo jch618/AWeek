@@ -1,8 +1,10 @@
 #pragma once
 
+#include "AWeek/UI/AWeekActivatableWidget.h"
+
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InventoryPanel.generated.h"
+#include "AWeekInventoryPanel.generated.h"
 
 class UUniformGridPanel;
 class UWrapBox;
@@ -13,7 +15,7 @@ class UAWeekInventoryComponent;
 class AAWeekPlayerCharacter;
 
 UCLASS()
-class AWEEK_API UAWeekInventoryPanel : public UUserWidget
+class AWEEK_API UAWeekInventoryPanel : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
 
@@ -31,7 +33,7 @@ protected:
 	TObjectPtr<UTextBlock> InventoryTitle;
 
 	UPROPERTY(meta = (BindWidget))
-	UUniformGridPanel* InventoryGridPanel;
+	TObjectPtr<UUniformGridPanel> InventoryGridPanel;
 
 	//UPROPERTY(meta = (BindWidget))
 	//UWrapBox* InventoryWrapBox;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AWeek/UI/AWeekActivatableWidget.h"
+
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekInventoryToolTip.generated.h"
@@ -9,12 +11,15 @@ class UTextBlock;
 class UAWeekInventoryItemSlot;
 
 UCLASS()
-class AWEEK_API UAWeekInventoryToolTip : public UUserWidget
+class AWEEK_API UAWeekInventoryToolTip : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
 
 public:
-	TObjectPtr<UAWeekInventoryItemSlot> InventorySlotBeingHovered;
+	void InitializeToolTip(TObjectPtr<UAWeekInventoryItemSlot> NewItemSlotWidget);
+
+protected:
+	TObjectPtr<UAWeekInventoryItemSlot> ItemSlotWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemName;
@@ -39,7 +44,4 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> StackWeight;
-
-protected:
-	virtual void NativeConstruct() override;
 };

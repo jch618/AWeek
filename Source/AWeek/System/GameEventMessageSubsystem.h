@@ -7,6 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameEventMessageSubsystem.generated.h"
 
+class UAsyncAction_RegisterGameEventMessage;
 class UGameEventMessageSubsystem;
 
 UENUM(BlueprintType)
@@ -28,6 +29,7 @@ public:
 
 	bool IsValid() const { return ID != 0; }
 
+	void Unregister();
 private:
 	UPROPERTY(Transient)
 	TWeakObjectPtr<UGameEventMessageSubsystem> Subsystem;
@@ -70,7 +72,7 @@ UCLASS()
 class AWEEK_API UGameEventMessageSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-
+	friend UAsyncAction_RegisterGameEventMessage;
 public:
 	static UGameEventMessageSubsystem& Get(const UObject* WorldContextObject);
 	static bool HasInstance(const UObject* WorldContextObject);

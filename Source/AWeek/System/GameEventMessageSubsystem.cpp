@@ -3,6 +3,17 @@
 
 #include "GameEventMessageSubsystem.h"
 
+void FGameEventMessageListenerHandle::Unregister()
+{
+	if (UGameEventMessageSubsystem* StrongSubsystem = Subsystem.Get())
+	{
+		StrongSubsystem->UnregisterListener(*this);
+		Subsystem.Reset();
+		Channel = FGameplayTag();
+		ID = 0;
+	}
+}
+
 UGameEventMessageSubsystem& UGameEventMessageSubsystem::Get(const UObject* WorldContextObject)
 {
 	const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::Assert);

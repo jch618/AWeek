@@ -133,11 +133,10 @@ public:
 	// =====================================================
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); }
 	FORCEINLINE TObjectPtr<UAWeekInventoryComponent> GetInventory() const { return PlayerInventory; }
-
 	void UpdateInteractionWidget() const;
 	void DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot, const int32 QuantityToDrop);
 	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
-	void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
+	//void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 	void CloseChestInventory();
 
 protected:

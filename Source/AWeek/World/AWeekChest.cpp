@@ -50,7 +50,7 @@ void AAWeekChest::BeginInteract()
 
 void AAWeekChest::EndInteract()
 {
-	//InventoryComponent->SetIsLinkedToInventoryPanel(false);
+
 }
 
 void AAWeekChest::Interact(TObjectPtr<AAWeekPlayerCharacter> Character)

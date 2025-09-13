@@ -20,20 +20,17 @@ struct FAWeekItemSlot
 {
 	GENERATED_BODY()
 
-	FAWeekItemSlot(int32 NumRow, int32 NumCol, UAWeekItemBase* ItemReference, UAWeekInventoryComponent* Inventory) :
-		Row(NumRow), Col(NumCol), Item(ItemReference), OwningInventory(Inventory)
-	{
-		bIsEmpty = (Item == nullptr);
-	}
+	FAWeekItemSlot(int32 NewItemSlotIndex, UAWeekInventoryComponent* NewOwningInventory, UAWeekItemBase* NewItem = nullptr) :
+		bIsEmpty(NewItem == nullptr), ItemSlotIndex(NewItemSlotIndex), OwningInventory(NewOwningInventory), Item(NewItem)
+	{ }
 	FAWeekItemSlot() :
-		Row(0), Col(0), Item(nullptr), bIsEmpty(true), OwningInventory(nullptr)
-	{
-	}
-	int32 Row;
-	int32 Col;
-	UAWeekItemBase* Item;
+		bIsEmpty(true), ItemSlotIndex(-1), OwningInventory(nullptr), Item(nullptr)
+	{ }
+
 	bool bIsEmpty;
+	int32 ItemSlotIndex;
 	UAWeekInventoryComponent* OwningInventory;
+	UAWeekItemBase* Item;
 };
 
 USTRUCT(BlueprintType)
@@ -106,6 +103,9 @@ public:
 	UAWeekInventoryComponent();
 
 	FORCEINLINE bool IsValidItemSlotIndex(const int32 ItemSlotIndex) { return InventoryContents.IsValidIndex(ItemSlotIndex); }
+
+	FORCEINLINE bool CanAddItemWeight(const int32 NewWeight) const { return InventoryTotalWeight + NewWeight <= InventoryWeightCapacity; }
+
 	UFUNCTION(Category = "Inventory")
 	FAWeekItemAddResult HandleAddItem(UAWeekItemBase* InputItem);
 
@@ -116,19 +116,22 @@ public:
 	FAWeekItemSlot* FindNextPartialStack(UAWeekItemBase* ItemIn);
 
 	UFUNCTION(Category = "Inventory")
-	void ClearItemSlot(FAWeekItemSlot& ItemToRemove);
-	UFUNCTION(Category = "Inventory")
 	int32 RemoveAmountOfItem(FAWeekItemSlot& ItemSlot, int32 DesiredAmountToRemove);
-	int32 RemoveAmountOfItem(const FAWeekItemSlot& ItemSlot, int32 DesiredAmountToRemove);
+	int32 RemoveAmountOfItem(int32 TargetItemSlotIndex, int32 DesiredAmountToRemove);
+	UAWeekItemBase* ReleaseItemAt(int32 TargetItemSlotIndex);
 	UFUNCTION(Category = "Inventory")
 	void SplitExistingStack(FAWeekItemSlot& ItemSlot, const int32 AmountToSplit);
 
 	void SwapItemSlotWith(const int32 ItemSlotIndex, const int32 OtherItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OtherInventory);
+	int32 GetFirstEmptySlotIndex();
 
 	// getters
 	// -------------------------------------
+	FORCEINLINE int32 GetNumCols() const { return NumCols; }
+	FORCEINLINE int32 GetItemSlotIndex(int Row, int Col) { return Row * NumCols + Col; }
+
 	UFUNCTION(Category = "Inventory")
-	int32 GetEmptySlotsNum();
+	int32 GetEmptySlotsNum() const;
 
 	UFUNCTION(Category = "Inventory")
 
@@ -146,6 +149,7 @@ public:
 
 	FORCEINLINE const FAWeekItemSlot& GetItemSlotAt(int32 Index) const { return InventoryContents[Index]; }
 	FORCEINLINE bool IsLinkedToInventoryPanel() const { return bIsLinkedToInventoryPanel; }
+
 	// setters
 	// -------------------------------------
 	UFUNCTION(Category = "Inventory")
@@ -156,6 +160,9 @@ public:
 	{
 		bIsLinkedToInventoryPanel = bNewIsLinkedToInventoryPanel;
 	}
+	int32 AddItemQuantityAt(int32 ItemSlotIndex, int32 DesiredAddAmount);
+	void PlaceItemAt(TObjectPtr<UAWeekItemBase> InputItem, int32 TargetIndex);
+	UAWeekItemBase* TakeItemAt(int32 TargetIndex);
 
 protected:
 	//================================================================
@@ -183,14 +190,15 @@ protected:
 	//================================================================
 	virtual void BeginPlay() override;
 
+	void ClearItemSlot(FAWeekItemSlot& ItemSlotToRemove);
+
 	FAWeekItemAddResult HandleNonStackableItems(UAWeekItemBase* InputItem);
 	int32 HandleStackableItems(UAWeekItemBase* ItemIn, int32 RequestedAddAmount);
 	int32 CalculateWeightAddAmount(UAWeekItemBase* ItemIn, int32 RequestedAddAmount);
 	int32 CalculateNumberForFullStack(UAWeekItemBase* StackableItem, int32 InitialRequestedAddAmount);
 
-	void AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd);
+	void AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex = -1);
 private:
 	void SetItemQuantity(FAWeekItemSlot& ItemSlot, const int32 Quantity);
-	int32 GetFirstEmptySlotIndex();
 	int32 FindItemIndex(const UAWeekItemBase* ItemIn) const;
 };

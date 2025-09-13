@@ -2,6 +2,7 @@
 
 // game
 #include "AWeek/UI/Inventory/AWeekInventoryPanel.h"
+#include "AWeek/UI/AWeekInventoryMainPanel.h"
 #include "AWeek/UI/Inventory/AWeekInventoryItemSlot.h"
 #include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
@@ -118,8 +119,8 @@ void UAWeekInventoryPanel::RefreshInventory()
 	{
 		InventoryGridPanel->ClearChildren();
 
-		TArray<FAWeekItemSlot>& InventoryContents = InventoryReference->GetInventoryContents();
-		UE_LOG(LogTemp, Warning, TEXT("Refresh Inventory: InventorySlots = %d"), InventoryContents.Num());
+		const TArray<FAWeekItemSlot>& InventoryContents = InventoryReference->GetInventoryContents();
+		//UE_LOG(LogTemp, Warning, TEXT("%s: InventorySlots = %d"), *FString(__FUNCTION__), InventoryContents.Num());
 		if (InventorySlotClass == nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("InventorySlotClass is null!"), InventoryContents.Num());
@@ -128,20 +129,22 @@ void UAWeekInventoryPanel::RefreshInventory()
 		for (int32 i = 0; i < InventoryContents.Num(); i++)
 		{
 			TObjectPtr<UAWeekInventoryItemSlot> ItemSlot = CreateWidget<UAWeekInventoryItemSlot>(this, InventorySlotClass);
-			//TObjectPtr<UAWeekInventoryItemSlot> ItemSlot = Cast<UAWeekInventoryItemSlot, UCommonActivatableWidget>(
-			//	UCommonUIExtensions::PushContentToLayer_ForPlayer(GetOwningLocalPlayer(),
-			//	FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventorySlotClass));
-			
 			ItemSlot->SetItemSlotIndex(i);
 			ItemSlot->SetInventory(InventoryReference);
 			ItemSlot->InitializeItemSlot();
 
 			UUniformGridSlot* GridSlot = InventoryGridPanel->AddChildToUniformGrid(ItemSlot,
-				InventoryContents[i].Row,
-				InventoryContents[i].Col);
+				InventoryContents[i].ItemSlotIndex / InventoryReference->GetNumCols(),
+				InventoryContents[i].ItemSlotIndex % InventoryReference->GetNumCols());
 		}
 	}
 	SetInfoText();
+}
+
+void UAWeekInventoryPanel::HandleShiftClickOnSlot(const FAWeekItemSlot& ClickedItemSlot)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s: detected"), *FString(__FUNCTION__));
+	OnShiftClick.ExecuteIfBound(ClickedItemSlot);
 }
 
 void UAWeekInventoryPanel::SetInfoText() const

@@ -51,6 +51,16 @@ bool UAWeekInventoryMainPanel::NativeOnDrop(const FGeometry& InGeometry, const F
 	return false;
 }
 
+UAWeekInventoryComponent* UAWeekInventoryMainPanel::GetPlayerInventoryComponent()
+{
+	return PlayerInventoryPanel->GetInventoryReference();
+}
+
+UAWeekInventoryComponent* UAWeekInventoryMainPanel::GetChestInventoryComponent()
+{
+	return ChestInventoryPanel->GetInventoryReference();
+}
+
 void UAWeekInventoryMainPanel::InitializeInventoryMainPanel()
 {
 	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwningPlayerPawn());
@@ -65,7 +75,7 @@ void UAWeekInventoryMainPanel::ActivateChestInventory(TObjectPtr<UAWeekInventory
 	{
 		ChestInventoryPanel->LinkToInventory(InventoryComponent);
 		ChestInventoryPanel->SetVisibility(ESlateVisibility::Visible);
-
+		bIsChestOpen = true;
 	}
 }
 
@@ -75,5 +85,6 @@ void UAWeekInventoryMainPanel::DeActivateChestInventory()
 	{
 		ChestInventoryPanel->UnlinkFromInventory();
 		ChestInventoryPanel->SetVisibility(ESlateVisibility::Collapsed);
+		bIsChestOpen = false;
 	}
 }

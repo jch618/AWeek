@@ -416,7 +416,7 @@ void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot,
 	UAWeekItemBase* ItemToDrop = ItemSlot.Item;
 
 	//const int32 RemoveQuantity = PlayerInventory->RemoveAmountOfItem(ItemSlot, QuantityToDrop);
-	const int32 RemoveQuantity = ItemSlot.OwningInventory->RemoveAmountOfItem(ItemSlot, QuantityToDrop);
+	const int32 RemoveQuantity = ItemSlot.OwningInventory->RemoveAmountOfItem(ItemSlot.ItemSlotIndex, QuantityToDrop);
 
 	AAWeekPickupItem* Pickup = GetWorld()->SpawnActor<AAWeekPickupItem>(AAWeekPickupItem::StaticClass(), SpawnTransform, SpawnParams);
 
@@ -428,10 +428,10 @@ void AAWeekPlayerCharacter::ToggleChestInventory(TObjectPtr<UAWeekInventoryCompo
 	PlayerController->ToggleChestInventory(ChestInventory);
 }
 
-void AAWeekPlayerCharacter::OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
-{
-	PlayerController->ActivateChestInventory(ChestInventory);
-}
+//void AAWeekPlayerCharacter::OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
+//{
+//	PlayerController->ActivateChestInventory(ChestInventory);
+//}
 
 void AAWeekPlayerCharacter::CloseChestInventory()
 {

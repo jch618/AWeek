@@ -1,19 +1,25 @@
-#include "Components/TextBlock.h"
-
+// game
 #include "AWeek/UI/Inventory/AWeekInventoryTooltip.h"
 #include "AWeek/UI/Inventory/AWeekInventoryItemSlot.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 
+// engine
+#include "Components/TextBlock.h"
+
 void UAWeekInventoryToolTip::InitializeToolTip(TObjectPtr<UAWeekInventoryItemSlot> NewItemSlotWidget)
 {
+	if (!IsValid(NewItemSlotWidget))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: NewItemSlotWidget is invalid"), *FString(__FUNCTION__));
+		return;
+	}
 	const UAWeekItemBase* ItemBeingHovered = NewItemSlotWidget->GetItemReference();
 	if (!IsValid(ItemBeingHovered))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InventoryTooTip: ItemBeingHovered is null!"));
+		UE_LOG(LogTemp, Warning, TEXT("%s: ItemBeingHovered is invalid"), *FString(__FUNCTION__));
 		return;
 	}
-
 	switch (ItemBeingHovered->ItemType)
 	{
 	case EAWeekItemType::Armor:

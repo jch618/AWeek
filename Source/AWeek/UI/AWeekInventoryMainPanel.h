@@ -9,6 +9,9 @@
 class AAWeekPlayerCharacter;
 class UAWeekInventoryPanel;
 class UAWeekInventoryComponent;
+class UAWeekDragItemVisual;
+
+struct FAWeekItemSlot;
 
 UCLASS()
 class AWEEK_API UAWeekInventoryMainPanel : public UAWeekActivatableWidget
@@ -16,6 +19,23 @@ class AWEEK_API UAWeekInventoryMainPanel : public UAWeekActivatableWidget
 	GENERATED_BODY()
 
 public:
+	//================================================================
+	//	FUNCTIONS
+	//================================================================
+	FORCEINLINE bool IsChestOpen() const { return bIsChestOpen; }
+	FORCEINLINE UAWeekInventoryComponent* GetPlayerInventoryComponent();
+	FORCEINLINE UAWeekInventoryComponent* GetChestInventoryComponent();
+
+	UFUNCTION()
+	void InitializeInventoryMainPanel();
+	void ActivateChestInventory(TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
+	void DeActivateChestInventory();
+protected:
+	//================================================================
+	//	PROPERTIES & VARIABLES
+	//================================================================
+	bool bIsChestOpen;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	TSubclassOf<UAWeekInventoryPanel> InventoryPanelClass;
 
@@ -28,10 +48,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAWeekInventoryPanel> ChestInventoryPanel;
 
-	void InitializeInventoryMainPanel();
-	void ActivateChestInventory(TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
-	void DeActivateChestInventory();
-protected:
+	//================================================================
+	//	FUNCTIONS
+	//================================================================
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 

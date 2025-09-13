@@ -1,8 +1,3 @@
-// engine
-#include "Components/Border.h"
-#include "Components/Image.h"
-#include "Components/TextBlock.h"
-
 // game
 #include "AWeek/UI/Inventory/AWeekInventoryItemSlot.h"
 #include "AWeek/UI/Inventory/AWeekInventoryToolTip.h"
@@ -10,6 +5,12 @@
 #include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
+#include "AWeek/Player/AWeekPlayerController.h"
+
+// engine
+#include "Components/Border.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
 
 const TObjectPtr<UAWeekItemBase> UAWeekInventoryItemSlot::GetItemReference() const
 {
@@ -20,25 +21,30 @@ void UAWeekInventoryItemSlot::InitializeItemSlot()
 {
 	if (ItemSlotIndex == -1) return;
 	// set ToolTip
-	//if (!ItemSlotReference->bIsEmpty && ToolTipClass)
 	if (OwningInventory == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Item slot: OwningInventory is null!"));
+		UE_LOG(LogTemp, Warning, TEXT("%s: OwningInventory is null!"), *FString(__FUNCTION__));
 		return;
 
 	}
 	const FAWeekItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
-	if (!ItemSlot.bIsEmpty && ToolTipClass)
+	if (IsValid(ItemSlot.Item) && ToolTipClass)
 	{
 		UAWeekInventoryToolTip* ToolTip = CreateWidget<UAWeekInventoryToolTip>(this, ToolTipClass);
-		ToolTip->InitializeToolTip(this);
-		SetToolTip(ToolTip);
+		if (IsValid(ToolTip))
+		{
+			ToolTip->InitializeToolTip(this);
+			SetToolTip(ToolTip);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s: ToolTip is invalid"), *FString(__FUNCTION__));
+		}
 	}
 
-	const UAWeekItemBase* ItemReference = ItemSlot.Item;
-	if (ItemReference)
+	if (IsValid(ItemSlot.Item))
 	{
-		switch (ItemReference->ItemQuality)
+		switch (ItemSlot.Item->ItemQuality)
 		{
 		case EAWeekItemQuality::Shoddy:
 			ItemBorder->SetBrushColor(FLinearColor::Gray);
@@ -59,11 +65,11 @@ void UAWeekInventoryItemSlot::InitializeItemSlot()
 			break;
 		}
 
-		ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);
+		ItemIcon->SetBrushFromTexture(ItemSlot.Item->AssetData.Icon);
 
-		if (ItemReference->NumericData.bIsStackable)
+		if (ItemSlot.Item->NumericData.bIsStackable)
 		{
-			ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
+			ItemQuantity->SetText(FText::AsNumber(ItemSlot.Item->Quantity));
 		}
 		else
 		{
@@ -76,6 +82,11 @@ void UAWeekInventoryItemSlot::InitializeItemSlot()
 		ItemIcon->SetVisibility(ESlateVisibility::Collapsed);
 		ItemBorder->SetBrushColor(FLinearColor(0.1f, 0.1f, 0.1f));
 	}
+
+	AAWeekPlayerController* Controller = Cast<AAWeekPlayerController>(GetWorld()->GetFirstPlayerController());
+	OnLeftClick.BindUObject(Controller, &AAWeekPlayerController::HandleItemSlotLeftClick);
+	OnRightClick.BindUObject(Controller, &AAWeekPlayerController::HandleItemSlotRightClick);
+	OnShiftLeftClick.BindUObject(Controller, &AAWeekPlayerController::HandleItemSlotShiftLeftClick);
 }
 
 void UAWeekInventoryItemSlot::NativeOnInitialized()
@@ -87,65 +98,6 @@ void UAWeekInventoryItemSlot::NativeOnInitialized()
 void UAWeekInventoryItemSlot::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	//if (ItemSlotIndex == -1) return;
-	//// set ToolTip
-	////if (!ItemSlotReference->bIsEmpty && ToolTipClass)
-	//if (OwningInventory == nullptr)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Item slot: OwningInventory is null!"));
-	//	return;
-
-	//}
-	//const FAWeekItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
-	//if (!ItemSlot.bIsEmpty && ToolTipClass)
-	//{
-	//	UAWeekInventoryToolTip* ToolTip = CreateWidget<UAWeekInventoryToolTip>(this, ToolTipClass);
-	//	ToolTip->InventorySlotBeingHovered = this;
-	//	SetToolTip(ToolTip);
-	//}
-
-	//const UAWeekItemBase* ItemReference = ItemSlot.Item;
-	//if (ItemReference)
-	//{
-	//	switch (ItemReference->ItemQuality)
-	//	{
-	//	case EAWeekItemQuality::Shoddy:
-	//		ItemBorder->SetBrushColor(FLinearColor::Gray);
-	//		break;
-	//	case EAWeekItemQuality::Common:
-	//		ItemBorder->SetBrushColor(FLinearColor::White);
-	//		break;
-	//	case EAWeekItemQuality::Quality:
-	//		ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.51f, 0.169f));
-	//		break;
-	//	case EAWeekItemQuality::Masterwork:
-	//		ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.4f, 0.75f));
-	//		break;
-	//	case EAWeekItemQuality::Grandmaster:
-	//		ItemBorder->SetBrushColor(FLinearColor(1.0f, 0.45f, 0.0f)); // orange
-	//		break;
-	//	default:
-	//		break;
-	//	}
-
-	//	ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);
-
-	//	if (ItemReference->NumericData.bIsStackable)
-	//	{
-	//		ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
-	//	}
-	//	else
-	//	{
-	//		ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
-	//	}
-	//}
-	//else
-	//{
-	//	ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
-	//	ItemIcon->SetVisibility(ESlateVisibility::Collapsed);
-	//	ItemBorder->SetBrushColor(FLinearColor(0.1f, 0.1f, 0.1f));
-	//}
 }
 
 FReply UAWeekInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -154,7 +106,24 @@ FReply UAWeekInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeome
 
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-		return Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
+		if (InMouseEvent.IsShiftDown())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s: ItemSlotIndex = %d"), *FString(__FUNCTION__), ItemSlotIndex);
+
+			const FAWeekItemSlot& ClickedItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
+			UE_LOG(LogTemp, Warning, TEXT("%s: ClickedItemIndex: %d"), *FString(__FUNCTION__), ClickedItemSlot.ItemSlotIndex);
+			OnShiftLeftClick.ExecuteIfBound(ClickedItemSlot);
+			return FReply::Handled();
+		}
+		OnLeftClick.ExecuteIfBound(ItemSlotIndex, OwningInventory);
+		return FReply::Handled();
+
+		//return Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
+	}
+	else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+	{
+		OnRightClick.ExecuteIfBound(ItemSlotIndex, OwningInventory);
+		return FReply::Handled();
 	}
 	// submenu on right click will happen here
 
@@ -172,45 +141,24 @@ void UAWeekInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, 
 
 	// if empty slot, no dragging
 	//if (ItemSlotReference && !ItemSlotReference->bIsEmpty && DragItemVisualClass)
-	if (ItemSlotIndex == -1)
+	if (OwningInventory->IsValidItemSlotIndex(ItemSlotIndex))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ItemSlotIndex is -1!"));
+		UE_LOG(LogTemp, Warning, TEXT("%s: ItemSlotIndex=%d is invalid"), *FString(__FUNCTION__), ItemSlotIndex);
 		return;
 	}
 	const FAWeekItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
-	if (ItemSlotIndex != -1 && !ItemSlot.bIsEmpty && DragItemVisualClass)
+	if (!ItemSlot.bIsEmpty && DragItemVisualClass)
 	{
-		const UAWeekItemBase* ItemReference = ItemSlot.Item;
 		TObjectPtr<UAWeekDragItemVisual> DragVisual = CreateWidget<UAWeekDragItemVisual>(this, DragItemVisualClass);
-		if (!DragVisual)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("drag visual is null"));;
-			return;
-		}
-		if (!DragVisual->ItemIcon)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("item icon is null"));;
-			return;
-		}
-		if (!ItemReference)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("InventoryItemSlot: Item reference is null!"));;
-			return;
-		}
-		if (!ItemReference->AssetData.Icon)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("asset data is null"));;
-			return;
-		}
-		DragVisual->ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);
+		DragVisual->ItemIcon->SetBrushFromTexture(ItemSlot.Item->AssetData.Icon);
 
 		DragVisual->ItemBorder->SetBrushColor(ItemBorder->GetBrushColor());
 
-		ItemReference->NumericData.bIsStackable
-			? DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity))
+		ItemSlot.Item->NumericData.bIsStackable
+			? DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemSlot.Item->Quantity))
 			: DragVisual->ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
 
-		DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
+		DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemSlot.Item->Quantity));
 		UAWeekItemDragDropOperation* DragItemOperation = NewObject<UAWeekItemDragDropOperation>();
 		//DragItemOperation->SourceItemSlot = ItemSlotReference;
 		DragItemOperation->ItemSlotIndex = ItemSlotIndex;

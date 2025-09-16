@@ -38,8 +38,7 @@ public:
 	virtual void NativeBeginPlay();
 	virtual void NativeInitializeAnimation();
 	virtual void NativeUpdateAnimation(float DeltaSeconds);
-
-protected:
+public:
 	UFUNCTION(BlueprintCallable)
 	void InitializeAnimMap();
 
@@ -55,4 +54,28 @@ protected:
 public: 
 	void ChangeAnimOverride(FName State);
 	FName GetCurrentOverride() { return mStatusKey; }
+public:
+	template<typename T>
+	void SetAnimMontage_Interrupted_Delegate(UAnimMontage* Montage, T* Object, void(T::* Func)(UAnimMontage*, bool));
+	template<typename T>
+	void SetAnimMontage_End_Delegate(UAnimMontage* Montage, T* Object, void(T::* Func)(UAnimMontage*, bool));
 };
+
+
+template<typename T>
+inline void UAWeekCharacterAnimInstance::SetAnimMontage_Interrupted_Delegate(UAnimMontage* Montage, T* Object, void(T::* Func)(UAnimMontage*, bool))
+{
+	if (!Montage || !Object) return;
+	FOnMontageBlendingOutStarted BlendDel;
+	BlendDel.BindUObject(Object, Func);
+	Montage_SetBlendingOutDelegate(BlendDel, Montage);
+}
+
+template<typename T>
+inline void UAWeekCharacterAnimInstance::SetAnimMontage_End_Delegate(UAnimMontage* Montage, T* Object, void(T::* Func)(UAnimMontage*, bool))
+{
+	if (!Montage || !Object) return;
+	FOnMontageEnded EndDel;
+	EndDel.BindUObject(Object, Func);
+	Montage_SetEndDelegate(EndDel, Montage);
+}

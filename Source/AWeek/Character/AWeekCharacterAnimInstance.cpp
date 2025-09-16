@@ -69,3 +69,5 @@ void UAWeekCharacterAnimInstance::ChangeAnimOverride(FName State)
 	mBlendSpaceMap = mAnimMap[mStatusKey].BlendSpaceMap;
 	mMontageMap = mAnimMap[mStatusKey].MontageMap;
 }
+
+

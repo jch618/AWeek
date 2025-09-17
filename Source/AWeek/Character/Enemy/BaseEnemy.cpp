@@ -21,6 +21,8 @@ void ABaseEnemy::BeginPlay()
 	Super::BeginPlay();
 	m_AnimInstance = Cast<UAWeekCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 
+
+
 }
 
 void ABaseEnemy::Tick(float DeltaTime)

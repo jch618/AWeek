@@ -15,6 +15,7 @@
 				"CommonUI",
 				"BlueprintGraph"
 				"UMG"
+				"AIModule"
 			]
 		}
 	],

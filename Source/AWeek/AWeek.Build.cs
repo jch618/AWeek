@@ -23,6 +23,7 @@ public class AWeek : ModuleRules
             "ModularGameplay",
             "GameFeatures",
             "CommonUI",
+            "CommonInput",
             "CommonGame",
             "UIExtension",
             "UMG",
@@ -30,7 +31,6 @@ public class AWeek : ModuleRules
             "SlateCore",
 
             "Niagara",
-            "UMG",
             "MotionWarping",
             
             "GeometryCollectionEngine",

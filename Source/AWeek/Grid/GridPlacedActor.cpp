@@ -2,6 +2,12 @@
 
 
 #include "GridPlacedActor.h"
+#include "GeometryCollection/GeometryCollectionComponent.h"
+#include "GeometryCollection/GeometryCollectionObject.h"
+#include "TimerManager.h"
+#include "Field/FieldSystemObjects.h"
+
+FTimerHandle TimerHandle;
 
 // Sets default values
 AGridPlacedActor::AGridPlacedActor()
@@ -12,12 +18,19 @@ AGridPlacedActor::AGridPlacedActor()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent = Root;
 
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualMesh"));
+	//StaticMesh 버전
+	/*StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualMesh"));
 	StaticMesh->SetupAttachment(Root);
 	if (MeshApply)
 	{
 		StaticMesh->SetStaticMesh(MeshApply);
-	}
+	}*/
+
+	GeoComponent = CreateDefaultSubobject<UGeometryCollectionComponent>("GeoComponent");
+	GeoComponent->SetupAttachment(RootComponent);
+
+	GeoComponent->SetCollisionProfileName(UCollisionProfile::BlockAll_ProfileName);
+	GeoComponent->SetSimulatePhysics(false);
 
 	BoxMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BoxMesh"));
 	BoxMesh->SetupAttachment(Root);
@@ -27,7 +40,7 @@ AGridPlacedActor::AGridPlacedActor()
 		BoxMesh->SetStaticMesh(BoxMeshApply);
 	}
 
-	StaticMesh->SetCollisionProfileName(TEXT("BlockAll"));
+	//StaticMesh->SetCollisionProfileName(TEXT("BlockAll"));
 	BoxMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("GridObjectSizeBoxComponent"));
@@ -43,6 +56,15 @@ void AGridPlacedActor::BeginPlay()
 	{
 		StaticMesh->SetStaticMesh(MeshApply);
 	}
+	if (GeometryCollection)
+	{
+		GeometryCollection->SetSimulatePhysics(false);
+	}
+
+
+	//Fracture 작동 테스트
+	
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AGridPlacedActor::BrokeStructure, 3.0f, false);
 }
 
 // Called every frame
@@ -50,6 +72,8 @@ void AGridPlacedActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	
 }
 
 void AGridPlacedActor::OnConstruction(const FTransform& Transform)
@@ -57,7 +81,11 @@ void AGridPlacedActor::OnConstruction(const FTransform& Transform)
 	//에디터에서 수정되는 순간, Details에서 UPROPERTY 값을 수정할 때 실행
 	Super::OnConstruction(Transform);
 
-	if (MeshApply) StaticMesh->SetStaticMesh(MeshApply);
+	//if (MeshApply) StaticMesh->SetStaticMesh(MeshApply);
+	if (GeoComponent && GeoAsset)
+	{
+		GeoComponent->SetRestCollection(GeoAsset);
+	}
 	if (BoxMeshApply) BoxMesh->SetStaticMesh(BoxMeshApply);
 	if (Material) BoxMesh->SetMaterial(0, Material);
 	if (BoxComponent)
@@ -105,3 +133,105 @@ void AGridPlacedActor::NotifyChildDestroyed(class AGridPlacedActor* ChildActor, 
 {
 	
 }
+
+void AGridPlacedActor::Damage(float Damage)
+{
+	if (!bActive) return;
+	BuildingStat.CurrentHealth -= Damage;
+	if (BuildingStat.CurrentHealth <= 0)
+	{
+		BrokeStructure();
+	}
+}
+
+void AGridPlacedActor::BrokeStructure()
+{
+	bActive = false;
+	UE_LOG(LogTemp, Log, TEXT("BrokeStructure start"));
+
+
+	// 붕괴 가능 상태로 전환
+	GeoComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GeoComponent->SetSimulatePhysics(true);
+	GeoComponent->WakeAllRigidBodies();
+	
+	const FBoxSphereBounds B = GeoComponent->Bounds;
+	const FVector Origin = B.Origin;
+	const float Radius = B.SphereRadius * 1.2f; // 콜렉션보다 살짝 크게
+	
+	//    Chaos_ExternalClusterStrain: 클러스터에 균열을 가함
+	//Magnitude = 부서지는 잔해 개수
+	URadialFalloff* Strain = NewObject<URadialFalloff>();
+	Strain->SetRadialFalloff(
+		/*Magnitude=*/ 3500.f,
+		/*MinRange=*/ 0.f,
+		/*MaxRange=*/ Radius,
+		/*Default=*/ 0.f,
+		/*Radius=*/ Radius,
+		/*Position=*/ Origin,
+		/*Falloff=*/ EFieldFalloffType::Field_Falloff_Linear
+	);
+	GeoComponent->ApplyPhysicsField(
+		/*Enabled=*/ true,
+		EGeometryCollectionPhysicsTypeEnum::Chaos_ExternalClusterStrain,
+		/*Meta=*/ nullptr,
+		Strain
+	);
+
+	
+	URadialVector* Linear = NewObject<URadialVector>();
+	Linear->SetRadialVector(/*Magnitude=*/ 200.f, /*Position=*/ Origin);
+	GeoComponent->ApplyPhysicsField(true, EGeometryCollectionPhysicsTypeEnum::Chaos_LinearForce, nullptr, Linear);
+
+	URadialVector* Torque = NewObject<URadialVector>();
+	Torque->SetRadialVector(/*Magnitude=*/ 200.f, /*Position=*/ Origin);
+	GeoComponent->ApplyPhysicsField(true, EGeometryCollectionPhysicsTypeEnum::Chaos_AngularTorque, nullptr, Torque);
+	
+	GeoComponent->AddRadialImpulse(Origin, Radius, /*Strength=*/ 200.f, ERadialImpulseFalloff::RIF_Linear, true);
+
+	/*// 살짝 건드려서 실제로 무너지게
+	const FVector Origin = GeoComponent->GetComponentLocation();
+	GeoComponent->AddRadialImpulse(Origin, 300.f, 1200.f, ERadialImpulseFalloff::RIF_Linear, true);*/
+
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AGridPlacedActor::CleanupAfterBreak, 3.0f, false);
+
+	
+}
+
+void AGridPlacedActor::Rebuild()
+{
+	if (!BoxComponent)
+	{
+		UE_LOG(LogTemp, Log, TEXT("BOxComponent is Null!!"));
+		return;
+	}
+	float CellX = FMath::Max(0.5, BuildingSize.Size.X);
+	float CellY = FMath::Max(0.5, BuildingSize.Size.Y);
+	float CellZ = FMath::Max(0.5, BuildingSize.Size.Z);
+
+	const FVector DesiredSize(CellX * GridSize, CellY * GridSize, CellZ * GridSize);
+	BoxComponent->SetBoxExtent(DesiredSize * 0.5f, true);
+}
+
+void AGridPlacedActor::CleanupAfterBreak()
+{
+	GeoComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Destroy();
+}
+
+FVector AGridPlacedActor::GetLinkWorldPosition()
+{
+	if (!GeoComponent)
+	{
+		return FVector::ZeroVector;
+	}
+	GeoComponent->UpdateBounds();
+	const FBoxSphereBounds& Box = GeoComponent->Bounds;
+	
+	return  FVector(Box.Origin.X, Box.Origin.Y, Box.BoxExtent.Z +Box.Origin.Z);
+}
+
+
+
+
+

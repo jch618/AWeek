@@ -8,6 +8,9 @@
 #include "GameFramework/Actor.h"
 #include "GridPlacedActor.generated.h"
 
+
+class UGeometryCollection;
+class UGeometryCollectionComponent;
 UCLASS()
 class AWEEK_API AGridPlacedActor : public AActor
 {
@@ -20,6 +23,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 
 	UPROPERTY(VisibleAnywhere, Category="Components")
 	USceneComponent* Root;
@@ -28,6 +32,14 @@ protected:
 	UStaticMeshComponent* StaticMesh;
 	UPROPERTY(EditAnywhere, Category="Components")
 	UStaticMesh* MeshApply;
+
+	UPROPERTY(EditAnywhere, Category="Components")
+	UGeometryCollectionComponent* GeometryCollection;
+
+	UPROPERTY(EditAnywhere, Category="Components")
+	UGeometryCollectionComponent* GeoComponent = nullptr;
+	UPROPERTY(EditAnywhere, Category="Components")
+	UGeometryCollection* GeoAsset = nullptr;
 
 	UPROPERTY(EditAnywhere, Category="Components")
 	UStaticMeshComponent* BoxMesh;
@@ -59,10 +71,23 @@ protected:
 
 	static void MatchBoxToMesh(UBoxComponent* BoxComponent_, UStaticMeshComponent* BoxMesh_);
 
+	void BrokeStructure();
+	void Rebuild();
+	void CleanupAfterBreak();
+
+	//나중에 옮기기
+	float GridSize = 100.f;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnConstruction(const FTransform& Transform) override;
+
+	void Damage(float Damage);
+
+	bool bActive = true;
+
+	FVector WorldTopPosition = FVector::ZeroVector;
 
 	/*UFUNCTION(BlueprintCallable, Category = "Build")
 	bool PlaceAtSlot(int32 SlotIndex, TSubclassOf<class AGridPlacedActor> ActorClass);
@@ -73,6 +98,7 @@ public:
 	void NotifyChildDestroyed(class AGridPlacedActor* ChildActor, int32 SlotIndex);
 	void BuildActor(AGridPlacedActor* Actor);
 
+	FVector GetLinkWorldPosition();
 
 	UPROPERTY()
 	AGridPlacedActor* ParentGridPlacedActor;

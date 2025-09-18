@@ -6,30 +6,103 @@
 #include "GameFramework/Actor.h"
 #include "BuildingData.h"
 #include "GridPlacedActor.h"
+#include "Components/BoxComponent.h"
 #include "PreviewObject.generated.h"
 
 class UGridTriggerBoxComponent;
 
-UCLASS()
+UCLASS(ClassGroup=(Custom), BlueprintType, Blueprintable)
 class AWEEK_API APreviewObject : public AActor
 {
 	GENERATED_BODY()
-	
+
 public:	
 	// Sets default values for this actor's properties
 	APreviewObject();
 
-	UPROPERTY()
-	bool bActiveActor = false;
+	UPROPERTY(EditAnywhere, Category="PlaceActor")
+	AGridPlacedActor* GridPlaced;
+
+	bool PlaceActor(AGridPlacedActor* ParentGridPlacedActor);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, Category="Components")
-	USceneComponent* Root;
+	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* Root;
+	
+	UPROPERTY(VisibleAnywhere, Category="MeshComponent")
+	UStaticMeshComponent* StaticMesh;
+	UPROPERTY(VisibleAnywhere, Category="MeshComponent")
+	UStaticMesh* Mesh;
+
+	UPROPERTY(VisibleAnywhere, Category="BoxComponent")
+	UStaticMeshComponent* BoxMesh;
+	UPROPERTY(VisibleAnywhere, Category="BoxComponent")
+	UBoxComponent* BoxComponent;
+	UPROPERTY(VisibleAnywhere, Category="BoxComponent")
+	UStaticMesh* BoxMeshAsset;
+	
+
+	//GirdSize는 나중에 확정지을것. 여기서는 아닐듯
+	UPROPERTY(EditAnywhere, Category="BoxComponent")
+	float GridSize = 100.f;
+	UPROPERTY(EditAnywhere, Category="BoxComponent")
+	FVector StructureSize = FVector(1.f,1.f,1.f);
+	//에디터에서 StructureSize 변경시 거기에 맞게 BoxComponent, BoxMesh 사이즈 변경 함수
+	void Rebuild();
+
+	
+	UPROPERTY(EditAnywhere, Category="Preview")
+	UMaterialInterface* TrueMaterial;
+	UPROPERTY(EditAnywhere, Category="Preview")
+	UMaterialInterface* FalseMaterial;
+
+	UPROPERTY(EditAnywhere, Category="BuildObject")
+	TSubclassOf<AActor> BuildToPlace;
+	bool bCanPlace = true;
+
+	UPROPERTY(EditAnywhere, Category = "Visual")
+	bool bBottomAlign = true;
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	void CheckMaterial(bool value);
+	
+/*public:	
+	// Sets default values for this actor's properties
+	APreviewObject();
+
+	UPROPERTY(EditAnywhere, Category="PlaceActor")
+	AGridPlacedActor* GridPlaced;
+
+	bool PlaceActor(AGridPlacedActor* ParentGridPlacedActor);
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere, Category="MeshComponent")
+	UStaticMeshComponent* StaticMesh;
+	UPROPERTY(EditAnywhere, Category="MeshComponent")
+	UStaticMesh* Mesh;
+	
+	UPROPERTY(EditAnywhere, Category="Preview")
+	UMaterialInterface* TrueMaterial;
+	UPROPERTY(EditAnywhere, Category="Preview")
+	UMaterialInterface* FalseMaterial;
+
+	UPROPERTY(EditAnywhere, Category="BuildObject")
+	TSubclassOf<AActor> BuildToPlace;
+	bool bCanPlace = true;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	void CheckMaterial(bool value);
 	
 	
 
@@ -73,8 +146,7 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	void CheckMaterial(bool value);
+	
 	bool PlaceActor(AGridPlacedActor* ParentGridPlacedActor);
-	void SetActive(bool bValue);
+	void SetActive(bool bValue);*/
 };

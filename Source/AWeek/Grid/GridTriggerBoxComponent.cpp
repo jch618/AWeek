@@ -30,7 +30,7 @@ void UGridTriggerBoxComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	if (!OwnerClass)
 	{
 		OwnerClass = Cast<APreviewObject>(GetOwner());
-		if (OwnerClass->bActiveActor)
+		OwnerClass->CheckMaterial(true);
 		return;
 	}
 	TArray<UPrimitiveComponent*> OverlappingComps;

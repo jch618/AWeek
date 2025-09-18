@@ -32,6 +32,13 @@ public class AWeek : ModuleRules
             "Niagara",
             "UMG",
             "MotionWarping",
+            
+            "GeometryCollectionEngine",
+            "FieldSystemEngine",
+            "Chaos",
+            "ChaosSolverEngine",
+            "NavigationSystem",
+            "AIModule"
             "BlueprintGraph",
             "KismetCompiler",
             "PropertyEditor",

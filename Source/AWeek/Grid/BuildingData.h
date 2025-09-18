@@ -21,7 +21,7 @@ struct FBuildingSize
 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Size", meta=(ClampMin="0"))
-	FIntVector Size = FIntVector(1, 1, 1);
+	FVector Size = FVector(1.f, 1.f, 1.f);
 	
 };
 
@@ -32,7 +32,8 @@ struct FBuildingStat
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat", meta=(ClampMin="0.0"))
-	float Health = 1.f;
+	float CurrentHealth = 1.f;
+	float MaxHealth = 1.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
 	EBuildingType BuildingType = EBuildingType::None;
 	

@@ -154,24 +154,22 @@ void AGridPlacedActor::BrokeStructure()
 	GeoComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GeoComponent->SetSimulatePhysics(true);
 	GeoComponent->WakeAllRigidBodies();
-
-	// 2) 컬렉션의 대략적 크기/중심
+	
 	const FBoxSphereBounds B = GeoComponent->Bounds;
 	const FVector Origin = B.Origin;
 	const float Radius = B.SphereRadius * 1.2f; // 콜렉션보다 살짝 크게
-
-	// 3) Strain(균열) 필드로 ‘깨질 임계’를 넘기기
+	
 	//    Chaos_ExternalClusterStrain: 클러스터에 균열을 가함
 	//Magnitude = 부서지는 잔해 개수
 	URadialFalloff* Strain = NewObject<URadialFalloff>();
 	Strain->SetRadialFalloff(
-	/*Magnitude=*/ 3500.f,
-/*MinRange=*/ 0.f,
-/*MaxRange=*/ Radius,
-/*Default=*/ 0.f,
-/*Radius=*/ Radius,
-/*Position=*/ Origin,
-/*Falloff=*/ EFieldFalloffType::Field_Falloff_Linear
+		/*Magnitude=*/ 3500.f,
+		/*MinRange=*/ 0.f,
+		/*MaxRange=*/ Radius,
+		/*Default=*/ 0.f,
+		/*Radius=*/ Radius,
+		/*Position=*/ Origin,
+		/*Falloff=*/ EFieldFalloffType::Field_Falloff_Linear
 	);
 	GeoComponent->ApplyPhysicsField(
 		/*Enabled=*/ true,
@@ -180,7 +178,7 @@ void AGridPlacedActor::BrokeStructure()
 		Strain
 	);
 
-	// 4) 동시에 힘(선형/토크) 필드로 크게 날리기
+	
 	URadialVector* Linear = NewObject<URadialVector>();
 	Linear->SetRadialVector(/*Magnitude=*/ 200.f, /*Position=*/ Origin);
 	GeoComponent->ApplyPhysicsField(true, EGeometryCollectionPhysicsTypeEnum::Chaos_LinearForce, nullptr, Linear);
@@ -188,8 +186,7 @@ void AGridPlacedActor::BrokeStructure()
 	URadialVector* Torque = NewObject<URadialVector>();
 	Torque->SetRadialVector(/*Magnitude=*/ 200.f, /*Position=*/ Origin);
 	GeoComponent->ApplyPhysicsField(true, EGeometryCollectionPhysicsTypeEnum::Chaos_AngularTorque, nullptr, Torque);
-
-	// 5) 필요하면 ‘임펄스’도 추가로
+	
 	GeoComponent->AddRadialImpulse(Origin, Radius, /*Strength=*/ 200.f, ERadialImpulseFalloff::RIF_Linear, true);
 
 	/*// 살짝 건드려서 실제로 무너지게

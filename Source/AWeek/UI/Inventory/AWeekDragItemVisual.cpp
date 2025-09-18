@@ -1,8 +1,8 @@
 // game
+#include "AWeek/UI/Inventory/AWeekDragItemVisual.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/Player/AWeekPlayerController.h"
 
-#include "AWeek/UI/Inventory/AWeekDragItemVisual.h"
 
 void UAWeekDragItemVisual::NativeConstruct()
 {

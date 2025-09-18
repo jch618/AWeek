@@ -38,11 +38,11 @@ public class AWeek : ModuleRules
             "Chaos",
             "ChaosSolverEngine",
             "NavigationSystem",
-            "AIModule"
+            "AIModule",
             "BlueprintGraph",
             "KismetCompiler",
             "PropertyEditor",
-            "UnrealEd"
+            "UnrealEd",
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

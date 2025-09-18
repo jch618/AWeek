@@ -7,7 +7,7 @@
 #include "TimerManager.h"
 #include "Field/FieldSystemObjects.h"
 
-FTimerHandle TimerHandle;
+FTimerHandle TimerHandle2;
 
 // Sets default values
 AGridPlacedActor::AGridPlacedActor()
@@ -64,7 +64,7 @@ void AGridPlacedActor::BeginPlay()
 
 	//Fracture 작동 테스트
 	
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AGridPlacedActor::BrokeStructure, 3.0f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle2, this, &AGridPlacedActor::BrokeStructure, 3.0f, false);
 }
 
 // Called every frame
@@ -193,7 +193,7 @@ void AGridPlacedActor::BrokeStructure()
 	const FVector Origin = GeoComponent->GetComponentLocation();
 	GeoComponent->AddRadialImpulse(Origin, 300.f, 1200.f, ERadialImpulseFalloff::RIF_Linear, true);*/
 
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AGridPlacedActor::CleanupAfterBreak, 3.0f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle2, this, &AGridPlacedActor::CleanupAfterBreak, 3.0f, false);
 
 	
 }

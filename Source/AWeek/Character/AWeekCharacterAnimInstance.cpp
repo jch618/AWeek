@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "../AWeekAssetManager.h"
 #include "AWeekCharacterAnimInstance.h"
+#include "../AWeekAssetManager.h"
 
 
 void UAWeekCharacterAnimInstance::NativeBeginPlay()

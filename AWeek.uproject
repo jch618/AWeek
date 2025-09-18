@@ -12,7 +12,8 @@
 				"Engine",
 				"CommonGame",
 				"ModularGameplay",
-				"CommonUI"
+				"CommonUI",
+				"UMG"
 			]
 		}
 	],

@@ -7,6 +7,13 @@
 #include "Pakour/AWeekPakourComponent.h"
 #include "../Input/AWeekGameInput.h"
 
+#include "AWeek/Interfaces/AWeekInteractionInterface.h"
+#include "AWeek/Components/AWeekInventoryComponent.h"
+#include "AWeek/World/AWeekPickupItem.h"
+#include "AWeek/Items/AWeekItemBase.h"
+#include "AWeek/Player/AWeekPlayerController.h"
+
+
 DEFINE_LOG_CATEGORY(AWeekPlayerCharacter);
 
 AAWeekPlayerCharacter::AAWeekPlayerCharacter()
@@ -45,6 +52,11 @@ AAWeekPlayerCharacter::AAWeekPlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	mPakour = CreateDefaultSubobject<UAWeekPakourComponent>(TEXT("Pakour"));
+
+	PlayerInventory = CreateDefaultSubobject<UAWeekInventoryComponent>(TEXT("PlayerInventory"));
+
+	InteractionCheckFrequency = 0.1f;
+	InteractionCheckDistance = 250.0f;
 }
 
 // Called when the game starts or when spawned
@@ -52,7 +64,7 @@ void AAWeekPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	PlayerController = Cast<AAWeekPlayerController>(GetController());
 
 	if (IsValid(PlayerController))
 	{
@@ -84,6 +96,12 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 			mPakour->TriggerPakour();
 			mSprintTime += DeltaTime;
 		}
+	}
+
+	// check interaction period
+	if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
+	{
+		PerformInteractionCheck();
 	}
 }
 
@@ -119,6 +137,15 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Started,
 			this, &AAWeekPlayerCharacter::Attack);
+
+		EnhancedInput->BindAction(InputCDO->mInteract, ETriggerEvent::Started,
+			this, &AAWeekPlayerCharacter::BeginInteract);
+
+		EnhancedInput->BindAction(InputCDO->mInteract, ETriggerEvent::Completed,
+			this, &AAWeekPlayerCharacter::EndInteract);
+		
+		EnhancedInput->BindAction(InputCDO->mInventory, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::ToggleMenu);
 	}
 }
 
@@ -227,4 +254,186 @@ void AAWeekPlayerCharacter::FootStepEffect(FName SocketName)
 	FVector	Position = GetMesh()->GetSocketLocation(SocketName);
 	UNiagaraSystem* FootStepVFX = LoadObject<UNiagaraSystem>(GetWorld(), TEXT("/Script/Niagara.NiagaraSystem'/Game/A_Surface_Footstep/Niagara_FX/ParticleSystems/PSN_General1_Surface.PSN_General1_Surface'"));
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FootStepVFX, Position);
+}
+
+// ================================
+// INVENTORY SYSTEM
+// ================================
+
+void AAWeekPlayerCharacter::PerformInteractionCheck()
+{
+	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
+
+	FVector TraceStart = GetPawnViewLocation();
+	FVector TraceEnd(TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance));
+
+	float LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
+	if (LookDirection > 0)
+	{
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+		FHitResult TraceHit;
+
+		if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+		{
+			if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UAWeekInteractionInterface::StaticClass()))
+			{
+				// found new interactable
+				if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
+				{
+					FoundInteractable(TraceHit.GetActor());
+					return;
+				}
+
+				// already interacting
+				if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+				{
+					return;
+				}
+			}
+		}
+	}
+	NoInteractableFound();
+}
+
+void AAWeekPlayerCharacter::FoundInteractable(TObjectPtr<AActor> NewInteractable)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Found Interactable"));
+
+	if (IsInteracting())
+	{
+		EndInteract();
+	}
+
+	if (InteractionData.CurrentInteractable)
+	{
+		TargetInteractable = InteractionData.CurrentInteractable;
+		TargetInteractable->EndFocus();
+	}
+
+	InteractionData.CurrentInteractable = NewInteractable;
+	TargetInteractable = NewInteractable;
+
+	
+	PlayerController->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	TargetInteractable->BeginFocus();
+}
+
+void AAWeekPlayerCharacter::NoInteractableFound()
+{
+	if (IsInteracting())
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	}
+
+	if (InteractionData.CurrentInteractable)
+	{
+		if (IsValid(TargetInteractable.GetObject()))
+		{
+			TargetInteractable->EndFocus();
+		}
+
+		PlayerController->HideInteractionWidget();
+
+		InteractionData.CurrentInteractable = nullptr;
+		TargetInteractable = nullptr;
+	}
+}
+
+void AAWeekPlayerCharacter::BeginInteract()
+{
+	UE_LOG(LogTemp, Warning, TEXT("begin interact"));
+	// verify nothing has changed with the interactable state since beginning interaction
+	PerformInteractionCheck();
+
+	if (InteractionData.CurrentInteractable)
+	{
+		if (IsValid(TargetInteractable.GetObject()))
+		{
+			TargetInteractable->BeginInteract();
+
+			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+			{
+				Interact();
+			}
+			else
+			{
+				GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
+					this,
+					&AAWeekPlayerCharacter::Interact,
+					TargetInteractable->InteractableData.InteractionDuration,
+					false);
+			}
+		}
+	}
+}
+
+void AAWeekPlayerCharacter::EndInteract()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		TargetInteractable->EndInteract();
+	}
+}
+
+void AAWeekPlayerCharacter::Interact()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		TargetInteractable->Interact(this);
+	}
+}
+
+void AAWeekPlayerCharacter::UpdateInteractionWidget() const
+{
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		PlayerController->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	}
+}
+
+void AAWeekPlayerCharacter::ToggleMenu()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Toggle Menu"));
+	PlayerController->ToggleMainPanel();
+}
+
+void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot, const int32 QuantityToDrop)
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.bNoFail = true;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 50.0f;
+	const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
+	UAWeekItemBase* ItemToDrop = ItemSlot.Item;
+
+	//const int32 RemoveQuantity = PlayerInventory->RemoveAmountOfItem(ItemSlot, QuantityToDrop);
+	const int32 RemoveQuantity = ItemSlot.OwningInventory->RemoveAmountOfItem(ItemSlot.ItemSlotIndex, QuantityToDrop);
+
+	AAWeekPickupItem* Pickup = GetWorld()->SpawnActor<AAWeekPickupItem>(AAWeekPickupItem::StaticClass(), SpawnTransform, SpawnParams);
+
+	Pickup->InitializeDrop(ItemToDrop, RemoveQuantity);
+}
+
+void AAWeekPlayerCharacter::ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
+{
+	PlayerController->ToggleChestInventory(ChestInventory);
+}
+
+//void AAWeekPlayerCharacter::OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
+//{
+//	PlayerController->ActivateChestInventory(ChestInventory);
+//}
+
+void AAWeekPlayerCharacter::CloseChestInventory()
+{
+	PlayerController->DeactivateChestInventory();
 }

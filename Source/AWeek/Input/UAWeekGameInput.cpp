@@ -39,4 +39,9 @@ UAWeekGameInput::UAWeekGameInput()
 		InventoryAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_Inventory.IA_Inventory'"));
 
 	mInventory = InventoryAction.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>
+		InteractAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_Interact.IA_Interact'"));
+
+	mInteract = InteractAction.Object;
 }

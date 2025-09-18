@@ -1,0 +1,67 @@
+#pragma once
+
+#include "AWeek/UI/AWeekActivatableWidget.h"
+
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "AWeekInventoryPanel.generated.h"
+
+class UUniformGridPanel;
+class UWrapBox;
+class UTextBlock;
+
+class UAWeekInventoryItemSlot;
+class UAWeekInventoryComponent;
+class AAWeekPlayerCharacter;
+
+struct FAWeekItemSlot;
+
+DECLARE_DELEGATE_OneParam(FOnShiftClick, const FAWeekItemSlot& ClickedItemSlot);
+
+UCLASS()
+class AWEEK_API UAWeekInventoryPanel : public UAWeekActivatableWidget
+{
+	GENERATED_BODY()
+
+public:
+	FOnShiftClick OnShiftClick;
+	bool bIsLinkedToInventory;
+
+	FORCEINLINE UAWeekInventoryComponent* GetInventoryReference() { return InventoryReference; }
+	UFUNCTION()
+	void RefreshInventory();
+	void LinkToInventory(TObjectPtr<UAWeekInventoryComponent> InputInventory, TObjectPtr<AAWeekPlayerCharacter> InputCharacter = nullptr);
+	void UnlinkFromInventory();
+
+protected:
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> InventoryTitle;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUniformGridPanel> InventoryGridPanel;
+
+	//UPROPERTY(meta = (BindWidget))
+	//UWrapBox* InventoryWrapBox;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> WeightInfo;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> CapacityInfo;
+
+	UPROPERTY()
+	AAWeekPlayerCharacter* PlayerCharacter;
+
+	UPROPERTY()
+	UAWeekInventoryComponent* InventoryReference;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UAWeekInventoryItemSlot> InventorySlotClass;
+
+	void HandleShiftClickOnSlot(const FAWeekItemSlot& ClickedItemSlot);
+
+	void SetInfoText() const;
+	virtual void NativeOnInitialized() override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+};

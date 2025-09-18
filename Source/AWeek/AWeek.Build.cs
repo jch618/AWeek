@@ -31,7 +31,11 @@ public class AWeek : ModuleRules
 
             "Niagara",
             "UMG",
-            "MotionWarping"
+            "MotionWarping",
+            "BlueprintGraph",
+            "KismetCompiler",
+            "PropertyEditor",
+            "UnrealEd"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

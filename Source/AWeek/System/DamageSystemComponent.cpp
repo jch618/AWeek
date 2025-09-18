@@ -5,6 +5,7 @@
 UDamageSystemComponent::UDamageSystemComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	Health = MaxHealth;
 }
 
 float UDamageSystemComponent::GetCurrentHealth_Implementation() const

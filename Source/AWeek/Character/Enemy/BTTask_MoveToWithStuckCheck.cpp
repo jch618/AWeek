@@ -33,13 +33,20 @@ UBTTask_MoveToWithStuckCheck::UBTTask_MoveToWithStuckCheck()
 
 EBTNodeResult::Type UBTTask_MoveToWithStuckCheck::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	UE_LOG(LogTemp,Warning,TEXT("[BTT_MoveToWithStuck] : ExecuteTask"))
 	CachedAIController = OwnerComp.GetAIOwner();
 	if (!CachedAIController)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[BTT_MoveToWithStuck] : There is No AIController"))
 		return EBTNodeResult::Failed;
+	}
 
 	CachedPawn = CachedAIController->GetPawn();
 	if (!CachedPawn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[BTT_MoveToWithStuck] : There is No AIPawn"))
 		return EBTNodeResult::Failed;
+	}
 
 	LastPawnLocation = CachedPawn->GetActorLocation();
 	LastTargetLocation = FVector::ZeroVector;
@@ -124,7 +131,10 @@ void UBTTask_MoveToWithStuckCheck::RequestMove()
 
 	UObject* TargetObject= BBComp->GetValueAsObject(GetSelectedBlackboardKey());
 	if (TargetObject == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[BTT_MoveToWithStuck] : There is No TargetObject"))
 		return;
+	}
 
 	AActor* TargetActor = Cast<AActor>(TargetObject);
 	FAIMoveRequest MoveReq;

@@ -7,7 +7,9 @@
 // Sets default values for this component's properties
 UAWeekInventoryComponent::UAWeekInventoryComponent() : bIsLinkedToInventoryPanel(false)
 {
-
+	InventoryWeightCapacity = 20.0f;
+	InventorySlotsCapacity = 9;
+	NumCols = 3;
 }
 
 void UAWeekInventoryComponent::BeginPlay()
@@ -409,16 +411,16 @@ void UAWeekInventoryComponent::PlaceItemAt(TObjectPtr<UAWeekItemBase> InputItem,
 	OnInventoryUpdated.Broadcast();
 }
 
-UAWeekItemBase* UAWeekInventoryComponent::TakeItemAt(int32 TargetIndex)
-{
-	if (IsValidItemSlotIndex(TargetIndex))
-	{
-		UAWeekItemBase* ResultItem = InventoryContents[TargetIndex].Item;
-		ClearItemSlot(InventoryContents[TargetIndex]);
-		return ResultItem;
-	}
-	return nullptr;
-}
+//UAWeekItemBase* UAWeekInventoryComponent::TakeItemAt(int32 TargetIndex)
+//{
+//	if (IsValidItemSlotIndex(TargetIndex))
+//	{
+//		UAWeekItemBase* ResultItem = InventoryContents[TargetIndex].Item;
+//		ClearItemSlot(InventoryContents[TargetIndex]);
+//		return ResultItem;
+//	}
+//	return nullptr;
+//}
 
 void UAWeekInventoryComponent::SetItemQuantity(FAWeekItemSlot& ItemSlot, const int32 Quantity)
 {

@@ -246,34 +246,12 @@ void AAWeekPlayerController::HandleItemSlotRightClick(int32 ClickedItemSlotIndex
 	const FAWeekItemSlot& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
 	if (IsHoldingItem())
 	{
-		if (ClickedItemSlot.bIsEmpty)
-		{
-			//if (HeldItem->GetItemReference()->Quantity == 1)
-			//{
-			//	OwningInventory->PlaceItemAt(HeldItem->ReleaseHeldItem(), ClickedItemSlotIndex);
-			//	HeldItem->ClearHeldItem();
-			//	HeldItem = nullptr;
-			//}
-			//else
-			//{
-			//	UAWeekItemBase* NewItemSlotItem = HeldItem->GetItemReference()->CreateItemCopy();
-			//	NewItemSlotItem->SetQuantity(1);
-			//	HeldItem->SetHeldItemQuantity(HeldItem->GetItemReference()->Quantity - 1);
-			//	OwningInventory->PlaceItemAt(NewItemSlotItem, ClickedItemSlotIndex);
-			//}
-		}
-		else
+		if (!ClickedItemSlot.bIsEmpty)
 		{
 			if (HeldItem->GetItemReference()->ID == ClickedItemSlot.Item->ID)
 			{
 				OwningInventory->RemoveAmountOfItem(ClickedItemSlotIndex, 1);
 				HeldItem->SetHeldItemQuantity(HeldItem->GetItemReference()->Quantity + 1);
-				//OwningInventory->AddItemQuantityAt(ClickedItemSlotIndex, 1);
-				//HeldItem->SetHeldItemQuantity(HeldItem->GetItemReference()->Quantity - 1);
-				//if (HeldItem->IsEmpty())
-				//{
-				//	HeldItem = nullptr;
-				//}
 			}
 		}
 	}
@@ -288,21 +266,6 @@ void AAWeekPlayerController::HandleItemSlotRightClick(int32 ClickedItemSlotIndex
 			OwningInventory->RemoveAmountOfItem(ClickedItemSlotIndex, 1);
 		}
 	}
-}
-
-void AAWeekPlayerController::HoldItemAt(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
-{
-
-
-}
-
-void AAWeekPlayerController::PutItemTo(int32 TargetSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
-{
-
-}
-
-void AAWeekPlayerController::SwapItem()
-{
 }
 
 void AAWeekPlayerController::MergeItem(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)

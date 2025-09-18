@@ -97,9 +97,6 @@ protected:
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
-	void HoldItemAt(int32 ItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
-	void PutItemTo(int32 TargetSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
-	void SwapItem();
 	void MergeItem(int32 TargetSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 	void CreateHeldItem(TObjectPtr<UAWeekItemBase> NewNeldItem, TObjectPtr<UAWeekInventoryComponent> SourceInventory, int32 SourceItemSlotIndex);
 	virtual void BeginPlay() override;

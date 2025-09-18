@@ -160,9 +160,11 @@ public:
 	{
 		bIsLinkedToInventoryPanel = bNewIsLinkedToInventoryPanel;
 	}
+	FORCEINLINE void ClearInventoryContents() { InventoryContents.Empty(); }
 	int32 AddItemQuantityAt(int32 ItemSlotIndex, int32 DesiredAddAmount);
 	void PlaceItemAt(TObjectPtr<UAWeekItemBase> InputItem, int32 TargetIndex);
-	UAWeekItemBase* TakeItemAt(int32 TargetIndex);
+
+	
 
 protected:
 	//================================================================

@@ -28,9 +28,6 @@ public:
 	void Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter) override;
 
 protected:
-	void BeginPlay() override;
-
-private:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
@@ -39,22 +36,32 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Chest")
 	TObjectPtr<UAWeekInventoryComponent> InventoryComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Chest")
 	TObjectPtr<UStaticMeshComponent> ChestMesh;
-	
+
 	UPROPERTY()
 	TObjectPtr<USphereComponent> ChestExitSphere;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Chest | Initialization")
 	float ChestExitRadius;
 
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
+	void BeginPlay() override;
+	
 	UFUNCTION()
 	void OnChestRadiusExit(UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
+
+private:
+
+
+	//================================================================
+	//	FUNCTIONS
+	//================================================================
+
 };

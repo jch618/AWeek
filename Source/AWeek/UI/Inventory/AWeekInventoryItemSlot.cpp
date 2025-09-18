@@ -141,49 +141,49 @@ void UAWeekInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, 
 
 	// if empty slot, no dragging
 	//if (ItemSlotReference && !ItemSlotReference->bIsEmpty && DragItemVisualClass)
-	if (OwningInventory->IsValidItemSlotIndex(ItemSlotIndex))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: ItemSlotIndex=%d is invalid"), *FString(__FUNCTION__), ItemSlotIndex);
-		return;
-	}
-	const FAWeekItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
-	if (!ItemSlot.bIsEmpty && DragItemVisualClass)
-	{
-		TObjectPtr<UAWeekDragItemVisual> DragVisual = CreateWidget<UAWeekDragItemVisual>(this, DragItemVisualClass);
-		DragVisual->ItemIcon->SetBrushFromTexture(ItemSlot.Item->AssetData.Icon);
+	//if (OwningInventory->IsValidItemSlotIndex(ItemSlotIndex))
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("%s: ItemSlotIndex=%d is invalid"), *FString(__FUNCTION__), ItemSlotIndex);
+	//	return;
+	//}
+	//const FAWeekItemSlot& ItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
+	//if (!ItemSlot.bIsEmpty && DragItemVisualClass)
+	//{
+	//	TObjectPtr<UAWeekDragItemVisual> DragVisual = CreateWidget<UAWeekDragItemVisual>(this, DragItemVisualClass);
+	//	DragVisual->ItemIcon->SetBrushFromTexture(ItemSlot.Item->AssetData.Icon);
 
-		DragVisual->ItemBorder->SetBrushColor(ItemBorder->GetBrushColor());
+	//	DragVisual->ItemBorder->SetBrushColor(ItemBorder->GetBrushColor());
 
-		ItemSlot.Item->NumericData.bIsStackable
-			? DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemSlot.Item->Quantity))
-			: DragVisual->ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
+	//	ItemSlot.Item->NumericData.bIsStackable
+	//		? DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemSlot.Item->Quantity))
+	//		: DragVisual->ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
 
-		DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemSlot.Item->Quantity));
-		UAWeekItemDragDropOperation* DragItemOperation = NewObject<UAWeekItemDragDropOperation>();
-		//DragItemOperation->SourceItemSlot = ItemSlotReference;
-		DragItemOperation->ItemSlotIndex = ItemSlotIndex;
-		DragItemOperation->SourceInventory = OwningInventory;
+	//	DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemSlot.Item->Quantity));
+	//	UAWeekItemDragDropOperation* DragItemOperation = NewObject<UAWeekItemDragDropOperation>();
+	//	//DragItemOperation->SourceItemSlot = ItemSlotReference;
+	//	DragItemOperation->ItemSlotIndex = ItemSlotIndex;
+	//	DragItemOperation->SourceInventory = OwningInventory;
 
 
-		UE_LOG(LogTemp, Warning, TEXT("DragItemOperation SourceInventory: %s"), *DragItemOperation->SourceInventory->GetName());
+	//	UE_LOG(LogTemp, Warning, TEXT("DragItemOperation SourceInventory: %s"), *DragItemOperation->SourceInventory->GetName());
 
-		DragItemOperation->DefaultDragVisual = DragVisual;
-		DragItemOperation->Pivot = EDragPivot::TopLeft;
+	//	DragItemOperation->DefaultDragVisual = DragVisual;
+	//	DragItemOperation->Pivot = EDragPivot::TopLeft;
 
-		OutOperation = DragItemOperation;
-	}
+	//	OutOperation = DragItemOperation;
+	//}
 }
 
-bool UAWeekInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
-{
-	const UAWeekItemDragDropOperation* ItemDragDrop = Cast<UAWeekItemDragDropOperation>(InOperation);
-	if (ItemDragDrop)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("swap item"));
-		// TODO: if each owning inventory of item are different
-		//ItemDragDrop->SourceItemSlot->OwningInventory->SwapItemSlot(*ItemSlotReference, *ItemDragDrop->SourceItemSlot);
-		OwningInventory->SwapItemSlotWith(ItemSlotIndex, ItemDragDrop->ItemSlotIndex, ItemDragDrop->SourceInventory);
-		return true;
-	}
-	return false;
-}
+//bool UAWeekInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+//{
+	//const UAWeekItemDragDropOperation* ItemDragDrop = Cast<UAWeekItemDragDropOperation>(InOperation);
+	//if (ItemDragDrop)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("swap item"));
+	//	// TODO: if each owning inventory of item are different
+	//	//ItemDragDrop->SourceItemSlot->OwningInventory->SwapItemSlot(*ItemSlotReference, *ItemDragDrop->SourceItemSlot);
+	//	OwningInventory->SwapItemSlotWith(ItemSlotIndex, ItemDragDrop->ItemSlotIndex, ItemDragDrop->SourceInventory);
+	//	return true;
+	//}
+	//return false;
+//}

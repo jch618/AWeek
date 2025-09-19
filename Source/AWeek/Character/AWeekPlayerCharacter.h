@@ -22,7 +22,7 @@
 
 class UAWeekInventoryComponent;
 class UAWeekItemBase;
-class AAWeekPlayerController;
+class AAWeekUIController;
 struct FAWeekItemSlot;
 
 USTRUCT()
@@ -122,7 +122,7 @@ protected:
 	// INVENTORY SYSTEM
 	// ====================================================
 	UPROPERTY()
-	TObjectPtr<AAWeekPlayerController> PlayerController;
+	TObjectPtr<AAWeekUIController> UIController;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
 	TScriptInterface<IAWeekInteractionInterface> TargetInteractable;

@@ -5,7 +5,7 @@
 #include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
-#include "AWeek/Player/AWeekPlayerController.h"
+#include "AWeek/Player/AWeekUIController.h"
 
 // engine
 #include "Components/Border.h"
@@ -83,10 +83,10 @@ void UAWeekInventoryItemSlot::InitializeItemSlot()
 		ItemBorder->SetBrushColor(FLinearColor(0.1f, 0.1f, 0.1f));
 	}
 
-	AAWeekPlayerController* Controller = Cast<AAWeekPlayerController>(GetWorld()->GetFirstPlayerController());
-	OnLeftClick.BindUObject(Controller, &AAWeekPlayerController::HandleItemSlotLeftClick);
-	OnRightClick.BindUObject(Controller, &AAWeekPlayerController::HandleItemSlotRightClick);
-	OnShiftLeftClick.BindUObject(Controller, &AAWeekPlayerController::HandleItemSlotShiftLeftClick);
+	AAWeekUIController* Controller = Cast<AAWeekUIController>(GetWorld()->GetFirstPlayerController());
+	OnLeftClick.BindUObject(Controller, &AAWeekUIController::HandleItemSlotLeftClick);
+	OnRightClick.BindUObject(Controller, &AAWeekUIController::HandleItemSlotRightClick);
+	OnShiftLeftClick.BindUObject(Controller, &AAWeekUIController::HandleItemSlotShiftLeftClick);
 }
 
 void UAWeekInventoryItemSlot::NativeOnInitialized()

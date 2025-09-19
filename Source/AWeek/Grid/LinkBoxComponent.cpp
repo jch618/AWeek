@@ -234,7 +234,7 @@ void ULinkBoxComponent::HandleEndOverlap(UPrimitiveComponent* OverlappedComp, AA
 {
 	if (!OtherActor || OtherActor == GetOwner()) return;
 
-	if (UBoxComponent* Box = Cast<UBoxComponent>(OtherActor))
+	if (UBoxComponent* Box = Cast<UBoxComponent>(OtherActor->GetComponentByClass<UBoxComponent>()))
 	{
 		if (Box->ComponentHasTag(TEXT("Test_Structure")))
 		{

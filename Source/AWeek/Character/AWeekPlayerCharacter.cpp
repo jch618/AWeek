@@ -15,7 +15,7 @@
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/World/AWeekPickupItem.h"
 #include "AWeek/Items/AWeekItemBase.h"
-#include "AWeek/Player/AWeekPlayerController.h"
+#include "AWeek/Player/AWeekUIController.h"
 
 
 DEFINE_LOG_CATEGORY(AWeekPlayerCharacter);
@@ -73,12 +73,12 @@ void AAWeekPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerController = Cast<AAWeekPlayerController>(GetController());
+	UIController = Cast<AAWeekUIController>(GetController());
 
-	if (IsValid(PlayerController))
+	if (IsValid(UIController))
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(UIController->GetLocalPlayer());
 
 		const UAWeekGameInput* InputCDO = GetDefault<UAWeekGameInput>();
 
@@ -551,7 +551,7 @@ void AAWeekPlayerCharacter::FoundInteractable(TObjectPtr<AActor> NewInteractable
 	TargetInteractable = NewInteractable;
 
 	
-	PlayerController->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	UIController->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 	TargetInteractable->BeginFocus();
 }
 
@@ -569,7 +569,7 @@ void AAWeekPlayerCharacter::NoInteractableFound()
 			TargetInteractable->EndFocus();
 		}
 
-		PlayerController->HideInteractionWidget();
+		UIController->HideInteractionWidget();
 
 		InteractionData.CurrentInteractable = nullptr;
 		TargetInteractable = nullptr;
@@ -628,14 +628,14 @@ void AAWeekPlayerCharacter::UpdateInteractionWidget() const
 {
 	if (IsValid(TargetInteractable.GetObject()))
 	{
-		PlayerController->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+		UIController->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 	}
 }
 
 void AAWeekPlayerCharacter::ToggleMenu()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Toggle Menu"));
-	PlayerController->ToggleMainPanel();
+	UIController->ToggleMainPanel();
 }
 
 void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot, const int32 QuantityToDrop)
@@ -659,15 +659,15 @@ void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot,
 
 void AAWeekPlayerCharacter::ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
 {
-	PlayerController->ToggleChestInventory(ChestInventory);
+	UIController->ToggleChestInventory(ChestInventory);
 }
 
 //void AAWeekPlayerCharacter::OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
 //{
-//	PlayerController->ActivateChestInventory(ChestInventory);
+//	UIController->ActivateChestInventory(ChestInventory);
 //}
 
 void AAWeekPlayerCharacter::CloseChestInventory()
 {
-	PlayerController->DeactivateChestInventory();
+	UIController->DeactivateChestInventory();
 }

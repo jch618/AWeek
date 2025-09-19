@@ -109,6 +109,34 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 		}
 	}
 
+	if (bIsCombat)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (PC && PC->PlayerCameraManager)
+		{
+			FVector CameraLoc = PC->PlayerCameraManager->GetCameraLocation();
+			FVector CameraDir = PC->PlayerCameraManager->GetActorForwardVector();
+
+			FVector TraceEnd = CameraLoc + CameraDir * 10000.f;
+
+			FHitResult Hit;
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
+
+			FVector TargetPoint = TraceEnd;
+			if (GetWorld()->LineTraceSingleByChannel(Hit, CameraLoc, TraceEnd, ECC_Visibility, Params))
+			{
+				TargetPoint = Hit.Location;
+			}
+
+			FVector ToTarget = TargetPoint - GetActorLocation();
+			ToTarget.Z = 0;
+
+			FRotator TargetRot = ToTarget.Rotation();
+			SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, DeltaTime, 10.f));
+		}
+	}
+
 	// check interaction period
 	if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
 	{
@@ -230,9 +258,7 @@ void AAWeekPlayerCharacter::Jump()
 
 	if (mPakour->TriggerPakour(EPakourType::Ledge) ||
 		GetMovementComponent()->IsFalling() ||
-		mAnimInst->IsPlayingMontageByName(TEXT("Ledge")) ||
-		mAnimInst->IsPlayingMontageByName(TEXT("RunToStop")) ||
-		mAnimInst->IsPlayingMontageByName(TEXT("Climb")))
+		mAnimInst->IsAnyMontagePlaying())
 	{
 		return;
 	}
@@ -245,6 +271,7 @@ void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 		return;
 	if (mAnimInst->GetCurrentOverride() == FName("Rifle"))
 		return;
+	SetCombatBool(true);
 	mAnimInst->PlayMontageByName(TEXT("Attack"));
 
 	// Get Weapon Damage from Weapon Component
@@ -262,6 +289,7 @@ void AAWeekPlayerCharacter::Fire()
 	{
 		mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Gun);
 		mAnimInst->PlayMontageByName(TEXT("Fire"));
+		SetCombatBool(true);
 	}
 
 	//mAnimInst->ChangeAnimOverride(TEXT("Rifle_Firing"));
@@ -275,6 +303,7 @@ void AAWeekPlayerCharacter::EndFire()
 	GetCharacterMovement()->MaxWalkSpeed = mWalkSpeed;
 	mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
 	mAnimInst->StopMontageByName(TEXT("Fire"));
+	SetCombatBool(false);
 
 	//mAnimInst->ChangeAnimOverride(TEXT("Rifle"));
 }

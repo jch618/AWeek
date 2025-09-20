@@ -3,6 +3,7 @@
 
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/Items/AWeekItemBase.h"
+#include "GeometryCollection/GeometryCollectionParticlesData.h"
 
 // Sets default values for this component's properties
 UAWeekInventoryComponent::UAWeekInventoryComponent() : bIsLinkedToInventoryPanel(false)
@@ -257,6 +258,7 @@ int32 UAWeekInventoryComponent::HandleStackableItems(UAWeekItemBase* ItemIn, int
 			if (InventoryTotalWeight + ExistingItemStack->Item->GetItemSingleWeight() > InventoryWeightCapacity)
 			{
 				OnInventoryUpdated.Broadcast();
+				UE_LOG(LogTemp, Warning, TEXT("%s: 1"), *FString(__FUNCTION__));
 				return RequestedAddAmount - AmountToDistribute;
 			}
 		}
@@ -267,8 +269,12 @@ int32 UAWeekInventoryComponent::HandleStackableItems(UAWeekItemBase* ItemIn, int
 				// this block wil be reached if distributing an item across multiple stacks
 				// and the weight limit is hit during that process
 				OnInventoryUpdated.Broadcast();
+				UE_LOG(LogTemp, Warning, TEXT("%s: 2"), *FString(__FUNCTION__));
+				
 				return RequestedAddAmount - AmountToDistribute;
 			}
+				UE_LOG(LogTemp, Warning, TEXT("%s: 3"), *FString(__FUNCTION__));
+			
 			return 0;
 		}
 
@@ -276,6 +282,8 @@ int32 UAWeekInventoryComponent::HandleStackableItems(UAWeekItemBase* ItemIn, int
 		{
 			// all of the input item was distributed across existing stacks
 			OnInventoryUpdated.Broadcast();
+				UE_LOG(LogTemp, Warning, TEXT("%s: 4"), *FString(__FUNCTION__));
+			
 			return RequestedAddAmount;
 		}
 
@@ -307,7 +315,8 @@ int32 UAWeekInventoryComponent::HandleStackableItems(UAWeekItemBase* ItemIn, int
 		}
 	}
 	// can only be reached if there is no existing stack and no extra capacity slots
-	return 0;
+	OnInventoryUpdated.Broadcast();
+	return RequestedAddAmount - AmountToDistribute;
 }
 
 FAWeekItemAddResult UAWeekInventoryComponent::HandleAddItem(UAWeekItemBase* InputItem)
@@ -337,7 +346,7 @@ FAWeekItemAddResult UAWeekInventoryComponent::HandleAddItem(UAWeekItemBase* Inpu
 		if (StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
 		{
 			return FAWeekItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
-				FText::FromString("Parial amount of {0} added to the inventory. Number added = {1}"),
+				FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
 				InputItem->TextData.Name,
 				StackableAmountAdded));
 		}
@@ -408,19 +417,23 @@ void UAWeekInventoryComponent::PlaceItemAt(TObjectPtr<UAWeekItemBase> InputItem,
 	//int32 DesiredAddAmount = InputItem->Quantity;
 	/*const int32 WeightLimitAddAmount = CalculateWeightAddAmount(InputItem, DesiredAddAmount);*/
 	AddNewItem(InputItem, InputItem->Quantity, TargetIndex);
-	OnInventoryUpdated.Broadcast();
 }
 
-//UAWeekItemBase* UAWeekInventoryComponent::TakeItemAt(int32 TargetIndex)
-//{
-//	if (IsValidItemSlotIndex(TargetIndex))
-//	{
-//		UAWeekItemBase* ResultItem = InventoryContents[TargetIndex].Item;
-//		ClearItemSlot(InventoryContents[TargetIndex]);
-//		return ResultItem;
-//	}
-//	return nullptr;
-//}
+void UAWeekInventoryComponent::TransferItem(const FAWeekItemSlot& FromItemSlot, TObjectPtr<UAWeekInventoryComponent> TargetInventory)
+{
+	int32 DesiredAddAmount = FromItemSlot.Item->Quantity;
+	FAWeekItemAddResult AddResult = TargetInventory->HandleAddItem(FromItemSlot.Item);
+	if (AddResult.ActualAmountAdded == DesiredAddAmount)
+	{
+		// item pointer is moved to target inventory or item quantity is 0
+		ReleaseItemAt(FromItemSlot.ItemSlotIndex);
+	}
+	else
+	{
+		// clicked item quantity changed
+		OnInventoryUpdated.Broadcast();
+	}
+}
 
 void UAWeekInventoryComponent::SetItemQuantity(FAWeekItemSlot& ItemSlot, const int32 Quantity)
 {

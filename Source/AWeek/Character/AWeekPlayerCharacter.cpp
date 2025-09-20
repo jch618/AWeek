@@ -11,6 +11,7 @@
 #include "../Input/AWeekGameInput.h"
 #include "../System/DaySystem/AWeekDaySystem.h"
 
+#include "AWeek/UI/AWeekGameUIManager.h"
 #include "AWeek/Interfaces/AWeekInteractionInterface.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/World/AWeekPickupItem.h"
@@ -75,6 +76,12 @@ void AAWeekPlayerCharacter::BeginPlay()
 
 	UIController = Cast<AAWeekUIController>(GetController());
 
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UIManager = GameInstance->GetSubsystem<UAWeekGameUIManager>();
+		UIManager->InitializeUIManager();
+	}
+	
 	if (IsValid(UIController))
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem =
@@ -115,6 +122,18 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 		PerformInteractionCheck();
 	}
 
+	// update held item ui position
+	if (UIManager)
+	{
+		if (UIManager->IsHoldingItem())
+		{
+			FVector2D MousePos;
+			if (UIController->GetMousePosition(MousePos.X, MousePos.Y))
+			{
+				UIManager->UpdateHeldItemPosition(MousePos);
+			}
+		}
+	}
 	if (mAnimInst->GetPlayerMoveState() == EPlayerMoveState::Ledge)
 	{
 		if (!mStamina->UseStamina(EStaminaUseType::Ledge))
@@ -551,7 +570,7 @@ void AAWeekPlayerCharacter::FoundInteractable(TObjectPtr<AActor> NewInteractable
 	TargetInteractable = NewInteractable;
 
 	
-	UIController->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	UIManager->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 	TargetInteractable->BeginFocus();
 }
 
@@ -569,7 +588,7 @@ void AAWeekPlayerCharacter::NoInteractableFound()
 			TargetInteractable->EndFocus();
 		}
 
-		UIController->HideInteractionWidget();
+		UIManager->HideInteractionWidget();
 
 		InteractionData.CurrentInteractable = nullptr;
 		TargetInteractable = nullptr;
@@ -628,14 +647,14 @@ void AAWeekPlayerCharacter::UpdateInteractionWidget() const
 {
 	if (IsValid(TargetInteractable.GetObject()))
 	{
-		UIController->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+		UIManager->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 	}
 }
 
 void AAWeekPlayerCharacter::ToggleMenu()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Toggle Menu"));
-	UIController->ToggleMainPanel();
+	UIManager->ToggleMainPanel();
 }
 
 void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot, const int32 QuantityToDrop)
@@ -659,15 +678,15 @@ void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot,
 
 void AAWeekPlayerCharacter::ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
 {
-	UIController->ToggleChestInventory(ChestInventory);
+	UIManager->ToggleChestInventory(ChestInventory);
 }
 
 //void AAWeekPlayerCharacter::OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
 //{
-//	UIController->ActivateChestInventory(ChestInventory);
+//	UIManager->ActivateChestInventory(ChestInventory);
 //}
 
 void AAWeekPlayerCharacter::CloseChestInventory()
 {
-	UIController->DeactivateChestInventory();
+	UIManager->DeactivateChestInventory();
 }

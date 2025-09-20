@@ -164,6 +164,7 @@ public:
 	int32 AddItemQuantityAt(int32 ItemSlotIndex, int32 DesiredAddAmount);
 	void PlaceItemAt(TObjectPtr<UAWeekItemBase> InputItem, int32 TargetIndex);
 
+	void TransferItem(const FAWeekItemSlot& FromItemSlot, TObjectPtr<UAWeekInventoryComponent> TargetInventory);
 	
 
 protected:

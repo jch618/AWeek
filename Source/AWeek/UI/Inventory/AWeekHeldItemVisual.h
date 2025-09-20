@@ -6,7 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "AWeekDragItemVisual.generated.h"
+#include "AWeekHeldItemVisual.generated.h"
 
 
 class UTextBlock;
@@ -14,7 +14,7 @@ class UBorder;
 class UImage;
 
 UCLASS()
-class AWEEK_API UAWeekDragItemVisual : public UAWeekActivatableWidget
+class AWEEK_API UAWeekHeldItemVisual : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
 
@@ -27,8 +27,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantity;
-
-protected:
-	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };

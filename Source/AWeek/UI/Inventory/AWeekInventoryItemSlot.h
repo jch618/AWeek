@@ -10,7 +10,7 @@ class UTextBlock;
 class UBorder;
 class UImage;
 
-class UAWeekDragItemVisual;
+class UAWeekHeldItemVisual;
 class UAWeekItemBase;
 class UAWeekInventoryToolTip;
 struct FAWeekItemSlot;
@@ -49,7 +49,7 @@ protected:
 	//	PROPERTIES & VARIABLES
 	//================================================================
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory Slot")
-	TSubclassOf<UAWeekDragItemVisual> DragItemVisualClass;
+	TSubclassOf<UAWeekHeldItemVisual> DragItemVisualClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory Slot")
 	TSubclassOf<UAWeekInventoryToolTip> ToolTipClass;

@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AWeek/Player/AWeekPlayerController.h"
-#include "AWeekUIController.generated.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "AWeekGameUIManager.generated.h"
 
+class UAWeekUIDataAsset;
+class AAWeekPlayerController;
 class UAWeekInventoryMainPanel;
 class UAWeekInteractionWidget;
 struct FAWeekInteractableData;
@@ -14,12 +16,13 @@ class UAWeekHeldItemVisual;
 class UAWeekHeldItem;
 class UAWeekItemBase;
 struct FAWeekItemSlot;
+class AAWeekPlayerCharacter;
 
 /**
  * 
  */
 UCLASS()
-class AWEEK_API AAWeekUIController : public AAWeekPlayerController
+class AWEEK_API UAWeekGameUIManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
@@ -40,39 +43,44 @@ class AWEEK_API AAWeekUIController : public AAWeekPlayerController
 	//================================================================
 
 public:
+	UAWeekGameUIManager();
+	void InitializeUIManager();
+
 	void ShowMainPanel();
 	void HideMainPanel();
 	void ToggleMainPanel();
 	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 
-	void ShowCrosshair();
-	void HideCrosshair();
+	// void ShowCrosshair();
+	// void HideCrosshair();
 
 	void ShowInteractionWidget();
-	void HideInteractionWidget();
-	void UpdateInteractionWidget(const FAWeekInteractableData* InteracableData);
+	void HideInteractionWidget() const;
+	void UpdateInteractionWidget(const FAWeekInteractableData* InteractableData);
 
-	void ActivateChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
+	void ActivateChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory) const;
 	void DeactivateChestInventory();
 
 	// held item functions
 	FORCEINLINE bool IsHoldingItem() const;
 	FORCEINLINE void SetHeldItem(TObjectPtr<UAWeekHeldItem> NewHeldItem) { HeldItem = NewHeldItem; }
 
+	void UpdateHeldItemPosition(FVector2D NewPosition);
+
 	void HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 	void HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 
-	void HandleItemSlotShiftLeftClick(const FAWeekItemSlot& ClickedItemSlot);
+	void HandleItemSlotShiftLeftClick(const FAWeekItemSlot& ClickedItemSlot) const;
 protected:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UAWeekHeldItemVisual> HeldItemVisualClass;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UAWeekInventoryMainPanel> InventoryMainPanelClass;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UAWeekInteractionWidget> InteractionWidgetClass;
 
@@ -86,14 +94,24 @@ protected:
 	TObjectPtr<UUserWidget> CrosshairWidget;
 
 	UPROPERTY()
+	TObjectPtr<ULocalPlayer> LocalPlayer;
+
+	UPROPERTY()
+	TObjectPtr<AAWeekPlayerController> PlayerController;
+
+	UPROPERTY()
 	TObjectPtr<UAWeekHeldItem> HeldItem;
 
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
-	
 	void MergeItem(int32 TargetSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
-	void CreateHeldItem(TObjectPtr<UAWeekItemBase> NewNeldItem, TObjectPtr<UAWeekInventoryComponent> SourceInventory, int32 SourceItemSlotIndex);
+	void CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem, TObjectPtr<UAWeekInventoryComponent> SourceInventory, int32 SourceItemSlotIndex);
+
+private:
+	UPROPERTY(EditAnywhere, Category = "UI Settings")
+	FSoftObjectPath UIDataAssetPath;
+    
+	UPROPERTY()
+	UAWeekUIDataAsset* UIDataAsset;
 };

@@ -6,10 +6,10 @@
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "AWeekHeldItem.generated.h"
 
-class UAWeekDragItemVisual;
+class UAWeekHeldItemVisual;
 class UAWeekInventoryComponent;
 class UAWeekItemBase;
-class UAWeekDragItemVisual;
+class UAWeekHeldItemVisual;
 
 /**
  * 
@@ -20,7 +20,7 @@ struct FHeldItemData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TObjectPtr<UAWeekDragItemVisual> HeldItemVisual;
+	TObjectPtr<UAWeekHeldItemVisual> HeldItemVisual;
 
 	UPROPERTY()
 	TObjectPtr<UAWeekItemBase> ItemReference;
@@ -37,6 +37,8 @@ class AWEEK_API UAWeekHeldItem : public UObject
 	GENERATED_BODY()
 
 public:
+	UAWeekHeldItem();
+	
 	FORCEINLINE bool IsEmpty() const { return HeldItemData.ItemReference == nullptr; }
 	FORCEINLINE const UAWeekInventoryComponent* GetSourceInventory() const { return HeldItemData.SourceInventory; }
 	FORCEINLINE const UAWeekItemBase* GetItemReference() const { return HeldItemData.ItemReference; }
@@ -48,7 +50,9 @@ public:
 	void ClearHeldItem();
 	void ReturnHeldItemToInventory();
 protected:
-
+	float HeldItemVisualXOffset;
+	float HeldItemVisualYOffset;
+	
 	FHeldItemData HeldItemData;
 
 	void UpdateHeldItem();

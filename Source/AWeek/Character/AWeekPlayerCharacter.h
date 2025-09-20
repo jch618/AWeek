@@ -20,6 +20,7 @@
 #include "AWeekPlayerCharacter.generated.h"
 
 
+class UAWeekGameUIManager;
 class UAWeekInventoryComponent;
 class UAWeekItemBase;
 class AAWeekUIController;
@@ -121,6 +122,9 @@ protected:
 	// =====================================================
 	// INVENTORY SYSTEM
 	// ====================================================
+	UPROPERTY()
+	TObjectPtr<UAWeekGameUIManager> UIManager;
+	
 	UPROPERTY()
 	TObjectPtr<AAWeekUIController> UIController;
 

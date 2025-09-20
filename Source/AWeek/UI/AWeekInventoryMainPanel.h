@@ -9,7 +9,7 @@
 class AAWeekPlayerCharacter;
 class UAWeekInventoryPanel;
 class UAWeekInventoryComponent;
-class UAWeekDragItemVisual;
+class UAWeekHeldItemVisual;
 
 struct FAWeekItemSlot;
 

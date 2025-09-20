@@ -1,13 +1,14 @@
 // game
 #include "AWeek/UI/Inventory/AWeekInventoryItemSlot.h"
 #include "AWeek/UI/Inventory/AWeekInventoryToolTip.h"
-#include "AWeek/UI/Inventory/AWeekDragItemVisual.h"
+#include "AWeek/UI/Inventory/AWeekHeldItemVisual.h"
 #include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/Player/AWeekUIController.h"
 
 // engine
+#include "AWeek/UI/AWeekGameUIManager.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -84,9 +85,10 @@ void UAWeekInventoryItemSlot::InitializeItemSlot()
 	}
 
 	AAWeekUIController* Controller = Cast<AAWeekUIController>(GetWorld()->GetFirstPlayerController());
-	OnLeftClick.BindUObject(Controller, &AAWeekUIController::HandleItemSlotLeftClick);
-	OnRightClick.BindUObject(Controller, &AAWeekUIController::HandleItemSlotRightClick);
-	OnShiftLeftClick.BindUObject(Controller, &AAWeekUIController::HandleItemSlotShiftLeftClick);
+	UAWeekGameUIManager* UIManager = GetGameInstance()->GetSubsystem<UAWeekGameUIManager>();
+	OnLeftClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotLeftClick);
+	OnRightClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotRightClick);
+	OnShiftLeftClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotShiftLeftClick);
 }
 
 void UAWeekInventoryItemSlot::NativeOnInitialized()

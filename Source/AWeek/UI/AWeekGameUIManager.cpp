@@ -1,6 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "AWeek/UI/AWeekGameUIManager.h"
+
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
 #include "AWeek/Player/AWeekUIController.h"
 #include "AWeek/UI/AWeekInventoryMainPanel.h"
 #include "AWeek/UI/Interaction/AWeekInteractionWidget.h"
@@ -10,53 +15,62 @@
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "CommonUIExtensions.h"
+#include "AWeek/Character/AWeekPlayerCharacter.h"
+#include "AWeek/Player/AWeekPlayerController.h"
+#include "AWeek/Data/AWeekUIDataAsset.h"
 
-void AAWeekUIController::BeginPlay()
+UAWeekGameUIManager::UAWeekGameUIManager()
 {
-	Super::BeginPlay();
+	UIDataAssetPath = FSoftObjectPath(TEXT("/Game/Data/UI/UA_UIClassSettings.UA_UIClassSettings"));
+}
 
-	check(InventoryMainPanelClass);
-	check(InteractionWidgetClass);
+void UAWeekGameUIManager::InitializeUIManager()
+{
+	PlayerController = Cast<AAWeekPlayerController>(GetWorld()->GetFirstPlayerController());
+	LocalPlayer = PlayerController->GetLocalPlayer();
 
+	if (UIDataAssetPath.IsValid())
+	{
+		UIDataAsset = Cast<UAWeekUIDataAsset>(UIDataAssetPath.TryLoad());
+        
+		if (UIDataAsset)
+		{
+			InventoryMainPanelClass = UIDataAsset->InventoryMainPanelClass;
+			InteractionWidgetClass = UIDataAsset->InteractionWidgetClass;
+			HeldItemVisualClass = UIDataAsset->HeldItemVisualClass;
+            
+			UE_LOG(LogTemp, Log, TEXT("UI DataAsset loaded from: %s"), *UIDataAssetPath.ToString());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to load UI DataAsset from: %s"), *UIDataAssetPath.ToString());
+			return;
+		}
+	}
+	
 	if (InventoryMainPanelClass)
 	{
 		InventoryMainPanelWidget = Cast<UAWeekInventoryMainPanel, UCommonActivatableWidget>(
-			UCommonUIExtensions::PushContentToLayer_ForPlayer(GetLocalPlayer(),
+			UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
 				FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventoryMainPanelClass));
 		InventoryMainPanelWidget->InitializeInventoryMainPanel();
 		InventoryMainPanelWidget->DeactivateWidget();
-	}
-}
-
-void AAWeekUIController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	// Manually update the held item's visual position to follow the cursor
-	if (IsHoldingItem() && InventoryMainPanelWidget->IsActivated())
-	{
-		FVector2D MousePosition;
-		if (GetMousePosition(MousePosition.X, MousePosition.Y))
-		{
-			MousePosition += FVector2D(5.0f, 5.0f);
-			HeldItem->UpdateHeldVisualPosition(MousePosition);
-		}
 	}
 }
 // =====================================================
 // INVENTORY SYSTEM
 // =====================================================
 
-void AAWeekUIController::ShowMainPanel()
+void UAWeekGameUIManager::ShowMainPanel()
 {
 	if (InventoryMainPanelClass)
 	{
 		InventoryMainPanelWidget = Cast<UAWeekInventoryMainPanel, UCommonActivatableWidget>(
-			UCommonUIExtensions::PushContentToLayer_ForPlayer(GetLocalPlayer(),
+			UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
 				FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventoryMainPanelClass));
 	}
 }
-void AAWeekUIController::HideMainPanel()
+void UAWeekGameUIManager::HideMainPanel()
 {
 	if (InventoryMainPanelWidget)
 	{
@@ -69,12 +83,12 @@ void AAWeekUIController::HideMainPanel()
 	}
 }
 
-void AAWeekUIController::ToggleMainPanel()
+void UAWeekGameUIManager::ToggleMainPanel()
 {
 	if (!IsValid(InventoryMainPanelWidget) || !InventoryMainPanelWidget->IsActivated())
 	{
 		ShowMainPanel();
-		SetShowMouseCursor(true);
+		PlayerController->SetShowMouseCursor(true);
 	}
 	else
 	{
@@ -83,18 +97,18 @@ void AAWeekUIController::ToggleMainPanel()
 			DeactivateChestInventory();
 		}
 		HideMainPanel();
-		SetShowMouseCursor(false);
+		PlayerController->SetShowMouseCursor(false);
 	}
 }
 
-void AAWeekUIController::ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
+void UAWeekGameUIManager::ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
 {
 	if (!InventoryMainPanelWidget->IsChestOpen())
 	{
 		if (!IsValid(InventoryMainPanelWidget) || !InventoryMainPanelWidget->IsActivated())
 		{
 			ShowMainPanel();
-			SetShowMouseCursor(true);
+			PlayerController->SetShowMouseCursor(true);
 		}
 		ActivateChestInventory(ChestInventory);
 	}
@@ -102,44 +116,44 @@ void AAWeekUIController::ToggleChestInventory(TObjectPtr<UAWeekInventoryComponen
 	{
 		DeactivateChestInventory();
 		HideMainPanel();
-		SetShowMouseCursor(false);
+		PlayerController->SetShowMouseCursor(false);
 	}
 }
 
 
-void AAWeekUIController::ShowCrosshair()
-{
-	if (CrosshairWidget)
-	{
-		CrosshairWidget->SetVisibility(ESlateVisibility::Visible);
-	}
-}
+// void UAWeekGameUIManager::ShowCrosshair()
+// {
+// 	if (CrosshairWidget)
+// 	{
+// 		CrosshairWidget->SetVisibility(ESlateVisibility::Visible);
+// 	}
+// }
+//
+// void UAWeekGameUIManager::HideCrosshair()
+// {
+// 	if (CrosshairWidget)
+// 	{
+// 		CrosshairWidget->SetVisibility(ESlateVisibility::Collapsed);
+// 	}
+// }
 
-void AAWeekUIController::HideCrosshair()
-{
-	if (CrosshairWidget)
-	{
-		CrosshairWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-}
-
-void AAWeekUIController::ShowInteractionWidget()
+void UAWeekGameUIManager::ShowInteractionWidget()
 {
 	if (InteractionWidgetClass)
 	{
 		InteractionWidget = Cast<UAWeekInteractionWidget, UCommonActivatableWidget>(
-			UCommonUIExtensions::PushContentToLayer_ForPlayer(GetLocalPlayer(),
+			UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
 				FGameplayTag::RequestGameplayTag("UI.Layer.Game"), InteractionWidgetClass));
 	}
 }
-void AAWeekUIController::HideInteractionWidget()
+void UAWeekGameUIManager::HideInteractionWidget() const
 {
 	if (InteractionWidget)
 	{
 		InteractionWidget->DeactivateWidget();
 	}
 }
-void AAWeekUIController::UpdateInteractionWidget(const FAWeekInteractableData* InteractableData)
+void UAWeekGameUIManager::UpdateInteractionWidget(const FAWeekInteractableData* InteractableData)
 {
 	if (InteractionWidget == nullptr || !InteractionWidget->IsActivated())
 	{
@@ -152,12 +166,12 @@ void AAWeekUIController::UpdateInteractionWidget(const FAWeekInteractableData* I
 	}
 }
 
-void AAWeekUIController::ActivateChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
+void UAWeekGameUIManager::ActivateChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory) const
 {
 	InventoryMainPanelWidget->ActivateChestInventory(ChestInventory);
 }
 
-void AAWeekUIController::DeactivateChestInventory()
+void UAWeekGameUIManager::DeactivateChestInventory()
 {
 	if (IsHoldingItem())
 	{
@@ -170,12 +184,20 @@ void AAWeekUIController::DeactivateChestInventory()
 	InventoryMainPanelWidget->DeActivateChestInventory();
 }
 
-bool AAWeekUIController::IsHoldingItem() const
+bool UAWeekGameUIManager::IsHoldingItem() const
 {
 	return IsValid(HeldItem);
 }
 
-void AAWeekUIController::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
+void UAWeekGameUIManager::UpdateHeldItemPosition(FVector2D NewPosition)
+{
+	if (IsValid(HeldItem))
+	{
+		HeldItem->UpdateHeldVisualPosition(NewPosition);
+	}
+}
+
+void UAWeekGameUIManager::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
 {
 	// if isHolding item
 	//		if heldItem == slotItem => add item to SlotItem as possible and hold remaining items
@@ -220,7 +242,7 @@ void AAWeekUIController::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TOb
 	}
 }
 
-void AAWeekUIController::HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
+void UAWeekGameUIManager::HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
 {
 	const FAWeekItemSlot& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
 	if (IsHoldingItem())
@@ -247,7 +269,7 @@ void AAWeekUIController::HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TO
 	}
 }
 
-void AAWeekUIController::MergeItem(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
+void UAWeekGameUIManager::MergeItem(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s: Merge Item"), *FString(__FUNCTION__));
 
@@ -261,11 +283,11 @@ void AAWeekUIController::MergeItem(int32 ClickedItemSlotIndex, TObjectPtr<UAWeek
 	}
 }
 
-void AAWeekUIController::CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem, TObjectPtr<UAWeekInventoryComponent> SourceInventory, int32 SourceItemSlotIndex)
+void UAWeekGameUIManager::CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem, TObjectPtr<UAWeekInventoryComponent> SourceInventory, int32 SourceItemSlotIndex)
 {
 	if (HeldItemVisualClass)
 	{
-		UAWeekHeldItemVisual* HeldItemVisual = Cast<UAWeekHeldItemVisual>(CreateWidget(this, HeldItemVisualClass));
+		UAWeekHeldItemVisual* HeldItemVisual = Cast<UAWeekHeldItemVisual>(CreateWidget(PlayerController, HeldItemVisualClass));
 		HeldItem = NewObject<UAWeekHeldItem>();
 
 		if (HeldItemVisual)
@@ -285,7 +307,7 @@ void AAWeekUIController::CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem, 
 	}
 }
 
-void AAWeekUIController::HandleItemSlotShiftLeftClick(const FAWeekItemSlot& ClickedItemSlot)
+void UAWeekGameUIManager::HandleItemSlotShiftLeftClick(const FAWeekItemSlot& ClickedItemSlot) const
 {
 
 	if (!ClickedItemSlot.bIsEmpty && InventoryMainPanelWidget->IsChestOpen())
@@ -301,14 +323,10 @@ void AAWeekUIController::HandleItemSlotShiftLeftClick(const FAWeekItemSlot& Clic
 		{
 			TargetInventory = InventoryMainPanelWidget->GetPlayerInventoryComponent();
 		}
+		
 		if (SourceInventory && TargetInventory)
 		{
-			if (SourceInventory->IsValidItemSlotIndex(ClickedItemSlot.ItemSlotIndex))
-			{
-				FAWeekItemAddResult AddResult = TargetInventory->HandleAddItem(ClickedItemSlot.Item->CreateItemCopy());
-				SourceInventory->RemoveAmountOfItem(ClickedItemSlot.ItemSlotIndex, AddResult.ActualAmountAdded);
-
-			}
+			SourceInventory->TransferItem(ClickedItemSlot, TargetInventory);
 		}
 		else
 		{

@@ -2,11 +2,16 @@
 #include "AWeek/UI/Inventory/AWeekHeldItem.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
-#include "AWeek/UI/Inventory/AWeekDragItemVisual.h"
+#include "AWeek/UI/Inventory/AWeekHeldItemVisual.h"
 
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+
+UAWeekHeldItem::UAWeekHeldItem() : HeldItemVisualXOffset(5.0), HeldItemVisualYOffset(5.0)
+{
+	
+}
 
 void UAWeekHeldItem::SetHeldItemQuantity(int32 Quantity)
 {
@@ -74,6 +79,8 @@ void UAWeekHeldItem::UpdateHeldVisualPosition(FVector2D MousePos)
 {
 	if (HeldItemData.HeldItemVisual)
 	{
+		MousePos.X += HeldItemVisualXOffset;
+		MousePos.Y += HeldItemVisualYOffset;
 		HeldItemData.HeldItemVisual->SetPositionInViewport(MousePos);
 		//UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	}

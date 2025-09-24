@@ -61,6 +61,19 @@ UAnimMontage* UAWeekCharacterAnimInstance::FindAnimMontage(const FName& Name)
 	return Montage->Get();
 }
 
+UAnimMontage* UAWeekCharacterAnimInstance::FindRandomInMontageArray(const FName& Name)
+{
+	if (FAnimMontageArray* Array = mMontageArrayMap.Find(Name))
+	{
+		if (Array->Montages.Num() > 0)
+		{
+			int32 RandIndex = FMath::RandRange(0, Array->Montages.Num() - 1);
+			return Array->Montages[RandIndex];
+		}
+	}
+	return nullptr;
+}
+
 void UAWeekCharacterAnimInstance::ChangeAnimOverride(FName State)
 {
 	mStatusKey = State;
@@ -68,6 +81,7 @@ void UAWeekCharacterAnimInstance::ChangeAnimOverride(FName State)
 	mSequenceMap = mAnimMap[mStatusKey].SequenceMap;
 	mBlendSpaceMap = mAnimMap[mStatusKey].BlendSpaceMap;
 	mMontageMap = mAnimMap[mStatusKey].MontageMap;
+	mMontageArrayMap = mAnimMap[mStatusKey].MontageArrayMap;
 }
 
 

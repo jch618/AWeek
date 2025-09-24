@@ -446,7 +446,7 @@ void AAWeekPlayerCharacter::AttackImpact()
 	param.bTraceComplex = false;
 
 	bool Collision = GetWorld()->SweepMultiByChannel(Result, Center, Center,
-		FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel3,
+		FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5,
 		FCollisionShape::MakeBox(FVector(100)), param);
 
 	DrawDebugSphere(

@@ -21,4 +21,3 @@ void ABaseEnemyAIController::SetBlackboardValues()
 	BBComponent->SetValueAsObject(AttackTargetKeyName, PlayerCharacter);
 }
 
-

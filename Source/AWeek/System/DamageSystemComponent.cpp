@@ -28,6 +28,11 @@ float UDamageSystemComponent::Heal_Implementation(float Amount)
 	return Health - OldHealth;
 }
 
+bool UDamageSystemComponent::GetIsDead_Implementation()
+{
+	return IsDead;
+}
+
 bool UDamageSystemComponent::TakeDamage_Implementation(FDamageInfo DamageInfo)
 {
 	//No Damage

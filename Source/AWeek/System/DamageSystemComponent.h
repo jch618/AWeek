@@ -42,6 +42,7 @@ public:
     virtual float GetCurrentHealth_Implementation() const override;
     virtual float GetMaxHealth_Implementation() const override;
     virtual float Heal_Implementation(float Amount) override;
+    virtual bool GetIsDead_Implementation() override;
     virtual bool TakeDamage_Implementation(FDamageInfo DamageInfo) override;
 
 protected:

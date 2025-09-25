@@ -5,7 +5,7 @@
 
 #include "AWeek/Data/AWeekWeaponInfo.h"
 
-static float GDebugFinalSpreadAngle = 45.0f;
+static float GDebugFinalSpreadAngle = 4.0f;
 
 static FAutoConsoleVariableRef CVarDebugFinalSpreadAngle(
 	TEXT("aweek.DebugFinalSpreadAngle"),

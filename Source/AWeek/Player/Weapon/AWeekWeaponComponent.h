@@ -61,4 +61,7 @@ public:
 
 public:
 	void ChangeWeapon(FName WeaponKey);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<UAWeekReticleDefinition> mReticleDefinition;
 };

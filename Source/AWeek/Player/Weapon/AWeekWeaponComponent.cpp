@@ -60,7 +60,8 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 	mDamage = WeaponInfo->Damage;
 	mBulletMaxStack = WeaponInfo->BulletMaxStack;
 	mBulletUsagePerSingle = WeaponInfo->BulletUsagePerSingle;
-
+	mReticleDefinition = WeaponInfo->ReticleDefinition;
+	
 	if (!IsValid(Mesh))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Weapon Mesh is nullptr"));

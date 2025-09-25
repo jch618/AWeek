@@ -2,7 +2,6 @@
 
 
 #include "AWeekPlayerCharacter.h"
-#include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Pakour/AWeekPakourComponent.h"
 #include "Stamina/AWeekStaminaComponent.h"
@@ -17,7 +16,6 @@
 #include "AWeek/Interfaces/AWeekInteractionInterface.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/World/AWeekPickupItem.h"
-#include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Player/AWeekUIController.h"
 
 
@@ -77,7 +75,7 @@ void AAWeekPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UIController = Cast<AAWeekUIController>(GetController());
+	PlayerController = Cast<AAWeekPlayerController>(GetController());
 
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
@@ -88,10 +86,10 @@ void AAWeekPlayerCharacter::BeginPlay()
 	// temporary function
 	CraftingComponent->InitializeComponent();
 	
-	if (IsValid(UIController))
+	if (IsValid(PlayerController))
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(UIController->GetLocalPlayer());
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 
 		const UAWeekGameInput* InputCDO = GetDefault<UAWeekGameInput>();
 
@@ -178,7 +176,7 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 		if (UIManager->IsHoldingItem())
 		{
 			FVector2D MousePos;
-			if (UIController->GetMousePosition(MousePos.X, MousePos.Y))
+			if (PlayerController->GetMousePosition(MousePos.X, MousePos.Y))
 			{
 				UIManager->UpdateHeldItemPosition(MousePos);
 			}

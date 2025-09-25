@@ -21,11 +21,11 @@
 #include "AWeekPlayerCharacter.generated.h"
 
 
+class AAWeekPlayerController;
 class UAWeekCraftingComponent;
 class UAWeekGameUIManager;
 class UAWeekInventoryComponent;
 class UAWeekItemBase;
-class AAWeekUIController;
 struct FAWeekInventorySlotData;
 
 USTRUCT()
@@ -134,7 +134,7 @@ protected:
 	TObjectPtr<UAWeekGameUIManager> UIManager;
 	
 	UPROPERTY()
-	TObjectPtr<AAWeekUIController> UIController;
+	TObjectPtr<AAWeekPlayerController> PlayerController;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
 	TScriptInterface<IAWeekInteractionInterface> TargetInteractable;

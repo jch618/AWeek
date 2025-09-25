@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AWeek/UI/Weapon/AWeekReticleDefinition.h"
 #include "AWeekWeaponInfo.generated.h"
 
 UENUM()
@@ -36,4 +37,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	int32 BulletUsagePerSingle;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UAWeekReticleDefinition> ReticleDefinition;
 };

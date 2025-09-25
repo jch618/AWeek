@@ -7,9 +7,7 @@
 #include"../Data/AWeekCharacterAnimInfo.h"
 #include "AWeekCharacterAnimInstance.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class AWEEK_API UAWeekCharacterAnimInstance : public UAnimInstance
 {
@@ -33,6 +31,9 @@ public :
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TMap<FName, TObjectPtr<UAnimMontage>>	mMontageMap;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TMap<FName, FAnimMontageArray> mMontageArrayMap;
 
 public:
 	virtual void NativeBeginPlay();
@@ -50,6 +51,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UAnimMontage* FindAnimMontage(const FName& Name);
+
+	UFUNCTION(BlueprintCallable)
+	UAnimMontage* FindRandomInMontageArray(const FName& Name);
 
 public: 
 	void ChangeAnimOverride(FName State);

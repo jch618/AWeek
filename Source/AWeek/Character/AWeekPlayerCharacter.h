@@ -91,6 +91,9 @@ protected:
 
 	/*--------------VARIABLES--------------*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsCombat = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bSprint = false;
 
 	UPROPERTY(EditAnywhere)
@@ -193,6 +196,12 @@ public:
 	virtual void LedgeStart();
 	virtual void LedgeEnd();
 	virtual void ClimbStart();
+	void SetCombatBool(bool Bool)
+	{
+		// Combat True -> Orient False
+		GetCharacterMovement()->bOrientRotationToMovement = !Bool;
+		bIsCombat = Bool;
+	}
 
 	// =====================================================
 	// INVENTORY SYSTEM

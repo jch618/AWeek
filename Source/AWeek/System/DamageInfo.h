@@ -47,5 +47,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage System")
     bool ShouldForceInterrupt = false; //Damage Force Interrupt Animation
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage System")
+    TObjectPtr<AActor> DamageSource = nullptr; //Damage Instigator
+
 };
 

@@ -105,6 +105,11 @@ void UAWeekPlayerAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupt
 	{
 		mOwner->LedgeEnd();
 	}
+
+	if (Montage == FindAnimMontage(TEXT("Attack")))
+	{
+		mOwner->SetCombatBool(false);
+	}
 }
 
 void UAWeekPlayerAnimInstance::AnimNotify_MeeleAttack()

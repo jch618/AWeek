@@ -28,6 +28,11 @@ float UDamageSystemComponent::Heal_Implementation(float Amount)
 	return Health - OldHealth;
 }
 
+bool UDamageSystemComponent::GetIsDead_Implementation()
+{
+	return IsDead;
+}
+
 bool UDamageSystemComponent::TakeDamage_Implementation(FDamageInfo DamageInfo)
 {
 	//No Damage
@@ -54,6 +59,21 @@ bool UDamageSystemComponent::TakeDamage_Implementation(FDamageInfo DamageInfo)
 		OnDamageResponse.Broadcast(DamageInfo.DamageResponse);
 
 	return true;
+}
+
+bool UDamageSystemComponent::ReserveAttackToken_Implementation(int Amount = 1)
+{
+	if (AttackTokenCount >= Amount)
+	{
+		AttackTokenCount -= Amount;
+		return true;
+	}
+	return false;
+}
+
+void UDamageSystemComponent::ReturnAttackToken_Implementation(int Amount = 1)
+{
+	AttackTokenCount += Amount;
 }
 
 #if WITH_EDITOR

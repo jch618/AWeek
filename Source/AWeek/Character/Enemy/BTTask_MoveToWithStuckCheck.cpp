@@ -9,6 +9,7 @@
 #include "DrawDebugHelpers.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "EnemyState.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 
 
 
@@ -119,7 +120,6 @@ void UBTTask_MoveToWithStuckCheck::TickTask(UBehaviorTreeComponent& OwnerComp, u
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }
-
 void UBTTask_MoveToWithStuckCheck::RequestMove()
 {
 	if (!CachedAIController || !CachedPawn)
@@ -129,18 +129,31 @@ void UBTTask_MoveToWithStuckCheck::RequestMove()
 	if (!BBComp)
 		return;
 
-	UObject* TargetObject= BBComp->GetValueAsObject(GetSelectedBlackboardKey());
-	if (TargetObject == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("[BTT_MoveToWithStuck] : There is No TargetObject"))
-		return;
-	}
-
-	AActor* TargetActor = Cast<AActor>(TargetObject);
 	FAIMoveRequest MoveReq;
-	MoveReq.SetGoalActor(TargetActor);
 	MoveReq.SetAcceptanceRadius(AcceptanceRadius);
 	MoveReq.SetUsePathfinding(true);
+
+	FBlackboard::FKey KeyID = BBComp->GetKeyID(GetSelectedBlackboardKey());
+	TSubclassOf<UBlackboardKeyType> KeyType = BBComp->GetKeyType(KeyID);
+
+	if (KeyType == UBlackboardKeyType_Vector::StaticClass())
+	{
+		FVector TargetLocation = BBComp->GetValueAsVector(GetSelectedBlackboardKey());
+		MoveReq.SetGoalLocation(TargetLocation);
+	}
+	else
+	{
+		UObject* TargetObject = BBComp->GetValueAsObject(GetSelectedBlackboardKey());
+		if (AActor* TargetActor = Cast<AActor>(TargetObject))
+		{
+			MoveReq.SetGoalActor(TargetActor);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[BTT_MoveToWithStuck] : Target is neither Actor nor Vector"));
+			return;
+		}
+	}
 
 	FNavPathSharedPtr NavPath;
 	CachedAIController->MoveTo(MoveReq, &NavPath);

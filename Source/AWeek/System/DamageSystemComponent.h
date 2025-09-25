@@ -38,12 +38,17 @@ protected :
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
     bool IsBlocking = false;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+    int AttackTokenCount = 1; 
+
 public:
     virtual float GetCurrentHealth_Implementation() const override;
     virtual float GetMaxHealth_Implementation() const override;
     virtual float Heal_Implementation(float Amount) override;
     virtual bool GetIsDead_Implementation() override;
     virtual bool TakeDamage_Implementation(FDamageInfo DamageInfo) override;
+    virtual bool ReserveAttackToken_Implementation(int Amount) override;
+    virtual void ReturnAttackToken_Implementation(int Amount) override;
 
 protected:
 	virtual void BeginPlay() override;

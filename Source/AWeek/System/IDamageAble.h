@@ -27,7 +27,10 @@ public:
 	 float Heal(float amount); //return resultHealth(float) After healing
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Damage")
 	bool TakeDamage(FDamageInfo DamageInfo); //return WasDamaged(bool) -> some characters doesn't get damage like invincible player
-
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Damage")
+	bool ReserveAttackToken(int Amount); //Reserve Attack Token
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Damage")
+	void ReturnAttackToken(int Amount); //Return Attack Token
 };
 
 

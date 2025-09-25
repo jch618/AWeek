@@ -61,6 +61,21 @@ bool UDamageSystemComponent::TakeDamage_Implementation(FDamageInfo DamageInfo)
 	return true;
 }
 
+bool UDamageSystemComponent::ReserveAttackToken_Implementation(int Amount = 1)
+{
+	if (AttackTokenCount >= Amount)
+	{
+		AttackTokenCount -= Amount;
+		return true;
+	}
+	return false;
+}
+
+void UDamageSystemComponent::ReturnAttackToken_Implementation(int Amount = 1)
+{
+	AttackTokenCount += Amount;
+}
+
 #if WITH_EDITOR
 void UDamageSystemComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {

@@ -2,7 +2,7 @@
 
 // game
 #include "AWeek/UI/Inventory/AWeekInventoryPanel.h"
-#include "AWeek/UI/AWeekInventoryMainPanel.h"
+#include "AWeek/UI/Inventory/AWeekInventoryMainPanel.h"
 #include "AWeek/UI/Inventory/AWeekInventoryItemSlot.h"
 #include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
@@ -16,6 +16,10 @@
 #include "Components/WrapBox.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+
+UAWeekInventoryPanel::UAWeekInventoryPanel() : NumCols(5)
+{
+}
 
 void UAWeekInventoryPanel::NativeOnInitialized()
 {
@@ -113,17 +117,19 @@ void UAWeekInventoryPanel::UnlinkFromInventory()
 }
 
 
+
 void UAWeekInventoryPanel::RefreshInventory()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (InventoryReference && InventorySlotClass)
 	{
 		InventoryGridPanel->ClearChildren();
 
-		const TArray<FAWeekItemSlot>& InventoryContents = InventoryReference->GetInventoryContents();
+		const TArray<FAWeekInventorySlotData>& InventoryContents = InventoryReference->GetInventoryContents();
 		//UE_LOG(LogTemp, Warning, TEXT("%s: InventorySlots = %d"), *FString(__FUNCTION__), InventoryContents.Num());
 		if (InventorySlotClass == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("InventorySlotClass is null!"), InventoryContents.Num());
+			UE_LOG(LogTemp, Warning, TEXT("InventorySlotClass is null!"));
 			return;
 		}
 		for (int32 i = 0; i < InventoryContents.Num(); i++)
@@ -131,17 +137,17 @@ void UAWeekInventoryPanel::RefreshInventory()
 			TObjectPtr<UAWeekInventoryItemSlot> ItemSlot = CreateWidget<UAWeekInventoryItemSlot>(this, InventorySlotClass);
 			ItemSlot->SetItemSlotIndex(i);
 			ItemSlot->SetInventory(InventoryReference);
-			ItemSlot->InitializeItemSlot();
+			ItemSlot->InitializeInventoryItemSlot(InventoryReference->GetItemSlotAt(i).Item);
 
 			UUniformGridSlot* GridSlot = InventoryGridPanel->AddChildToUniformGrid(ItemSlot,
-				InventoryContents[i].ItemSlotIndex / InventoryReference->GetNumCols(),
-				InventoryContents[i].ItemSlotIndex % InventoryReference->GetNumCols());
+				InventoryContents[i].ItemSlotIndex / NumCols,
+				InventoryContents[i].ItemSlotIndex % NumCols);
 		}
 	}
 	SetInfoText();
 }
 
-void UAWeekInventoryPanel::HandleShiftClickOnSlot(const FAWeekItemSlot& ClickedItemSlot)
+void UAWeekInventoryPanel::HandleShiftClickOnSlot(const FAWeekInventorySlotData& ClickedItemSlot)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s: detected"), *FString(__FUNCTION__));
 	OnShiftClick.ExecuteIfBound(ClickedItemSlot);
@@ -169,7 +175,7 @@ bool UAWeekInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 		UE_LOG(LogTemp, Warning, TEXT("Invalid ItemSlotIndex: %d"), ItemDragDrop->ItemSlotIndex);
 		return false;
 	}
-	const FAWeekItemSlot& ItemSlot = ItemDragDrop->SourceInventory->GetItemSlotAt(ItemDragDrop->ItemSlotIndex);
+	const FAWeekInventorySlotData& ItemSlot = ItemDragDrop->SourceInventory->GetItemSlotAt(ItemDragDrop->ItemSlotIndex);
 
 	if (!ItemSlot.bIsEmpty && InventoryReference)
 	{

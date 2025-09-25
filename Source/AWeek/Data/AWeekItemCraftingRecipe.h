@@ -6,6 +6,7 @@
 #include "AWeek/Data/AWeekItemDataStructs.h"
 #include "AWeekItemCraftingRecipe.generated.h"
 
+
 /**
  * 
  */
@@ -36,4 +37,37 @@ struct FAWeekItemCraftingRecipe : public FTableRowBase
 	UPROPERTY(EditAnywhere, Category = "Recipe Ingredients")
 	//FAWeekIngredientItemList IngredientItemList;
 	TArray<FAWeekRequiredIngredientItem> IngredientItems;
+};
+
+USTRUCT()
+struct FAWeekItemEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FAWeekItemData ItemData;
+
+	UPROPERTY()
+	int32 Quantity;
+
+	FAWeekItemEntry() = default;
+	FAWeekItemEntry(const FAWeekItemData& InItemData, int32 InQuantity):
+		ItemData(InItemData), Quantity(InQuantity) { }
+};
+
+USTRUCT()
+struct FAWeekCachedCraftingRecipe
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	FAWeekItemCraftingRecipe OriginalRecipe;
+
+	UPROPERTY()
+	FAWeekItemEntry CraftedItemEntry;
+
+	UPROPERTY()
+	TArray<FAWeekItemEntry> IngredientItemEntries;
+
+	bool bIsCacheValid = false;
 };

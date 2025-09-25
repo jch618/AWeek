@@ -10,6 +10,7 @@
 #include "../System/DamageSystemComponent.h"
 #include "../Input/AWeekGameInput.h"
 #include "../System/DaySystem/AWeekDaySystem.h"
+#include "AWeek/Components/AWeekCraftingComponent.h"
 
 #include "AWeek/UI/AWeekGameUIManager.h"
 #include "AWeek/Interfaces/AWeekInteractionInterface.h"
@@ -61,7 +62,8 @@ AAWeekPlayerCharacter::AAWeekPlayerCharacter()
 	mPakour = CreateDefaultSubobject<UAWeekPakourComponent>(TEXT("Pakour"));
 
 	PlayerInventory = CreateDefaultSubobject<UAWeekInventoryComponent>(TEXT("PlayerInventory"));
-
+	CraftingComponent = CreateDefaultSubobject<UAWeekCraftingComponent>(TEXT("CraftingComponent"));
+	
 	InteractionCheckFrequency = 0.1f;
 	InteractionCheckDistance = 250.0f;
 	mStamina = CreateDefaultSubobject<UAWeekStaminaComponent>(TEXT("Stamina"));
@@ -81,6 +83,9 @@ void AAWeekPlayerCharacter::BeginPlay()
 		UIManager = GameInstance->GetSubsystem<UAWeekGameUIManager>();
 		UIManager->InitializeUIManager();
 	}
+
+	// temporary function
+	CraftingComponent->InitializeComponent();
 	
 	if (IsValid(UIController))
 	{
@@ -181,7 +186,7 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 			this, &AAWeekPlayerCharacter::EndInteract);
 		
 		EnhancedInput->BindAction(InputCDO->mInventory, ETriggerEvent::Triggered,
-			this, &AAWeekPlayerCharacter::ToggleMenu);
+			this, &AAWeekPlayerCharacter::ToggleInventoryMainPanel);
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::Fire);
 
@@ -651,13 +656,14 @@ void AAWeekPlayerCharacter::UpdateInteractionWidget() const
 	}
 }
 
-void AAWeekPlayerCharacter::ToggleMenu()
+void AAWeekPlayerCharacter::ToggleInventoryMainPanel()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Toggle Menu"));
-	UIManager->ToggleMainPanel();
+	UIManager->ToggleInventoryMainPanel();
+	// test
+	// ToggleCraftingMainPanel();
 }
 
-void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot, const int32 QuantityToDrop)
+void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop)
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
@@ -690,3 +696,14 @@ void AAWeekPlayerCharacter::CloseChestInventory()
 {
 	UIManager->DeactivateChestInventory();
 }
+
+void AAWeekPlayerCharacter::ToggleCraftingMainPanel()
+{
+	UIManager->ToggleCraftingMainPanel();
+}
+
+void AAWeekPlayerCharacter::CloseCraftingMainPanel()
+{
+	UIManager->HideCraftingMainPanel();
+}
+

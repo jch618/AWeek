@@ -20,11 +20,12 @@
 #include "AWeekPlayerCharacter.generated.h"
 
 
+class UAWeekCraftingComponent;
 class UAWeekGameUIManager;
 class UAWeekInventoryComponent;
 class UAWeekItemBase;
 class AAWeekUIController;
-struct FAWeekItemSlot;
+struct FAWeekInventorySlotData;
 
 USTRUCT()
 struct FAWeekInteractionData
@@ -134,6 +135,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
 	TObjectPtr<UAWeekInventoryComponent> PlayerInventory;
 
+	UPROPERTY(VisibleAnywhere, Category = "Character | Crafting")
+	TObjectPtr<UAWeekCraftingComponent> CraftingComponent;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float InteractionCheckFrequency;
 
@@ -175,10 +179,13 @@ public:
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); }
 	FORCEINLINE TObjectPtr<UAWeekInventoryComponent> GetInventory() const { return PlayerInventory; }
 	void UpdateInteractionWidget() const;
-	void DropItemFromItemSlot(const FAWeekItemSlot& ItemSlot, const int32 QuantityToDrop);
+	void ToggleInventoryMainPanel();
+	void DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop);
 	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 	//void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 	void CloseChestInventory();
+	void ToggleCraftingMainPanel();
+	void CloseCraftingMainPanel();
 
 public:
 	virtual void VaultStart();
@@ -197,7 +204,6 @@ public:
 	void EndInteract();
 	void Interact();
 
-	void ToggleMenu();
 
 	UFUNCTION()
 	virtual void ClimbEnd();

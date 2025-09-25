@@ -3,6 +3,8 @@
 #include "AWeek/UI/AWeekActivatableWidget.h"
 
 #include "CoreMinimal.h"
+#include "AWeek/UI/Inventory/AWeekItemSlot.h"
+#include "AWeek/Components/AWeekInventoryComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekInventoryItemSlot.generated.h"
 
@@ -13,15 +15,15 @@ class UImage;
 class UAWeekHeldItemVisual;
 class UAWeekItemBase;
 class UAWeekInventoryToolTip;
-struct FAWeekItemSlot;
+struct FAWeekInventorySlotData;
 class UAWeekInventoryComponent;
 
-DECLARE_DELEGATE_OneParam(FOnShiftLeftClick, const FAWeekItemSlot& ClickedItemSlot);
+DECLARE_DELEGATE_OneParam(FOnShiftLeftClick, const FAWeekInventorySlotData& ClickedItemSlot);
 DECLARE_DELEGATE_TwoParams(FOnLeftClick, int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 DECLARE_DELEGATE_TwoParams(FOnRightClick, int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 
 UCLASS()
-class AWEEK_API UAWeekInventoryItemSlot : public UAWeekActivatableWidget
+class AWEEK_API UAWeekInventoryItemSlot : public UAWeekItemSlot
 {
 	GENERATED_BODY()
 
@@ -37,42 +39,25 @@ public:
 	FORCEINLINE int32 GetItemSlotIndex() const { return ItemSlotIndex; }
 
 	FORCEINLINE void SetInventory(TObjectPtr<UAWeekInventoryComponent> Inventory) { OwningInventory = Inventory; }
-	const TObjectPtr<UAWeekItemBase> GetItemReference() const;
+	const UAWeekItemBase* GetItemReference() const;
 
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
-	void InitializeItemSlot();
+	void InitializeInventoryItemSlot(TObjectPtr<UAWeekItemBase> ItemReference);
 
 protected:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory Slot")
-	TSubclassOf<UAWeekHeldItemVisual> DragItemVisualClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Inventory Slot")
 	TSubclassOf<UAWeekInventoryToolTip> ToolTipClass;
 
 	TObjectPtr<UAWeekInventoryComponent> OwningInventory;
 	int32 ItemSlotIndex;
-
-	UPROPERTY(VisibleAnywhere, Category = "Inventory Slot", meta = (BindWidget))
-	TObjectPtr<UBorder> ItemBorder;
-
-	UPROPERTY(VisibleAnywhere, Category = "Inventory Slot", meta = (BindWidget))
-	TObjectPtr<UImage> ItemIcon;
-
-	UPROPERTY(VisibleAnywhere, Category = "Inventory Slot", meta = (BindWidget))
-	TObjectPtr<UTextBlock> ItemQuantity;
-
+	
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
-	virtual void NativeOnInitialized() override;
-	virtual void NativeConstruct() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
-	//virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 };

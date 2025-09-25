@@ -6,6 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "AWeekGameUIManager.generated.h"
 
+class UAWeekCraftingMainPanel;
 class UAWeekUIDataAsset;
 class AAWeekPlayerController;
 class UAWeekInventoryMainPanel;
@@ -15,7 +16,7 @@ class UAWeekInventoryComponent;
 class UAWeekHeldItemVisual;
 class UAWeekHeldItem;
 class UAWeekItemBase;
-struct FAWeekItemSlot;
+struct FAWeekInventorySlotData;
 class AAWeekPlayerCharacter;
 
 /**
@@ -45,12 +46,11 @@ class AWEEK_API UAWeekGameUIManager : public UGameInstanceSubsystem
 public:
 	UAWeekGameUIManager();
 	void InitializeUIManager();
-
-	void ShowMainPanel();
-	void HideMainPanel();
-	void ToggleMainPanel();
+	
+	void ToggleInventoryMainPanel();
 	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 
+	void ToggleCraftingMainPanel();
 	// void ShowCrosshair();
 	// void HideCrosshair();
 
@@ -61,16 +61,17 @@ public:
 	void ActivateChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory) const;
 	void DeactivateChestInventory();
 
+	void HideCraftingMainPanel();
+	
 	// held item functions
 	FORCEINLINE bool IsHoldingItem() const;
 	FORCEINLINE void SetHeldItem(TObjectPtr<UAWeekHeldItem> NewHeldItem) { HeldItem = NewHeldItem; }
-
 	void UpdateHeldItemPosition(FVector2D NewPosition);
 
+	// inventory slot delegates
 	void HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 	void HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
-
-	void HandleItemSlotShiftLeftClick(const FAWeekItemSlot& ClickedItemSlot) const;
+	void HandleItemSlotShiftLeftClick(const FAWeekInventorySlotData& ClickedItemSlot) const;
 protected:
 	//================================================================
 	//	PROPERTIES & VARIABLES
@@ -84,9 +85,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UAWeekInteractionWidget> InteractionWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UAWeekCraftingMainPanel> CraftingMainPanelClass;
+	
 	UPROPERTY()
 	TObjectPtr<UAWeekInventoryMainPanel> InventoryMainPanelWidget;
 
+	UPROPERTY()
+	TObjectPtr<UAWeekCraftingMainPanel> CraftingMainPanelWidget;;
+	
 	UPROPERTY()
 	TObjectPtr<UAWeekInteractionWidget> InteractionWidget;
 
@@ -107,6 +114,11 @@ protected:
 	//================================================================
 	void MergeItem(int32 TargetSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 	void CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem, TObjectPtr<UAWeekInventoryComponent> SourceInventory, int32 SourceItemSlotIndex);
+
+	void ShowInventoryMainPanel();
+	void HideInventoryMainPanel();
+
+	void ShowCraftingMainPanel();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "UI Settings")

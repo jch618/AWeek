@@ -1,4 +1,4 @@
-#include "AWeek/UI/AWeekInventoryMainPanel.h"
+#include "AWeek/UI/Inventory/AWeekInventoryMainPanel.h"
 #include "AWeek/UI/Inventory/AWeekInventoryPanel.h"
 #include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/Items/AWeekItemBase.h"
@@ -41,7 +41,7 @@ bool UAWeekInventoryMainPanel::NativeOnDrop(const FGeometry& InGeometry, const F
 		UE_LOG(LogTemp, Warning, TEXT("Invalid ItemSlotIndex: %d"), ItemDragDrop->ItemSlotIndex);
 		return false;
 	}
-	const FAWeekItemSlot& ItemSlot = ItemDragDrop->SourceInventory->GetItemSlotAt(ItemDragDrop->ItemSlotIndex);
+	const FAWeekInventorySlotData& ItemSlot = ItemDragDrop->SourceInventory->GetItemSlotAt(ItemDragDrop->ItemSlotIndex);
 	if (PlayerCharacter && !ItemSlot.bIsEmpty)
 	{
 		//PlayerCharacter->DropItem(ItemDragDrop->SourceItemSlot, ItemDragDrop->SourceItemSlot->Item->Quantity);
@@ -63,6 +63,8 @@ UAWeekInventoryComponent* UAWeekInventoryMainPanel::GetChestInventoryComponent()
 
 void UAWeekInventoryMainPanel::InitializeInventoryMainPanel()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s: call"), *FString(__FUNCTION__));
+	
 	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwningPlayerPawn());
 	PlayerInventoryPanel->LinkToInventory(PlayerCharacter->GetInventory(), PlayerCharacter);
 	ChestInventoryPanel->SetVisibility(ESlateVisibility::Collapsed);

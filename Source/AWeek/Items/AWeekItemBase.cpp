@@ -6,6 +6,19 @@ UAWeekItemBase::UAWeekItemBase() : bIsCopy(false), bIsPickup(false)
 
 }
 
+void UAWeekItemBase::InitializeItem(const FAWeekItemData* ItemData, int32 InQuantity)
+{
+	ID = ItemData->ID;
+	ItemType = ItemData->ItemType;
+	ItemQuality = ItemData->ItemQuality;
+	NumericData = ItemData->NumericData;
+	TextData = ItemData->TextData;
+	AssetData = ItemData->AssetData;
+
+	NumericData.bIsStackable = NumericData.MaxStackSize > 1;
+	Quantity = FMath::Max(1, InQuantity);
+}
+
 void UAWeekItemBase::ResetItemFlags()
 {
 	bIsCopy = false;

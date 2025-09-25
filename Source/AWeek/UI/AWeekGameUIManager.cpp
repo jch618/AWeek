@@ -2,14 +2,9 @@
 
 
 #include "AWeek/UI/AWeekGameUIManager.h"
-
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "AWeek/Player/AWeekUIController.h"
-#include "AWeek/UI/AWeekInventoryMainPanel.h"
+#include "AWeek/UI/Inventory/AWeekInventoryMainPanel.h"
+#include "AWeek/UI/Crafting/AWeekCraftingMainPanel.h"
 #include "AWeek/UI/Interaction/AWeekInteractionWidget.h"
-#include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/UI/Inventory/AWeekHeldItemVisual.h"
 #include "AWeek/UI/Inventory/AWeekHeldItem.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
@@ -36,6 +31,7 @@ void UAWeekGameUIManager::InitializeUIManager()
 		if (UIDataAsset)
 		{
 			InventoryMainPanelClass = UIDataAsset->InventoryMainPanelClass;
+			CraftingMainPanelClass = UIDataAsset->CraftingMainPanelClass;
 			InteractionWidgetClass = UIDataAsset->InteractionWidgetClass;
 			HeldItemVisualClass = UIDataAsset->HeldItemVisualClass;
             
@@ -47,7 +43,8 @@ void UAWeekGameUIManager::InitializeUIManager()
 			return;
 		}
 	}
-	
+
+	ensure(InventoryMainPanelClass);
 	if (InventoryMainPanelClass)
 	{
 		InventoryMainPanelWidget = Cast<UAWeekInventoryMainPanel, UCommonActivatableWidget>(
@@ -61,8 +58,8 @@ void UAWeekGameUIManager::InitializeUIManager()
 // INVENTORY SYSTEM
 // =====================================================
 
-void UAWeekGameUIManager::ShowMainPanel()
-{
+void UAWeekGameUIManager::ShowInventoryMainPanel()
+{	
 	if (InventoryMainPanelClass)
 	{
 		InventoryMainPanelWidget = Cast<UAWeekInventoryMainPanel, UCommonActivatableWidget>(
@@ -70,8 +67,8 @@ void UAWeekGameUIManager::ShowMainPanel()
 				FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventoryMainPanelClass));
 	}
 }
-void UAWeekGameUIManager::HideMainPanel()
-{
+void UAWeekGameUIManager::HideInventoryMainPanel()
+{	
 	if (InventoryMainPanelWidget)
 	{
 		InventoryMainPanelWidget->DeactivateWidget();
@@ -83,11 +80,32 @@ void UAWeekGameUIManager::HideMainPanel()
 	}
 }
 
-void UAWeekGameUIManager::ToggleMainPanel()
+void UAWeekGameUIManager::ShowCraftingMainPanel()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	if (CraftingMainPanelClass)
+	{
+		CraftingMainPanelWidget = Cast<UAWeekCraftingMainPanel, UCommonActivatableWidget>(
+			UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
+				FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), CraftingMainPanelClass));
+	}
+}
+
+void UAWeekGameUIManager::HideCraftingMainPanel()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s:"), *FString(__FUNCTION__));
+	if (CraftingMainPanelWidget)
+	{
+		CraftingMainPanelWidget->DeactivateWidget();
+	}
+}
+
+void UAWeekGameUIManager::ToggleInventoryMainPanel()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (!IsValid(InventoryMainPanelWidget) || !InventoryMainPanelWidget->IsActivated())
 	{
-		ShowMainPanel();
+		ShowInventoryMainPanel();
 		PlayerController->SetShowMouseCursor(true);
 	}
 	else
@@ -96,7 +114,7 @@ void UAWeekGameUIManager::ToggleMainPanel()
 		{
 			DeactivateChestInventory();
 		}
-		HideMainPanel();
+		HideInventoryMainPanel();
 		PlayerController->SetShowMouseCursor(false);
 	}
 }
@@ -107,7 +125,7 @@ void UAWeekGameUIManager::ToggleChestInventory(TObjectPtr<UAWeekInventoryCompone
 	{
 		if (!IsValid(InventoryMainPanelWidget) || !InventoryMainPanelWidget->IsActivated())
 		{
-			ShowMainPanel();
+			ShowInventoryMainPanel();
 			PlayerController->SetShowMouseCursor(true);
 		}
 		ActivateChestInventory(ChestInventory);
@@ -115,7 +133,21 @@ void UAWeekGameUIManager::ToggleChestInventory(TObjectPtr<UAWeekInventoryCompone
 	else
 	{
 		DeactivateChestInventory();
-		HideMainPanel();
+		HideInventoryMainPanel();
+		PlayerController->SetShowMouseCursor(false);
+	}
+}
+
+void UAWeekGameUIManager::ToggleCraftingMainPanel()
+{
+	if (!IsValid(CraftingMainPanelWidget) || !CraftingMainPanelWidget->IsActivated())
+	{
+		ShowCraftingMainPanel();
+		PlayerController->SetShowMouseCursor(true);
+	}
+	else
+	{
+		HideCraftingMainPanel();
 		PlayerController->SetShowMouseCursor(false);
 	}
 }
@@ -207,7 +239,7 @@ void UAWeekGameUIManager::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TO
 
 	if (IsHoldingItem())
 	{
-		const FAWeekItemSlot& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
+		const FAWeekInventorySlotData& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
 		if (ClickedItemSlot.bIsEmpty)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("%s: Place Item to slot and clear HeldItem"), *FString(__FUNCTION__));
@@ -244,7 +276,7 @@ void UAWeekGameUIManager::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TO
 
 void UAWeekGameUIManager::HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
 {
-	const FAWeekItemSlot& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
+	const FAWeekInventorySlotData& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
 	if (IsHoldingItem())
 	{
 		if (!ClickedItemSlot.bIsEmpty)
@@ -307,7 +339,7 @@ void UAWeekGameUIManager::CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem,
 	}
 }
 
-void UAWeekGameUIManager::HandleItemSlotShiftLeftClick(const FAWeekItemSlot& ClickedItemSlot) const
+void UAWeekGameUIManager::HandleItemSlotShiftLeftClick(const FAWeekInventorySlotData& ClickedItemSlot) const
 {
 
 	if (!ClickedItemSlot.bIsEmpty && InventoryMainPanelWidget->IsChestOpen())

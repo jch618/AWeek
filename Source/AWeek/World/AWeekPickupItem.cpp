@@ -33,16 +33,7 @@ void AAWeekPickupItem::InitializePickupItem(const int32 InQuantity)
 		const FAWeekItemData* ItemData = ItemRowHandle.GetRow<FAWeekItemData>(ItemRowHandle.RowName.ToString());
 
 		ItemReference = NewObject<UAWeekItemBase>(this, UAWeekItemBase::StaticClass());
-
-		ItemReference->ID = ItemData->ID;
-		ItemReference->ItemType = ItemData->ItemType;
-		ItemReference->ItemQuality = ItemData->ItemQuality;
-		ItemReference->NumericData = ItemData->NumericData;
-		ItemReference->TextData = ItemData->TextData;
-		ItemReference->AssetData = ItemData->AssetData;
-
-		ItemReference->NumericData.bIsStackable = ItemReference->NumericData.MaxStackSize > 1;
-		InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
+		ItemReference->InitializeItem(ItemData, InQuantity);
 
 		PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
 

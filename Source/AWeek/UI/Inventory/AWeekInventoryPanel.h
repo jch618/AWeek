@@ -14,9 +14,9 @@ class UAWeekInventoryItemSlot;
 class UAWeekInventoryComponent;
 class AAWeekPlayerCharacter;
 
-struct FAWeekItemSlot;
+struct FAWeekInventorySlotData;
 
-DECLARE_DELEGATE_OneParam(FOnShiftClick, const FAWeekItemSlot& ClickedItemSlot);
+DECLARE_DELEGATE_OneParam(FOnShiftClick, const FAWeekInventorySlotData& ClickedItemSlot);
 
 UCLASS()
 class AWEEK_API UAWeekInventoryPanel : public UAWeekActivatableWidget
@@ -27,6 +27,7 @@ public:
 	FOnShiftClick OnShiftClick;
 	bool bIsLinkedToInventory;
 
+	UAWeekInventoryPanel();
 	FORCEINLINE UAWeekInventoryComponent* GetInventoryReference() { return InventoryReference; }
 	UFUNCTION()
 	void RefreshInventory();
@@ -34,15 +35,11 @@ public:
 	void UnlinkFromInventory();
 
 protected:
-
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> InventoryTitle;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUniformGridPanel> InventoryGridPanel;
-
-	//UPROPERTY(meta = (BindWidget))
-	//UWrapBox* InventoryWrapBox;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> WeightInfo;
@@ -59,7 +56,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UAWeekInventoryItemSlot> InventorySlotClass;
 
-	void HandleShiftClickOnSlot(const FAWeekItemSlot& ClickedItemSlot);
+	UPROPERTY(EditDefaultsOnly)
+	int32 NumCols;
+	
+	void HandleShiftClickOnSlot(const FAWeekInventorySlotData& ClickedItemSlot);
 
 	void SetInfoText() const;
 	virtual void NativeOnInitialized() override;

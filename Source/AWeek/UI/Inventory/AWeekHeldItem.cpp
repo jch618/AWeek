@@ -100,7 +100,7 @@ void UAWeekHeldItem::ClearHeldItem()
 
 void UAWeekHeldItem::ReturnHeldItemToInventory()
 {
-	const FAWeekItemSlot& ItemSlot = HeldItemData.SourceInventory->GetItemSlotAt(HeldItemData.SourceSlotIndex);
+	const FAWeekInventorySlotData& ItemSlot = HeldItemData.SourceInventory->GetItemSlotAt(HeldItemData.SourceSlotIndex);
 	if (ItemSlot.bIsEmpty)
 	{
 		HeldItemData.SourceInventory->PlaceItemAt(HeldItemData.ItemReference, HeldItemData.SourceSlotIndex);

@@ -2,7 +2,7 @@
 
 
 #include "AWeek/Player/AWeekUIController.h"
-#include "AWeek/UI/AWeekInventoryMainPanel.h"
+#include "AWeek/UI/Inventory/AWeekInventoryMainPanel.h"
 #include "AWeek/UI/Interaction/AWeekInteractionWidget.h"
 #include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/UI/Inventory/AWeekHeldItemVisual.h"
@@ -185,7 +185,7 @@ void AAWeekUIController::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TOb
 
 	if (IsHoldingItem())
 	{
-		const FAWeekItemSlot& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
+		const FAWeekInventorySlotData& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
 		if (ClickedItemSlot.bIsEmpty)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("%s: Place Item to slot and clear HeldItem"), *FString(__FUNCTION__));
@@ -222,7 +222,7 @@ void AAWeekUIController::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TOb
 
 void AAWeekUIController::HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
 {
-	const FAWeekItemSlot& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
+	const FAWeekInventorySlotData& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
 	if (IsHoldingItem())
 	{
 		if (!ClickedItemSlot.bIsEmpty)
@@ -285,7 +285,7 @@ void AAWeekUIController::CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem, 
 	}
 }
 
-void AAWeekUIController::HandleItemSlotShiftLeftClick(const FAWeekItemSlot& ClickedItemSlot)
+void AAWeekUIController::HandleItemSlotShiftLeftClick(const FAWeekInventorySlotData& ClickedItemSlot)
 {
 
 	if (!ClickedItemSlot.bIsEmpty && InventoryMainPanelWidget->IsChestOpen())

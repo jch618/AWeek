@@ -3,3 +3,33 @@
 
 #include "AWeek/UI/Crafting/AWeekCraftingItemSlot.h"
 
+#include "AWeek/Data/AWeekItemDataStructs.h"
+#include "Components/Image.h"
+
+void UAWeekCraftingItemSlot::InitializeCraftingItemSlot(int32 InRecipeIndex, const FAWeekItemData& InItemData, int32 InItemQuantity, bool bInCraftable)
+{
+	Super::InitializeItemSlot(InItemData, InItemQuantity);
+
+	RecipeIndex = InRecipeIndex;
+	bIsCraftable = bInCraftable;
+	if (bIsCraftable)
+	{
+		ItemIcon->SetBrushTintColor(FLinearColor::Green);
+	}
+	else
+	{
+		ItemIcon->SetBrushTintColor(FLinearColor::Black);
+	}
+}
+
+FReply UAWeekCraftingItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	FReply Reply = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		OnCraftingSlotLeftClicked.Broadcast(RecipeIndex);
+		return FReply::Handled();
+	}
+	return Reply.Unhandled();
+}

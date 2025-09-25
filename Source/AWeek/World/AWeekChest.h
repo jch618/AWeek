@@ -9,7 +9,7 @@
 #include "AWeekChest.generated.h"
 
 class AAWeekPlayerCharacter;
-struct FAWeekItemSlot;
+struct FAWeekInventorySlotData;
 class UAWeekInventoryComponent;
 class USphereComponent;
 

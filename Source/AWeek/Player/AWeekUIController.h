@@ -13,7 +13,7 @@ class UAWeekInventoryComponent;
 class UAWeekHeldItemVisual;
 class UAWeekHeldItem;
 class UAWeekItemBase;
-struct FAWeekItemSlot;
+struct FAWeekInventorySlotData;
 
 /**
  * 
@@ -62,7 +62,7 @@ public:
 	void HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 	void HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 
-	void HandleItemSlotShiftLeftClick(const FAWeekItemSlot& ClickedItemSlot);
+	void HandleItemSlotShiftLeftClick(const FAWeekInventorySlotData& ClickedItemSlot);
 protected:
 	//================================================================
 	//	PROPERTIES & VARIABLES

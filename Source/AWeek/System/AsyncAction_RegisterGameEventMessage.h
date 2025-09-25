@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAsyncGameEventMessageDelegate, UAs
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta=(HasDedicatedAsyncNode))
 class AWEEK_API UAsyncAction_RegisterGameEventMessage : public UCancellableAsyncAction
 {
 	GENERATED_BODY()

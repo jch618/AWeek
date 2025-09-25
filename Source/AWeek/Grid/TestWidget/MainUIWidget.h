@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "CommonButtonBase.h"
-#include "TestPanelToButton.h"
+#include "AWeek/UI/MainWidget/MainWidgetPanel.h"
 #include "Components/WidgetSwitcher.h"
 #include "MainUIWidget.generated.h"
 
@@ -21,20 +21,29 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	UWidgetSwitcher* PanelSwitcher;
 
+
+	//Widget panel Button (BP_ButtonPanelWidget)
 	UPROPERTY(meta=(BindWidget))
 	UCommonButtonBase* BtnBuilding;
 
 	UPROPERTY(meta=(BindWidget))
 	UCommonButtonBase* BtnInventory;
+	//////////////////////////
 
+
+	//Widget panel
 	UPROPERTY(meta=(BindWidget))
-	UTestPanelToButton* InventoryPanel;
+	UMainWidgetPanel* InventoryPanel;
 	UPROPERTY(meta=(BindWidget))
-	UTestPanelToButton* BuildingPanel;
+	UMainWidgetPanel* BuildingPanel;
+	///////////////////////////
 
 	virtual void NativeConstruct() override;
 
+
+	//Widget panel Button Clicked
 	void ShowInventory() {PanelSwitcher->SetActiveWidgetIndex(0); InventoryPanel->SetActive();};
 	void ShowBuilding(){PanelSwitcher->SetActiveWidgetIndex(1); BuildingPanel->SetActive();};
+	//////////////////////////
 	
 };

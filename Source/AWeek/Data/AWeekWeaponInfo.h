@@ -39,5 +39,11 @@ public:
 	int32 BulletUsagePerSingle;
 
 	UPROPERTY(EditAnywhere)
+	float FireRate;
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* FireEffect;
+
+	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UAWeekReticleDefinition> ReticleDefinition;
 };

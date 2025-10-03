@@ -30,6 +30,10 @@ UAWeekGameInput::UAWeekGameInput()
 	mAttack = AttackAction.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>
+		ZoomAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_Zoom.IA_Zoom'"));
+	mZoom = ZoomAction.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>
 		InventoryAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_Inventory.IA_Inventory'"));
 	mInventory = InventoryAction.Object;
 
@@ -41,4 +45,6 @@ UAWeekGameInput::UAWeekGameInput()
 		InteractAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_Interact.IA_Interact'"));
 
 	mInteract = InteractAction.Object;
+
+	
 }

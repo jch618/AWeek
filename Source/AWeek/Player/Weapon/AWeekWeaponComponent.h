@@ -20,11 +20,16 @@ public:
 	UAWeekWeaponComponent();
 
 protected:
+	TObjectPtr<UStaticMeshComponent> mWeaponMeshComp;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<AAWeekPlayerCharacter> mOwner;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<AAWeekWeapon> mWeapon;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FName mWeaponKey;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	EWeaponType mWeaponType = EWeaponType::Unarmed;
@@ -35,32 +40,58 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<AActor>	mProjectile;
 
+	int32 mCurrentBullet = 10;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int32	mBulletMaxStack = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int32	mBulletUsagePerSingle = 0;
 
-	TObjectPtr<UStaticMeshComponent> mWeaponMeshComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float mFireRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UParticleSystem* mFireEffect;
+
+	/*--------------RANGED WEAPON--------------*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsFiring;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsReloading;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float mTimeSinceLastShot;
+
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void OnRegister() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	FVector GetFireDirection();
 
 public:	
-	float GetWeaponDamage()
-	{
-		return mDamage;
-	}
-
-	FVector GetWeaponMuzzle()
-	{
-		return mWeapon->mMeshComponent->GetSocketLocation(FName("Muzzle"));
-	}
+	float GetWeaponDamage() { return mDamage; }
+	FVector GetMuzzleLocation() { return mWeapon->mMeshComponent->GetSocketLocation(FName("Muzzle")); }
+	FName GetWeaponKey() { return mWeaponKey; }
+	EWeaponType GetWeaponType() { return mWeaponType; }
+	float GetFireRate() { return mFireRate; }
 
 public:
+	void Fire();
+	void StartFire()
+	{
+		Fire();
+		mTimeSinceLastShot = 0.0f;
+		bIsFiring = true;
+	}
+	void EndFire()
+	{
+		bIsFiring = false;
+	}
 	void ChangeWeapon(FName WeaponKey);
+	void ChangeWeaponPos(FName SocketName);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UAWeekReticleDefinition> mReticleDefinition;

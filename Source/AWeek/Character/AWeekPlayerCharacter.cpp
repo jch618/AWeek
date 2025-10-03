@@ -6,7 +6,6 @@
 #include "Pakour/AWeekPakourComponent.h"
 #include "Stamina/AWeekStaminaComponent.h"
 #include "../Player/Weapon/AWeekWeaponComponent.h"
-#include "../Player/Weapon/AWeekWeaponProjectile.h"
 
 #include "../System/DamageSystemComponent.h"
 #include "../Input/AWeekGameInput.h"
@@ -160,7 +159,7 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 			ToTarget.Z = 0;
 
 			FRotator TargetRot = ToTarget.Rotation();
-			SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, DeltaTime, 10.f));
+			SetActorRotation(TargetRot);
 		}
 	}
 
@@ -227,11 +226,16 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 		EnhancedInput->BindAction(InputCDO->mInteract, ETriggerEvent::Completed,
 			this, &AAWeekPlayerCharacter::EndInteract);
+
+		EnhancedInput->BindAction(InputCDO->mZoom, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::ZoomHold);
+		EnhancedInput->BindAction(InputCDO->mZoom, ETriggerEvent::Completed,
+			this, &AAWeekPlayerCharacter::ZoomOut);
 		
 		EnhancedInput->BindAction(InputCDO->mInventory, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::ToggleInventoryMainPanel);
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Triggered,
-			this, &AAWeekPlayerCharacter::Fire);
+			this, &AAWeekPlayerCharacter::StartFire);
 
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Completed,
 			this, &AAWeekPlayerCharacter::EndFire);
@@ -303,6 +307,37 @@ void AAWeekPlayerCharacter::Jump()
 	Super::Jump();
 }
 
+void AAWeekPlayerCharacter::SetCombatBool(bool Bool)
+{
+	// Combat True -> Orient False
+	GetCharacterMovement()->bOrientRotationToMovement = !Bool;
+	bIsCombat = Bool;
+
+	if (mAnimInst)
+	{
+		if (Bool)
+		{
+			if (mWeapon->GetWeaponType() == EWeaponType::Ranged)
+			{
+				FString SocketString = mWeapon->GetWeaponKey().ToString() + "Zoom";
+				mWeapon->ChangeWeaponPos(FName(*SocketString));
+			}
+			mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Aiming);
+		}
+			
+		else
+		{
+			if (mWeapon->GetWeaponType() == EWeaponType::Ranged)
+			{
+				FString SocketString = mWeapon->GetWeaponKey().ToString();
+				mWeapon->ChangeWeaponPos(FName(*SocketString));
+			}
+			mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
+		}
+			
+	}
+}
+
 void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 {
 	if (mAnimInst->IsAnyMontagePlaying())
@@ -317,34 +352,24 @@ void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 	// Apply damage later..
 }
 
-void AAWeekPlayerCharacter::Fire()
+void AAWeekPlayerCharacter::StartFire()
 {
-	if (mAnimInst->GetCurrentOverride() != FName("Rifle"))
+	if (mWeapon->GetWeaponType() != EWeaponType::Ranged)
 		return;
-
-	GetCharacterMovement()->MaxWalkSpeed = mFiringSpeed;
-
-	if (mAnimInst->GetPlayerWeaponState() == EPlayerWeaponState::Default)
-	{
-		mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Gun);
-		mAnimInst->PlayMontageByName(TEXT("Fire"));
-		SetCombatBool(true);
-	}
-
-	//mAnimInst->ChangeAnimOverride(TEXT("Rifle_Firing"));
+	mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Aiming);
+	FString SocketString = mWeapon->GetWeaponKey().ToString() + "Zoom";
+	mWeapon->ChangeWeaponPos(FName(*SocketString));
+	mWeapon->StartFire();
 }
 
 void AAWeekPlayerCharacter::EndFire()
 {
-	if (mAnimInst->GetCurrentOverride() != FName("Rifle"))
-		return;
-
-	GetCharacterMovement()->MaxWalkSpeed = mWalkSpeed;
-	mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
-	mAnimInst->StopMontageByName(TEXT("Fire"));
-	SetCombatBool(false);
-
-	//mAnimInst->ChangeAnimOverride(TEXT("Rifle"));
+	if (!bIsZooming)
+		mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
+	FString SocketString = mWeapon->GetWeaponKey().ToString();
+	mWeapon->ChangeWeaponPos(FName(*SocketString));
+	mWeapon->EndFire();
+	
 }
 
 void AAWeekPlayerCharacter::SprintStart()
@@ -353,7 +378,7 @@ void AAWeekPlayerCharacter::SprintStart()
 		GetVelocity().Size() < 50 || 
 		mStamina->GetStamina() < mSprintMinimumStamina ||
 		!mPakour->bCanPakour ||
-		mAnimInst->GetPlayerWeaponState()==EPlayerWeaponState::Gun)
+		bIsCombat)
 		return;
 	GetCharacterMovement()->MaxWalkSpeed = mSprintSpeed;
 	bSprint = true;
@@ -508,32 +533,6 @@ void AAWeekPlayerCharacter::AttackImpact()
 			}
 		}
 	}
-}
-
-void AAWeekPlayerCharacter::FireBullet()
-{
-	FVector	MuzzleLoctaion = mWeapon->GetWeaponMuzzle();
-
-	if (FireEffect)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(),
-			FireEffect,
-			MuzzleLoctaion,
-			GetActorRotation(),
-			FVector(1.0f)
-		);
-	}
-
-	if (FireSound)
-	{
-		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzleLoctaion);
-	}
-	
-	FActorSpawnParameters Param;
-	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	AAWeekWeaponProjectile* Bullet = GetWorld()->SpawnActor<AAWeekWeaponProjectile>(MuzzleLoctaion, GetActorRotation(), Param);
-	Bullet->SetDamage(mWeapon->GetWeaponDamage());
 }
 
 void AAWeekPlayerCharacter::Die()

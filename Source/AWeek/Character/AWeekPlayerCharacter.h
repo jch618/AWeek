@@ -61,6 +61,7 @@ protected:
 	UCameraComponent* FollowCamera;
 
 	/*--------------ANIMINST--------------*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAWeekPlayerAnimInstance> mAnimInst;
 
 	/*--------------PAKOUR--------------*/
@@ -79,13 +80,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UDamageSystemComponent> mDamageSystem;
 
-	/*--------------PARTICLES--------------*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Effects, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UParticleSystemComponent> ParticleComp;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Effects, meta = (AllowPrivateAccess = "true"))
-	UParticleSystem* FireEffect;
-
 	/*--------------SOUNDS--------------*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Sounds, meta = (AllowPrivateAccess = "true"))
 	USoundBase* FireSound;
@@ -99,6 +93,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bSprint = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsZooming = false;
 
 	UPROPERTY(EditAnywhere)
 	float mWalkSpeed = 300.f;
@@ -126,6 +123,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float mVaultStaminaUsage = 20;
+
 
 	// =====================================================
 	// INVENTORY SYSTEM
@@ -174,7 +172,17 @@ public:
 	void Look(const FInputActionValue& Value);
 	void Jump();
 	void Attack(const FInputActionValue& Value);
-	void Fire();
+	void ZoomHold()
+	{
+		SetCombatBool(true);
+		bIsZooming = true;
+	}
+	void ZoomOut()
+	{
+		SetCombatBool(false);
+		bIsZooming = false;
+	}
+	void StartFire();
 	void EndFire();
 	void SprintStart();
 	void SprintCompleted();
@@ -183,7 +191,6 @@ public:
 	UFUNCTION()
 	virtual void ClimbEnd();
 	void AttackImpact();
-	void FireBullet();
 
 	UFUNCTION()
 	void OnHit(EDamageResponse Response)
@@ -199,12 +206,9 @@ public:
 	virtual void LedgeStart();
 	virtual void LedgeEnd();
 	virtual void ClimbStart();
-	void SetCombatBool(bool Bool)
-	{
-		// Combat True -> Orient False
-		GetCharacterMovement()->bOrientRotationToMovement = !Bool;
-		bIsCombat = Bool;
-	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetCombatBool(bool Bool);
 
 	bool TakeDamage_Implementation(EDamageResponse DamageResponse);
 

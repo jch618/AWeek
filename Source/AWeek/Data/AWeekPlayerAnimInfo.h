@@ -15,6 +15,9 @@ public:
 	TMap<FName, TObjectPtr<UAnimSequence>>	SequenceMap;
 
 	UPROPERTY(EditAnywhere)
+	bool EnableAO = false;
+
+	UPROPERTY(EditAnywhere)
 	TMap<FName, TObjectPtr<UBlendSpace>>	BlendSpaceMap;
 
 	UPROPERTY(EditAnywhere)

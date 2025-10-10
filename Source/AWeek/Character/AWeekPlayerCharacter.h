@@ -187,6 +187,8 @@ public:
 	void SprintStart();
 	void SprintCompleted();
 	void ChangeWeapon();
+	void StartReload();
+	void WeaponReload();
 
 	UFUNCTION()
 	virtual void ClimbEnd();
@@ -210,7 +212,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCombatBool(bool Bool);
 
-	bool TakeDamage_Implementation(EDamageResponse DamageResponse);
+	//bool TakeDamage_Implementation(EDamageResponse DamageResponse);
 
 	// =====================================================
 	// INVENTORY SYSTEM

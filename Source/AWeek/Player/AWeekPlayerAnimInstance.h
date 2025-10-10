@@ -155,4 +155,7 @@ protected:
 
 	UFUNCTION()
 	void AnimNotify_MeeleAttack();
+
+	UFUNCTION()
+	void AnimNotify_Reload();
 };

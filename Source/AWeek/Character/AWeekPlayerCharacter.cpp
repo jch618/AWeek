@@ -140,26 +140,9 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		if (PC && PC->PlayerCameraManager)
 		{
-			FVector CameraLoc = PC->PlayerCameraManager->GetCameraLocation();
 			FVector CameraDir = PC->PlayerCameraManager->GetActorForwardVector();
-
-			FVector TraceEnd = CameraLoc + CameraDir * 10000.f;
-
-			FHitResult Hit;
-			FCollisionQueryParams Params;
-			Params.AddIgnoredActor(this);
-
-			FVector TargetPoint = TraceEnd;
-			if (GetWorld()->LineTraceSingleByChannel(Hit, CameraLoc, TraceEnd, ECC_Visibility, Params))
-			{
-				TargetPoint = Hit.Location;
-			}
-
-			FVector ToTarget = TargetPoint - GetActorLocation();
-			ToTarget.Z = 0;
-
-			FRotator TargetRot = ToTarget.Rotation();
-			SetActorRotation(TargetRot);
+			CameraDir.Z = 0;
+			SetActorRotation(CameraDir.Rotation());
 		}
 	}
 
@@ -234,7 +217,7 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		
 		EnhancedInput->BindAction(InputCDO->mInventory, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::ToggleInventoryMainPanel);
-		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Triggered,
+		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Started,
 			this, &AAWeekPlayerCharacter::StartFire);
 
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Completed,
@@ -359,7 +342,10 @@ void AAWeekPlayerCharacter::StartFire()
 	mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Aiming);
 	FString SocketString = mWeapon->GetWeaponKey().ToString() + "Zoom";
 	mWeapon->ChangeWeaponPos(FName(*SocketString));
-	mWeapon->StartFire();
+	if (!mWeapon->StartFire())
+	{
+		StartReload();
+	}
 }
 
 void AAWeekPlayerCharacter::EndFire()
@@ -421,6 +407,24 @@ void AAWeekPlayerCharacter::ChangeWeapon()
 		mWeapon->ChangeWeapon(TEXT("Default"));
 		mAnimInst->ChangeAnimOverride(TEXT("Default"));
 	}
+}
+
+void AAWeekPlayerCharacter::StartReload()
+{
+	if (mAnimInst->IsAnyMontagePlaying())
+		return;
+
+	FString SocketString = mWeapon->GetWeaponKey().ToString() + "Zoom";
+	mWeapon->ChangeWeaponPos(FName(*SocketString));
+	mAnimInst->PlayMontageByName(TEXT("Reload"));
+}
+
+void AAWeekPlayerCharacter::WeaponReload()
+{
+	FString SocketString = mWeapon->GetWeaponKey().ToString();
+	mWeapon->ChangeWeaponPos(FName(*SocketString));
+	if (mWeapon)
+		mWeapon->Reload();
 }
 
 void AAWeekPlayerCharacter::VaultStart()
@@ -539,9 +543,6 @@ void AAWeekPlayerCharacter::Die()
 {
 	mAnimInst->PlayMontageByName(TEXT("Die"));
 }
-
-
-
 
 void AAWeekPlayerCharacter::FootStepEffect(FName SocketName)
 {

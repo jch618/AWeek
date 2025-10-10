@@ -40,6 +40,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<AActor>	mProjectile;
 
+	bool bOutOfBullet = false;
+
 	int32 mCurrentBullet = 10;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -80,11 +82,15 @@ public:
 
 public:
 	void Fire();
-	void StartFire()
+	bool StartFire()
 	{
+		// 총알 다쓰면 false 리턴
+		if (bOutOfBullet)
+			return false;
 		Fire();
 		mTimeSinceLastShot = 0.0f;
 		bIsFiring = true;
+		return true;
 	}
 	void EndFire()
 	{
@@ -92,6 +98,11 @@ public:
 	}
 	void ChangeWeapon(FName WeaponKey);
 	void ChangeWeaponPos(FName SocketName);
+	void Reload()
+	{
+		mCurrentBullet = mBulletMaxStack;
+		bOutOfBullet = false;
+	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UAWeekReticleDefinition> mReticleDefinition;

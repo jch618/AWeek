@@ -106,9 +106,6 @@ UAnimMontage* UAWeekPlayerAnimInstance::FindAnimMontage(const FName& Name)
 
 void UAWeekPlayerAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (mWeaponState==EPlayerWeaponState::Firing && Montage != FindAnimMontage(TEXT("Fire")))
-		PlayMontageByName(TEXT("Fire"));
-
 	if (Montage == FindAnimMontage(TEXT("Vault")))
 	{
 		mOwner->VaultEnd();
@@ -128,4 +125,9 @@ void UAWeekPlayerAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupt
 void UAWeekPlayerAnimInstance::AnimNotify_MeeleAttack()
 {
 	mOwner->AttackImpact();
+}
+
+void UAWeekPlayerAnimInstance::AnimNotify_Reload()
+{
+	mOwner->WeaponReload();
 }

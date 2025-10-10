@@ -43,13 +43,12 @@ void UAWeekWeaponComponent::OnRegister()
 void UAWeekWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (bIsFiring && !bIsReloading && mWeaponType == EWeaponType::Ranged)
+	if (bIsFiring && mCurrentBullet > 0 && mWeaponType == EWeaponType::Ranged)
 	{
 		mTimeSinceLastShot += DeltaTime;
 
-		// 발사 간격 계산 (RPM -> 초당 발사 간격)
-		float FireInterval = 60.0f / mFireRate;
+		// 발사 간격 계산 (RPS)
+		float FireInterval = 1.f / mFireRate;
 
 		if (mTimeSinceLastShot >= FireInterval)
 		{
@@ -79,6 +78,7 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 	mWeaponKey = WeaponKey;
 	mWeaponType = WeaponInfo->WeaponType;
 	mDamage = WeaponInfo->Damage;
+	mCurrentBullet = WeaponInfo->BulletMaxStack;
 	mBulletMaxStack = WeaponInfo->BulletMaxStack;
 	mBulletUsagePerSingle = WeaponInfo->BulletUsagePerSingle;
 	mFireRate = WeaponInfo->FireRate;
@@ -148,8 +148,8 @@ FVector UAWeekWeaponComponent::GetFireDirection()
 void UAWeekWeaponComponent::Fire()
 {
 	// ... 탄약 체크 ...
-
-		// 카메라 위치에서 트레이스 시작
+	bOutOfBullet = false;
+	UE_LOG(LogTemp, Warning, TEXT("Fire called"));
 	APlayerController* PC = Cast<APlayerController>(mOwner->GetController());
 	if (!PC)
 		return;
@@ -177,14 +177,25 @@ void UAWeekWeaponComponent::Fire()
 		QueryParams
 	);
 
-	// 맞은 지점 (또는 최대 거리 지점)
 	FVector TargetPoint = bHit ? HitResult.Location : TraceEnd;
 
-	// 총구에서 그 지점으로 방향 계산
 	FVector MuzzleLocation = GetMuzzleLocation();
 	FVector MuzzleToTarget = (TargetPoint - MuzzleLocation).GetSafeNormal();
+	FRotator MuzzleRotation = MuzzleToTarget.Rotation();
 
-	// 총구에서 실제 발사 (시각적으로만)
+	FActorSpawnParameters Param;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;	
+
+	// 발사체 스폰
+	AAWeekWeaponProjectile* Bullet = GetWorld()->SpawnActor<AAWeekWeaponProjectile>(
+		MuzzleLocation,
+		MuzzleRotation,
+		Param
+	);
+	Bullet->SetDamage(mDamage);
+	mCurrentBullet -= mBulletUsagePerSingle;
+	UE_LOG(LogTemp, Warning, TEXT("%d"), mCurrentBullet);
+
 	DrawDebugLine(
 		GetWorld(),
 		MuzzleLocation,
@@ -198,9 +209,9 @@ void UAWeekWeaponComponent::Fire()
 
 	if (bHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit: %s at %s"),
-			*HitResult.GetActor()->GetName(),
-			*HitResult.Location.ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s at %s"),
+		//	*HitResult.GetActor()->GetName(),
+		//	*HitResult.Location.ToString());
 
 		DrawDebugSphere(
 			GetWorld(),
@@ -218,21 +229,14 @@ void UAWeekWeaponComponent::Fire()
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
 			mFireEffect,
-			GetMuzzleLocation(),
+			MuzzleLocation,
 			FireDirection.Rotation(),
 			FVector(1.0f)
 		);
 	}
 
-	/*
-	FActorSpawnParameters Param;
-	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	AAWeekWeaponProjectile* Bullet = GetWorld()->SpawnActor<AAWeekWeaponProjectile>(MuzzleLoctaion, FireDirection.Rotation(), Param);
-	Bullet->SetDamage(mDamage);
-	*/
-
     if (mCurrentBullet <= 0)
     {
-        //Reload();
+		bOutOfBullet = true;
     }
 }

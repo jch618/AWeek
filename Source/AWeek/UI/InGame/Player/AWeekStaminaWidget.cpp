@@ -4,7 +4,6 @@
 #include "AWeekStaminaWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Animation/WidgetAnimation.h"
-#include "../../../Character/Stamina/AWeekStaminaComponent.h"
 
 UAWeekStaminaWidget::UAWeekStaminaWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -62,7 +61,6 @@ void UAWeekStaminaWidget::UpdateProgress(float Stamina, bool bDecrease)
 	// 스태미너가 줄어들었을때만 타이머 초기화
 	if (bDecrease)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Stamina Decrease"));
 		ShowWidget();
 
 		if (IsAnimationPlaying(FadeOutAnim))

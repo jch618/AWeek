@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "AWeekEventMessageInfo.h"
 #include "GameEventMessageSubsystem.generated.h"
 
 class UAsyncAction_RegisterGameEventMessage;

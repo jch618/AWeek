@@ -14,4 +14,14 @@ void UAWeekPlayerStateWidget::NativeConstruct()
 	/*--------------INIT--------------*/
 	HealthBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HealthBar")));
 	HungerBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HungerBar")));
+
+	/*--------------EVENTMSSAGE--------------*/
+	HungerChangedHandle = UGameEventMessageSubsystem::Get(this).RegisterListener<FHungerChangedMessage>(
+		FGameplayTag::RequestGameplayTag(FName("Event.HungerChanged")),
+		[this](FGameplayTag Channel, const FHungerChangedMessage& Msg)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%f"), Msg.Hunger / Msg.MaxHunger)
+			HungerBar->SetPercent(Msg.Hunger / Msg.MaxHunger);
+		}
+	);
 }

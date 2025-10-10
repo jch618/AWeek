@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "../../../System/GameEventMessageSubsystem.h"
+
 #include "Components/ProgressBar.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekPlayerStateWidget.generated.h"
@@ -22,6 +25,8 @@ public:
 protected:
 	TObjectPtr<UProgressBar> HealthBar;
 	TObjectPtr<UProgressBar> HungerBar;
+
+	FGameEventMessageListenerHandle HungerChangedHandle;
 
 protected:
 	virtual void NativeConstruct() override;

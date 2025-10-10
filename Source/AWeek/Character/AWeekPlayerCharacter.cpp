@@ -5,6 +5,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Pakour/AWeekPakourComponent.h"
 #include "Stamina/AWeekStaminaComponent.h"
+#include "../Player/Hunger/AWeekHungerComponent.h"
 #include "../Player/Weapon/AWeekWeaponComponent.h"
 
 #include "../System/DamageSystemComponent.h"
@@ -66,6 +67,7 @@ AAWeekPlayerCharacter::AAWeekPlayerCharacter()
 	InteractionCheckDistance = 250.0f;
 	mStamina = CreateDefaultSubobject<UAWeekStaminaComponent>(TEXT("Stamina"));
 	mWeapon = CreateDefaultSubobject<UAWeekWeaponComponent>(TEXT("Weapon"));
+	mHunger = CreateDefaultSubobject<UAWeekHungerComponent>(TEXT("Hunger"));
 	mDamageSystem = CreateDefaultSubobject<UDamageSystemComponent>(TEXT("DamageSystem"));
 }
 

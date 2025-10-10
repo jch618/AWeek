@@ -76,6 +76,10 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UAWeekWeaponComponent> mWeapon;
 
+	/*--------------WEAPON--------------*/
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UAWeekHungerComponent> mHunger;
+
 	/*--------------DAMAGE--------------*/
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UDamageSystemComponent> mDamageSystem;

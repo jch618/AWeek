@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AWeek/Grid/TestWidget/ButtonPanelWidget.h"
+#include "AWeek/UI/MainWidget/ButtonPanelWidget.h"
 
 #include "CommonUIExtensions.h"
-#include "AWeek/Player/AWeekUIController.h"
+#include "AWeek/Player/AWeekPlayerController.h"
 #include "Components/Overlay.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -24,7 +24,7 @@ void UButtonPanelWidget::HandleToggleClicked()
 	UE_LOG(LogTemp, Warning, TEXT("UI Test Start!!!"));
 
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AAWeekUIController* UIPC = Cast<AAWeekUIController>(PC);
+	AAWeekPlayerController* UIPC = Cast<AAWeekPlayerController>(PC);
 
 	if (!IsValid(TestPanelToButton) || !(TestPanelToButton->IsActivated()))
 	{

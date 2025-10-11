@@ -33,7 +33,7 @@ void AAWeekPickupItem::InitializePickupItem(const int32 InQuantity)
 		const FAWeekItemData* ItemData = ItemRowHandle.GetRow<FAWeekItemData>(ItemRowHandle.RowName.ToString());
 
 		ItemReference = NewObject<UAWeekItemBase>(this, UAWeekItemBase::StaticClass());
-		ItemReference->InitializeItem(ItemData, InQuantity);
+		ItemReference->InitializeItem(*ItemData, InQuantity);
 
 		PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
 
@@ -91,7 +91,7 @@ void AAWeekPickupItem::TakePickup(const TObjectPtr<AAWeekPlayerCharacter> Taker)
 	{
 		if (ItemReference)
 		{
-			if (TObjectPtr<UAWeekInventoryComponent> PlayerInventory = Taker->GetInventory())
+			if (TObjectPtr<UAWeekInventoryComponent> PlayerInventory = Taker->GetPlayerInventoryComponent())
 			{
 				const FAWeekItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
 

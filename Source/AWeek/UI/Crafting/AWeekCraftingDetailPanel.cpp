@@ -6,21 +6,49 @@
 #include "AWeek/Components/AWeekCraftingComponent.h"
 #include "AWeek/Data/AWeekItemCraftingRecipe.h"
 #include "AWeek/UI/Inventory/AWeekItemSlot.h"
+#include "Components/Button.h"
 #include "Components/HorizontalBox.h"
 
-void UAWeekCraftingDetailPanel::SetRecipe(int32 RecipeIndex, UAWeekCraftingComponent* InCraftingComponent)
+void UAWeekCraftingDetailPanel::NativeConstruct()
 {
-	const FAWeekCachedCraftingRecipe& ItemRecipe = CraftingComponent->GetRecipeAt(RecipeIndex);
-	ResultItemSlot->InitializeItemSlot(ItemRecipe.CraftedItemEntry.ItemData, ItemRecipe.CraftedItemEntry.Quantity);
-
-	IngredientsContainer->ClearChildren();
-	for (const FAWeekItemEntry& IngredientItemEntry : ItemRecipe.IngredientItemEntries)
+	Super::NativeConstruct();
+	
+	if (CraftButton)
 	{
-		UAWeekItemSlot* IngredientItemSlot = CreateWidget<UAWeekItemSlot>(this, ItemSlotClass);
-		IngredientItemSlot->InitializeItemSlot(IngredientItemEntry.ItemData, IngredientItemEntry.Quantity);
-		IngredientsContainer->AddChild(IngredientItemSlot);
+		CraftButton->OnClicked.AddDynamic(this, &UAWeekCraftingDetailPanel::OnCraftButtonClicked);
 	}
 }
+
+void UAWeekCraftingDetailPanel::SetRecipe(int32 RecipeIndex, const UAWeekCraftingComponent* CraftingComponent, bool bIsCraftable)
+{
+	FAWeekCachedCraftingRecipe ItemRecipe;
+	if (CraftingComponent->GetRecipeAt(RecipeIndex, ItemRecipe))
+	{
+		CurrentRecipeIndex = RecipeIndex;
+		
+		ResultItemSlot->InitializeItemSlot(ItemRecipe.CraftedItemEntry.ItemData, ItemRecipe.CraftedItemEntry.Quantity);
+
+		IngredientsContainer->ClearChildren();
+		for (const FAWeekItemEntry& IngredientItemEntry : ItemRecipe.IngredientItemEntries)
+		{
+			UAWeekItemSlot* IngredientItemSlot = CreateWidget<UAWeekItemSlot>(this, ItemSlotClass);
+			IngredientItemSlot->InitializeItemSlot(IngredientItemEntry.ItemData, IngredientItemEntry.Quantity);
+			IngredientsContainer->AddChild(IngredientItemSlot);
+		}
+
+		CraftButton->SetIsEnabled(bIsCraftable);
+	}
+	else
+	{
+		CraftButton->SetIsEnabled(false);
+	}
+}
+
+void UAWeekCraftingDetailPanel::ClearCraftingDetails()
+{
+	
+}
+
 
 void UAWeekCraftingDetailPanel::UpdateIngredientSlots()
 {
@@ -33,4 +61,5 @@ void UAWeekCraftingDetailPanel::UpdateCraftButton()
 
 void UAWeekCraftingDetailPanel::OnCraftButtonClicked()
 {
+	OnCraftButtonLeftClicked.Broadcast(CurrentRecipeIndex);
 }

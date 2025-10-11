@@ -110,7 +110,7 @@ public:
 	FORCEINLINE bool IsValidItemSlotIndex(const int32 ItemSlotIndex) const { return InventoryContents.IsValidIndex(ItemSlotIndex); }
 
 	FORCEINLINE bool CanAddItemWeight(const int32 NewWeight) const { return InventoryTotalWeight + NewWeight <= InventoryWeightCapacity; }
-
+	bool CanAddItem(const FName ItemID, const int32 ItemSingleWeight, const int32 Quantity) const;
 	UFUNCTION(Category = "Inventory")
 	FAWeekItemAddResult HandleAddItem(UAWeekItemBase* InputItem);
 

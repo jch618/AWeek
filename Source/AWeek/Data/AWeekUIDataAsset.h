@@ -14,6 +14,7 @@ class UAWeekInteractionWidget;
 class UAWeekInventoryMainPanel;
 class UAWeekCraftingMainPanel;
 class UAWeekHeldItemVisual;
+class UMainUIWidget;
 
 UCLASS(BlueprintType)
 class AWEEK_API UAWeekUIDataAsset : public UDataAsset
@@ -32,4 +33,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
 	TSubclassOf<UAWeekHeldItemVisual> HeldItemVisualClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
+	TSubclassOf<UMainUIWidget> MainWidgetClass;
 };

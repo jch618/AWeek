@@ -10,6 +10,9 @@ class UButton;
 class UHorizontalBox;
 class UAWeekItemSlot;
 class UAWeekCraftingComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCraftButtonClicked, int32 CurrentRecipeIndex)
+
 /**
  * 
  */
@@ -19,8 +22,10 @@ class AWEEK_API UAWeekCraftingDetailPanel : public UAWeekActivatableWidget
 	GENERATED_BODY()
 
 public:
-	void SetRecipe(int32 RecipeIndex, UAWeekCraftingComponent* InCraftingComponent);
-	
+	FOnCraftButtonClicked OnCraftButtonLeftClicked;
+	void SetRecipe(int32 RecipeIndex, const UAWeekCraftingComponent* InCraftingComponent, bool bIsCraftable);
+
+	void ClearCraftingDetails();
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UAWeekItemSlot> ItemSlotClass;
@@ -37,14 +42,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UAWeekItemSlot> IngredientSlotClass;
 
-	UPROPERTY()
-	TObjectPtr<UAWeekCraftingComponent> CraftingComponent;
+	// UPROPERTY()
+	// TObjectPtr<UAWeekCraftingComponent> CraftingComponent;
 
+	virtual void NativeConstruct() override;
 	UPROPERTY()
 	int32 CurrentRecipeIndex = -1;
 
 private:
 	void UpdateIngredientSlots();
+
+protected:
+
+private:
 	void UpdateCraftButton();
 
 	UFUNCTION()

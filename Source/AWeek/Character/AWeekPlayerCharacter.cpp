@@ -16,8 +16,7 @@
 #include "AWeek/Interfaces/AWeekInteractionInterface.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/World/AWeekPickupItem.h"
-#include "AWeek/Player/AWeekUIController.h"
-
+#include "AWeek/Player/AWeekPlayerController.h"
 
 DEFINE_LOG_CATEGORY(AWeekPlayerCharacter);
 
@@ -60,7 +59,7 @@ AAWeekPlayerCharacter::AAWeekPlayerCharacter()
 
 	mPakour = CreateDefaultSubobject<UAWeekPakourComponent>(TEXT("Pakour"));
 
-	PlayerInventory = CreateDefaultSubobject<UAWeekInventoryComponent>(TEXT("PlayerInventory"));
+	PlayerInventoryComponent = CreateDefaultSubobject<UAWeekInventoryComponent>(TEXT("PlayerInventory"));
 	CraftingComponent = CreateDefaultSubobject<UAWeekCraftingComponent>(TEXT("CraftingComponent"));
 	
 	InteractionCheckFrequency = 0.1f;
@@ -85,7 +84,7 @@ void AAWeekPlayerCharacter::BeginPlay()
 	}
 
 	// temporary function
-	CraftingComponent->InitializeComponent();
+	CraftingComponent->InitializeCraftingComponent();
 	
 	if (IsValid(PlayerController))
 	{
@@ -221,6 +220,9 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 			this, &AAWeekPlayerCharacter::ToggleInventoryMainPanel);
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Started,
 			this, &AAWeekPlayerCharacter::StartFire);
+
+		EnhancedInput->BindAction(InputCDO->mMainWidget, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::ToggleMainWidget);
 
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Completed,
 			this, &AAWeekPlayerCharacter::EndFire);
@@ -702,6 +704,11 @@ void AAWeekPlayerCharacter::ToggleInventoryMainPanel()
 	// ToggleCraftingMainPanel();
 }
 
+void AAWeekPlayerCharacter::ToggleMainWidget()
+{
+	UIManager->ToggleMainWidget();	
+}
+
 void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop)
 {
 	FActorSpawnParameters SpawnParams;
@@ -738,7 +745,7 @@ void AAWeekPlayerCharacter::CloseChestInventory()
 
 void AAWeekPlayerCharacter::ToggleCraftingMainPanel()
 {
-	UIManager->ToggleCraftingMainPanel();
+	UIManager->ToggleCraftingMainPanel(CraftingComponent, PlayerInventoryComponent);
 }
 
 void AAWeekPlayerCharacter::CloseCraftingMainPanel()

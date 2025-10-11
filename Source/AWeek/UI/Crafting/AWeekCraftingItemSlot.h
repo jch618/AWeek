@@ -6,6 +6,8 @@
 #include "AWeek/UI/Inventory/AWeekItemSlot.h"
 #include "AWeekCraftingItemSlot.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCraftingSlotLeftClicked, int32 ClickedCraftingSlotIndex, bool bIsCraftable)
+
 /**
  * 
  */
@@ -15,7 +17,6 @@ class AWEEK_API UAWeekCraftingItemSlot : public UAWeekItemSlot
 {
 	GENERATED_BODY()
 public:
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnCraftingSlotLeftClicked, int32 ClickedCraftingSlotIndex)
 	FOnCraftingSlotLeftClicked OnCraftingSlotLeftClicked;
 	
 	FORCEINLINE void SetIsCraftable(bool bNewIsCraftable) { bIsCraftable = bNewIsCraftable; }

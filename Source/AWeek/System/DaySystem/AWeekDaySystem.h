@@ -11,18 +11,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "AWeekDaySystem.generated.h"
 
-USTRUCT(BlueprintType)
-struct FDayChangedMessage
-{
-    GENERATED_BODY()
-
-    UPROPERTY(BlueprintReadWrite)
-    bool bIsDay = true;
-
-    UPROPERTY(BlueprintReadWrite)
-    int32 Day;
-};
-
 UCLASS()
 class AWEEK_API AAWeekDaySystem : public AActor
 {

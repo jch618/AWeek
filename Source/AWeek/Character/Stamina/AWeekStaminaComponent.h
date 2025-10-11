@@ -16,16 +16,6 @@ enum class EStaminaUseType
 	LedgeStart
 };
 
-USTRUCT(BlueprintType)
-struct FStaminaChangedMessage
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	float Stamina;
-	float Amount;
-};
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AWEEK_API UAWeekStaminaComponent : public UActorComponent
 {

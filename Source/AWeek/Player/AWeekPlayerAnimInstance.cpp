@@ -50,6 +50,19 @@ void UAWeekPlayerAnimInstance::NativeInitializeAnimation()
 void UAWeekPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
+	if (!mOwner)
+		return;
+	AController* Controller = mOwner->GetController();
+	if (!Controller) return;
+
+	FVector Velocity = mOwner->GetVelocity();
+	Velocity.Z = 0.0f;
+	float Speed = Velocity.Size();
+	Direction = CalculateDirection(Velocity, mOwner->GetActorRotation());
+	
+	FRotator ControlRot = Controller->GetControlRotation();
+	ControllerYaw = ControlRot.Yaw;
+	ControllerPitch = ControlRot.Pitch;
 }
 
 UAnimSequence* UAWeekPlayerAnimInstance::FindAnimSequence(const FName& Name)
@@ -93,9 +106,6 @@ UAnimMontage* UAWeekPlayerAnimInstance::FindAnimMontage(const FName& Name)
 
 void UAWeekPlayerAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (mWeaponState==EPlayerWeaponState::Gun && Montage != FindAnimMontage(TEXT("Fire")))
-		PlayMontageByName(TEXT("Fire"));
-
 	if (Montage == FindAnimMontage(TEXT("Vault")))
 	{
 		mOwner->VaultEnd();
@@ -117,7 +127,7 @@ void UAWeekPlayerAnimInstance::AnimNotify_MeeleAttack()
 	mOwner->AttackImpact();
 }
 
-void UAWeekPlayerAnimInstance::AnimNotify_Fire()
+void UAWeekPlayerAnimInstance::AnimNotify_Reload()
 {
-	mOwner->FireBullet();
+	mOwner->WeaponReload();
 }

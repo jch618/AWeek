@@ -302,21 +302,11 @@ void AAWeekPlayerCharacter::SetCombatBool(bool Bool)
 	{
 		if (Bool)
 		{
-			if (mWeapon->GetWeaponType() == EWeaponType::Ranged)
-			{
-				FString SocketString = mWeapon->GetWeaponKey().ToString() + "Zoom";
-				mWeapon->ChangeWeaponPos(FName(*SocketString));
-			}
 			mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Aiming);
 		}
 			
 		else
 		{
-			if (mWeapon->GetWeaponType() == EWeaponType::Ranged)
-			{
-				FString SocketString = mWeapon->GetWeaponKey().ToString();
-				mWeapon->ChangeWeaponPos(FName(*SocketString));
-			}
 			mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
 		}
 			
@@ -342,8 +332,6 @@ void AAWeekPlayerCharacter::StartFire()
 	if (mWeapon->GetWeaponType() != EWeaponType::Ranged)
 		return;
 	mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Aiming);
-	FString SocketString = mWeapon->GetWeaponKey().ToString() + "Zoom";
-	mWeapon->ChangeWeaponPos(FName(*SocketString));
 	if (!mWeapon->StartFire())
 	{
 		StartReload();
@@ -354,8 +342,6 @@ void AAWeekPlayerCharacter::EndFire()
 {
 	if (!bIsZooming)
 		mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
-	FString SocketString = mWeapon->GetWeaponKey().ToString();
-	mWeapon->ChangeWeaponPos(FName(*SocketString));
 	mWeapon->EndFire();
 	
 }
@@ -416,15 +402,11 @@ void AAWeekPlayerCharacter::StartReload()
 	if (mAnimInst->IsAnyMontagePlaying())
 		return;
 
-	FString SocketString = mWeapon->GetWeaponKey().ToString() + "Zoom";
-	mWeapon->ChangeWeaponPos(FName(*SocketString));
 	mAnimInst->PlayMontageByName(TEXT("Reload"));
 }
 
 void AAWeekPlayerCharacter::WeaponReload()
 {
-	FString SocketString = mWeapon->GetWeaponKey().ToString();
-	mWeapon->ChangeWeaponPos(FName(*SocketString));
 	if (mWeapon)
 		mWeapon->Reload();
 }

@@ -58,6 +58,8 @@ protected:
 
 	void CreateCostPill(const FAWeekCost Cost);
 	void UpdateItemCount();
+
+	void ApplyText(FString BuildingText);
 	UPROPERTY()
 	bool bCheck = false;
 	UPROPERTY()

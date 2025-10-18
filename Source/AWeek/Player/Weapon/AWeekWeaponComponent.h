@@ -22,6 +22,9 @@ public:
 protected:
 	TObjectPtr<UStaticMeshComponent> mWeaponMeshComp;
 
+	UPROPERTY()
+	TObjectPtr<UCharacterMovementComponent> CharacterMovementComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<AAWeekPlayerCharacter> mOwner;
 
@@ -121,7 +124,6 @@ private:
 	float CurrentSpreadMultiplier = 0.0f;
 	float StandingSpreadMultiplier = 0.0f;
 	float JumpSpreadMultiplier = 0.0f;
-
 public:
 	float GetSpreadAngle() const
 	{
@@ -137,4 +139,7 @@ public:
 	{
 		return CurrentSpreadAngle * CurrentSpreadMultiplier;
 	}
+
+	void TickSpread(float DeltaTime);
+	void TickMultipliers(float DeltaTime);
 };

@@ -20,14 +20,13 @@ UAWeekWeaponComponent::UAWeekWeaponComponent()
 void UAWeekWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void UAWeekWeaponComponent::OnRegister()
 {
 	Super::OnRegister();
 	mOwner = Cast<AAWeekPlayerCharacter>(GetOwner());
-
+	CharacterMovementComponent = Cast<UCharacterMovementComponent>(mOwner->GetMovementComponent());
 	mWeapon = GetWorld()->SpawnActor<AAWeekWeapon>();
 	mWeaponMeshComp = mWeapon->mMeshComponent;
 	if (mWeapon)
@@ -40,14 +39,21 @@ void UAWeekWeaponComponent::OnRegister()
 	}
 }
 
-void UAWeekWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UAWeekWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                          FActorComponentTickFunction* ThisTickFunction)
 {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (mWeaponType == EWeaponType::Ranged)
+	{
+		TickSpread(DeltaTime);
+		TickMultipliers(DeltaTime);
+	}
 	if (bIsFiring && mCurrentBullet > 0 && mWeaponType == EWeaponType::Ranged)
 	{
+
 		mTimeSinceLastShot += DeltaTime;
 
-		// ¹ß»ç °£°Ý °è»ê (RPS)
+		// ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (RPS)
 		float FireInterval = 1.f / mFireRate;
 
 		if (mTimeSinceLastShot >= FireInterval)
@@ -84,7 +90,7 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 	mFireRate = WeaponInfo->FireRate;
 	mFireEffect = WeaponInfo->FireEffect;
 	mReticleDefinition = WeaponInfo->ReticleDefinition;
-	
+
 	if (mWeaponMeshComp)
 	{
 		switch (mWeaponType)
@@ -124,6 +130,25 @@ void UAWeekWeaponComponent::ChangeWeaponPos(FName SocketName)
 	}
 }
 
+void UAWeekWeaponComponent::TickSpread(float DeltaTime)
+{
+}
+
+void UAWeekWeaponComponent::TickMultipliers(float DeltaTime)
+{
+	if (CharacterMovementComponent == nullptr)
+		return;
+	
+	static const float TransitSpeed = 5.0f;
+
+	float MovementTargetMultiplier = FMath::GetMappedRangeValueClamped(
+		FVector2D(0.0f, CharacterMovementComponent->GetMaxSpeed()),
+		FVector2D(1.0f, 3.0f), mOwner->GetVelocity().Size());
+	
+	StandingSpreadMultiplier = FMath::FInterpTo(StandingSpreadMultiplier, MovementTargetMultiplier, DeltaTime, TransitSpeed);
+	CurrentSpreadMultiplier = StandingSpreadMultiplier;
+}
+
 // AWeekWeaponComponent.cpp
 
 FVector UAWeekWeaponComponent::GetFireDirection()
@@ -147,7 +172,7 @@ FVector UAWeekWeaponComponent::GetFireDirection()
 
 void UAWeekWeaponComponent::Fire()
 {
-	// ... Åº¾à Ã¼Å© ...
+	// ... Åºï¿½ï¿½ Ã¼Å© ...
 	bOutOfBullet = false;
 	UE_LOG(LogTemp, Warning, TEXT("Fire called"));
 	APlayerController* PC = Cast<APlayerController>(mOwner->GetController());
@@ -160,7 +185,7 @@ void UAWeekWeaponComponent::Fire()
 
 	FVector FireDirection = GetFireDirection();
 
-	// Ä«¸Þ¶ó À§Ä¡¿¡¼­ ¸ÕÀú Æ®·¹ÀÌ½ºÇØ¼­ ¸ñÇ¥ ÁöÁ¡ Ã£±â
+	// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
 	FVector TraceStart = CameraLocation;
 	FVector TraceEnd = TraceStart + (FireDirection * 10000.0f);
 
@@ -184,9 +209,9 @@ void UAWeekWeaponComponent::Fire()
 	FRotator MuzzleRotation = MuzzleToTarget.Rotation();
 
 	FActorSpawnParameters Param;
-	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;	
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	// ¹ß»çÃ¼ ½ºÆù
+	// ï¿½ß»ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
 	AAWeekWeaponProjectile* Bullet = GetWorld()->SpawnActor<AAWeekWeaponProjectile>(
 		MuzzleLocation,
 		MuzzleRotation,
@@ -235,8 +260,8 @@ void UAWeekWeaponComponent::Fire()
 		);
 	}
 
-    if (mCurrentBullet <= 0)
-    {
+	if (mCurrentBullet <= 0)
+	{
 		bOutOfBullet = true;
-    }
+	}
 }

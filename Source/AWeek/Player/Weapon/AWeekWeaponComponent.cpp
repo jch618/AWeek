@@ -111,6 +111,7 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 			UE_LOG(LogTemp, Warning, TEXT("Ranged"));
 			mWeaponMeshComp->SetWorldScale3D(FVector(1, 1, 1));
 			mWeaponMeshComp->SetStaticMesh(WeaponInfo->Mesh);
+			RangedWeaponInfo = WeaponInfo->RangedWeaponInfo;
 			break;
 		}
 	}
@@ -133,6 +134,13 @@ void UAWeekWeaponComponent::ChangeWeaponPos(FName SocketName)
 void UAWeekWeaponComponent::TickSpread(float DeltaTime)
 {
 	float LastFireTimeSince = GetWorld()->TimeSince(mTimeSinceLastShot);
+	if (LastFireTimeSince >= RangedWeaponInfo.HeatShotRecoveryDelay)
+	{
+		const float RecoveryHeat = RangedWeaponInfo.HeatShotRecoveryCurve.GetRichCurveConst()->Eval(RangedWeaponInfo.CurrentHeat);
+		const float NewHeat = RangedWeaponInfo.CurrentHeat - (RecoveryHeat * DeltaTime);
+		RangedWeaponInfo.CurrentHeat = RangedWeaponInfo.ClampHeatRange(NewHeat);
+		RangedWeaponInfo.CurrentSpreadAngle = RangedWeaponInfo.HeatToSpreadCurve.GetRichCurveConst()->Eval(RangedWeaponInfo.CurrentHeat);
+	}
 }
 
 void UAWeekWeaponComponent::TickMultipliers(float DeltaTime)

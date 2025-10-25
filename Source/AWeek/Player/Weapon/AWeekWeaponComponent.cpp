@@ -145,6 +145,18 @@ void UAWeekWeaponComponent::TickMultipliers(float DeltaTime)
 	if (CharacterMovementComponent == nullptr)
 		return;
 	
+	const float TransitSpeed = RangedWeaponInfo.TransitSpeed;
+
+	float JumpTargetMultiplier = CharacterMovementComponent->IsFalling() == true?RangedWeaponInfo.JumpSpreadMultiplierNormal:1.0f;
+	
+	float MovementTargetMultiplier = FMath::GetMappedRangeValueClamped(
+		FVector2D(0.0f, CharacterMovementComponent->GetMaxSpeed()),
+		FVector2D(1.0f, RangedWeaponInfo.MoveSpreadMultiplierNormal), mOwner->GetVelocity().Size());
+
+	RangedWeaponInfo.JumpSpreadMultiplier = FMath::FInterpTo(RangedWeaponInfo.JumpSpreadMultiplier, JumpTargetMultiplier, DeltaTime, TransitSpeed);
+	RangedWeaponInfo.StandingSpreadMultiplier = FMath::FInterpTo(RangedWeaponInfo.StandingSpreadMultiplier, MovementTargetMultiplier, DeltaTime, TransitSpeed);
+	
+	RangedWeaponInfo.CurrentSpreadMultiplier = FMath::Max(RangedWeaponInfo.JumpSpreadMultiplier, RangedWeaponInfo.StandingSpreadMultiplier);
 }
 
 void UAWeekWeaponComponent::AddSpreadHeat()

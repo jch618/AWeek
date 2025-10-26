@@ -60,8 +60,6 @@ struct FRangedWeaponInfo
 	float CurrentSpreadMultiplier = 1.0f;
 	float StandingSpreadMultiplier = 0.0f;
 	float JumpSpreadMultiplier = 0.0f;
-
-	
 };
 
 USTRUCT(BlueprintType)

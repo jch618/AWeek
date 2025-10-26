@@ -53,7 +53,6 @@ void UAWeekWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		// �߻� ���� ��� (RPS)
 		float FireInterval = 1.f / mFireRate;
-
 		if (mTimeSinceLastShot >= FireInterval)
 		{
 			Fire();
@@ -110,6 +109,7 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 			mWeaponMeshComp->SetWorldScale3D(FVector(1, 1, 1));
 			mWeaponMeshComp->SetStaticMesh(WeaponInfo->Mesh);
 			RangedWeaponInfo = WeaponInfo->RangedWeaponInfo;
+			mTimeSinceLastShot = 1.f / mFireRate;
 			break;
 		}
 	}

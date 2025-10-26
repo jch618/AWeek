@@ -92,8 +92,6 @@ public:
 		// �Ѿ� �پ��� false ����
 		if (bOutOfBullet)
 			return false;
-		Fire();
-		mTimeSinceLastShot = 0.0f;
 		bIsFiring = true;
 		return true;
 	}

@@ -4,25 +4,22 @@
 #include "AWeekCrossHairWidget.h"
 
 #include "AWeek/Data/AWeekWeaponInfo.h"
-
-static float GDebugFinalSpreadAngle = 4.0f;
-
-static FAutoConsoleVariableRef CVarDebugFinalSpreadAngle(
-	TEXT("aweek.DebugFinalSpreadAngle"),
-	GDebugFinalSpreadAngle,
-	TEXT("Adjust debug final spread angle for crosshair."),
-	ECVF_Cheat
-);
+#include "AWeek/Player/Weapon/AWeekWeaponComponent.h"
 
 float UAWeekCrossHairWidget::GetFinalSpreadAngle() const
 {
+	if (WeaponComponentInstance == nullptr)
+	{
+		return 0.0f;
+	}
+	
 	EWeaponType WeaponType = EWeaponType::Ranged;
 	if (WeaponType == EWeaponType::Ranged)
 	{
-		
+		return WeaponComponentInstance->GetSpreadAngle() * WeaponComponentInstance->GetSpreadMultiplier();
 	}
 
-	return GDebugFinalSpreadAngle;
+	return 0.0f;
 }
 
 float UAWeekCrossHairWidget::GetScreenspaceMaxSpreadAngleRadius() const
@@ -69,9 +66,4 @@ bool UAWeekCrossHairWidget::HasFirstShotAccuracy() const
 	}
 
 	return false;
-}
-
-void UAWeekCrossHairWidget::SetFinalSpreadAngle(float NewFinalSpreadAngle)
-{
-	GDebugFinalSpreadAngle = NewFinalSpreadAngle;
 }

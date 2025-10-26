@@ -35,7 +35,7 @@ public:
 	FSlateBrush MarkerImage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	uint8 bReticleCornerOutsideSpreadRadius : 1;
+	uint8 bReticleCornerOutsideSpreadRadius : 1 = false;
 
 	TSharedPtr<SAWeekCrossHairMarkerWidget> MarkerWidget;
 };

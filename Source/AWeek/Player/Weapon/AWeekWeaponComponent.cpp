@@ -20,14 +20,13 @@ UAWeekWeaponComponent::UAWeekWeaponComponent()
 void UAWeekWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void UAWeekWeaponComponent::OnRegister()
 {
 	Super::OnRegister();
 	mOwner = Cast<AAWeekPlayerCharacter>(GetOwner());
-
+	CharacterMovementComponent = Cast<UCharacterMovementComponent>(mOwner->GetMovementComponent());
 	mWeapon = GetWorld()->SpawnActor<AAWeekWeapon>();
 	mWeaponMeshComp = mWeapon->mMeshComponent;
 	if (mWeapon)
@@ -40,16 +39,20 @@ void UAWeekWeaponComponent::OnRegister()
 	}
 }
 
-void UAWeekWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UAWeekWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                          FActorComponentTickFunction* ThisTickFunction)
 {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (bIsFiring && mCurrentBullet > 0 && mWeaponType == EWeaponType::Ranged)
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (mWeaponType == EWeaponType::Ranged)
 	{
 		mTimeSinceLastShot += DeltaTime;
-
-		// ¹ß»ç °£°Ý °è»ê (RPS)
+		TickSpread(DeltaTime);
+		TickMultipliers(DeltaTime);
+	}
+	if (bIsFiring && mCurrentBullet > 0 && mWeaponType == EWeaponType::Ranged)
+	{
+		// ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ (RPS)
 		float FireInterval = 1.f / mFireRate;
-
 		if (mTimeSinceLastShot >= FireInterval)
 		{
 			Fire();
@@ -84,7 +87,7 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 	mFireRate = WeaponInfo->FireRate;
 	mFireEffect = WeaponInfo->FireEffect;
 	mReticleDefinition = WeaponInfo->ReticleDefinition;
-	
+
 	if (mWeaponMeshComp)
 	{
 		switch (mWeaponType)
@@ -105,6 +108,8 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 			UE_LOG(LogTemp, Warning, TEXT("Ranged"));
 			mWeaponMeshComp->SetWorldScale3D(FVector(1, 1, 1));
 			mWeaponMeshComp->SetStaticMesh(WeaponInfo->Mesh);
+			RangedWeaponInfo = WeaponInfo->RangedWeaponInfo;
+			mTimeSinceLastShot = 1.f / mFireRate;
 			break;
 		}
 	}
@@ -122,6 +127,57 @@ void UAWeekWeaponComponent::ChangeWeaponPos(FName SocketName)
 			SocketName
 		);
 	}
+}
+
+void UAWeekWeaponComponent::TickSpread(float DeltaTime)
+{
+	if (mTimeSinceLastShot >= RangedWeaponInfo.HeatShotRecoveryDelay)
+	{
+		const float RecoveryHeat = RangedWeaponInfo.HeatShotRecoveryCurve.GetRichCurveConst()->Eval(RangedWeaponInfo.CurrentHeat);
+		const float NewHeat = RangedWeaponInfo.CurrentHeat - (RecoveryHeat * DeltaTime);
+		RangedWeaponInfo.CurrentHeat = RangedWeaponInfo.ClampHeatRange(NewHeat);
+		RangedWeaponInfo.CurrentSpreadAngle = RangedWeaponInfo.HeatToSpreadCurve.GetRichCurveConst()->Eval(RangedWeaponInfo.CurrentHeat);
+	}
+}
+
+void UAWeekWeaponComponent::TickMultipliers(float DeltaTime)
+{
+	if (CharacterMovementComponent == nullptr)
+		return;
+	
+	const float TransitSpeed = RangedWeaponInfo.TransitSpeed;
+
+	float JumpTargetMultiplier = CharacterMovementComponent->IsFalling() == true?RangedWeaponInfo.JumpSpreadMultiplierNormal:1.0f;
+	
+	float MovementTargetMultiplier = FMath::GetMappedRangeValueClamped(
+		FVector2D(0.0f, CharacterMovementComponent->GetMaxSpeed()),
+		FVector2D(1.0f, RangedWeaponInfo.MoveSpreadMultiplierNormal), mOwner->GetVelocity().Size());
+
+	RangedWeaponInfo.JumpSpreadMultiplier = FMath::FInterpTo(RangedWeaponInfo.JumpSpreadMultiplier, JumpTargetMultiplier, DeltaTime, TransitSpeed);
+	RangedWeaponInfo.StandingSpreadMultiplier = FMath::FInterpTo(RangedWeaponInfo.StandingSpreadMultiplier, MovementTargetMultiplier, DeltaTime, TransitSpeed);
+	
+	APlayerController* PC = Cast<APlayerController>(CharacterMovementComponent->GetCharacterOwner()->GetController());
+	
+	bool bIsRotating = false;
+	if (PC)
+	{
+		static FRotator PrevRotater = PC->GetControlRotation();
+		const FRotator NowRotator = PC->GetControlRotation();
+		bIsRotating = !(NowRotator - PrevRotater).IsNearlyZero();
+		PrevRotater = NowRotator;
+	}
+	
+	const float LookTargetMultiplier = bIsRotating ? RangedWeaponInfo.LookSpreadMultiplierNormal:1.0f;
+	RangedWeaponInfo.LookSpreadMultiplier = FMath::FInterpTo(RangedWeaponInfo.LookSpreadMultiplier, LookTargetMultiplier, DeltaTime, TransitSpeed);
+	RangedWeaponInfo.CurrentSpreadMultiplier = FMath::Max(RangedWeaponInfo.LookSpreadMultiplier, RangedWeaponInfo.StandingSpreadMultiplier) * RangedWeaponInfo.JumpSpreadMultiplier;
+
+}
+
+void UAWeekWeaponComponent::AddSpreadHeat()
+{
+	const float AddHeat = RangedWeaponInfo.HeatShotCurve.GetRichCurveConst()->Eval(RangedWeaponInfo.CurrentHeat);
+	RangedWeaponInfo.CurrentHeat = RangedWeaponInfo.ClampHeatRange(RangedWeaponInfo.CurrentHeat + AddHeat);
+	RangedWeaponInfo.CurrentSpreadAngle = RangedWeaponInfo.HeatToSpreadCurve.GetRichCurveConst()->Eval(RangedWeaponInfo.CurrentHeat);
 }
 
 // AWeekWeaponComponent.cpp
@@ -142,12 +198,14 @@ FVector UAWeekWeaponComponent::GetFireDirection()
 	FVector CameraLocation, CameraDirection;
 	PC->DeprojectScreenPositionToWorld(ScreenCenter.X, ScreenCenter.Y, CameraLocation, CameraDirection);
 
+	const float FinalSpreadAngle = CalculateFinalSpreadAngle();
+	CameraDirection = FRangedWeaponInfo::GetRandomDirectionInCone(CameraDirection, FinalSpreadAngle,  RangedWeaponInfo.CenterBias);
 	return CameraDirection;
 }
 
 void UAWeekWeaponComponent::Fire()
 {
-	// ... Åº¾à Ã¼Å© ...
+	// ... Åºï¿½ï¿½ Ã¼Å© ...
 	bOutOfBullet = false;
 	UE_LOG(LogTemp, Warning, TEXT("Fire called"));
 	APlayerController* PC = Cast<APlayerController>(mOwner->GetController());
@@ -160,7 +218,7 @@ void UAWeekWeaponComponent::Fire()
 
 	FVector FireDirection = GetFireDirection();
 
-	// Ä«¸Þ¶ó À§Ä¡¿¡¼­ ¸ÕÀú Æ®·¹ÀÌ½ºÇØ¼­ ¸ñÇ¥ ÁöÁ¡ Ã£±â
+	// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
 	FVector TraceStart = CameraLocation;
 	FVector TraceEnd = TraceStart + (FireDirection * 10000.0f);
 
@@ -184,9 +242,9 @@ void UAWeekWeaponComponent::Fire()
 	FRotator MuzzleRotation = MuzzleToTarget.Rotation();
 
 	FActorSpawnParameters Param;
-	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;	
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	// ¹ß»çÃ¼ ½ºÆù
+	// ï¿½ß»ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
 	AAWeekWeaponProjectile* Bullet = GetWorld()->SpawnActor<AAWeekWeaponProjectile>(
 		MuzzleLocation,
 		MuzzleRotation,
@@ -235,8 +293,10 @@ void UAWeekWeaponComponent::Fire()
 		);
 	}
 
-    if (mCurrentBullet <= 0)
-    {
+	if (mCurrentBullet <= 0)
+	{
 		bOutOfBullet = true;
-    }
+	}
+
+	AddSpreadHeat();
 }

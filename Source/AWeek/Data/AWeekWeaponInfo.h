@@ -43,6 +43,9 @@ struct FRangedWeaponInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(ClampMin="1.0", ClampMax="2.0", ForceUnits=x))
 	float MoveSpreadMultiplierNormal = 1.0f; // Move시 곱해질 Spread Multiplier (1.0 ~ 서서히 증가)
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(ClampMin="1.0", ClampMax="4.0", ForceUnits=x))
+	float LookSpreadMultiplierNormal = 1.0f; // Look시 곱해질 Spread Multiplier
+	
 	float CurrentHeat = 0.0f;
 	float CurrentSpreadAngle = 0.0f; // 현재 Spread Angle 
 	
@@ -60,6 +63,7 @@ struct FRangedWeaponInfo
 	float CurrentSpreadMultiplier = 1.0f;
 	float StandingSpreadMultiplier = 0.0f;
 	float JumpSpreadMultiplier = 0.0f;
+	float LookSpreadMultiplier = 0.0f;
 };
 
 USTRUCT(BlueprintType)

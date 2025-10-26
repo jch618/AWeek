@@ -134,5 +134,4 @@ public:
 	void TickSpread(float DeltaTime);
 	void TickMultipliers(float DeltaTime);
 	void AddSpreadHeat();
-
 };

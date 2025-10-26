@@ -156,7 +156,21 @@ void UAWeekWeaponComponent::TickMultipliers(float DeltaTime)
 	RangedWeaponInfo.JumpSpreadMultiplier = FMath::FInterpTo(RangedWeaponInfo.JumpSpreadMultiplier, JumpTargetMultiplier, DeltaTime, TransitSpeed);
 	RangedWeaponInfo.StandingSpreadMultiplier = FMath::FInterpTo(RangedWeaponInfo.StandingSpreadMultiplier, MovementTargetMultiplier, DeltaTime, TransitSpeed);
 	
-	RangedWeaponInfo.CurrentSpreadMultiplier = FMath::Max(RangedWeaponInfo.JumpSpreadMultiplier, RangedWeaponInfo.StandingSpreadMultiplier);
+	APlayerController* PC = Cast<APlayerController>(CharacterMovementComponent->GetCharacterOwner()->GetController());
+	
+	bool bIsRotating = false;
+	if (PC)
+	{
+		static FRotator PrevRotater = PC->GetControlRotation();
+		const FRotator NowRotator = PC->GetControlRotation();
+		bIsRotating = !(NowRotator - PrevRotater).IsNearlyZero();
+		PrevRotater = NowRotator;
+	}
+	
+	const float LookTargetMultiplier = bIsRotating ? RangedWeaponInfo.LookSpreadMultiplierNormal:1.0f;
+	RangedWeaponInfo.LookSpreadMultiplier = FMath::FInterpTo(RangedWeaponInfo.LookSpreadMultiplier, LookTargetMultiplier, DeltaTime, TransitSpeed);
+	RangedWeaponInfo.CurrentSpreadMultiplier = FMath::Max(RangedWeaponInfo.LookSpreadMultiplier, RangedWeaponInfo.StandingSpreadMultiplier) * RangedWeaponInfo.JumpSpreadMultiplier;
+
 }
 
 void UAWeekWeaponComponent::AddSpreadHeat()

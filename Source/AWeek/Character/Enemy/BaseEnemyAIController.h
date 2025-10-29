@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "DetourCrowdAIController.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AIPerceptionComponent.h"
 #include "BaseEnemyAIController.generated.h"
 
 /**
@@ -19,16 +21,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBlackboardValues();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+	UAIPerceptionComponent* PerceptionComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UAISenseConfig_Sight* SightConfig;
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName AttackTargetKeyName = "AttackTarget";
 
 public:
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBehaviorTree* BTAsset;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBlackboardData* BBAsset;
 	UPROPERTY(BlueprintReadOnly)
 	UBlackboardComponent* BBComponent;
+	UFUNCTION(BlueprintCallable)
+	void ChangeAISightRange(float SightRadius, float LoseSightRadius, float VisionAngleDegrees, float MaxAgeSeconds);
 };
 

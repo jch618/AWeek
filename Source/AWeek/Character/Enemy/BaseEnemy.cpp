@@ -5,7 +5,6 @@
 ABaseEnemy::ABaseEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 void ABaseEnemy::PossessedBy(AController* NewController)
@@ -19,10 +18,62 @@ void ABaseEnemy::PossessedBy(AController* NewController)
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
 	m_AnimInstance = Cast<UAWeekCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 
+	if (!StatDataAsset)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("StatDataAsset is null"));
+		return;
+	}
+	m_Stat = StatDataAsset->DayData;
 
+	
+	auto& MessageSubsystem = UGameEventMessageSubsystem::Get(this);
 
+	DayChangedListenerHandle = MessageSubsystem.RegisterListener<FDayChangedMessage>(
+		FGameplayTag::RequestGameplayTag(FName("Event.DayChanged")),
+		[this](FGameplayTag Channel, const FDayChangedMessage& Msg)
+		{
+			this->OnDayChanged(Msg);
+		}
+	);
+
+}
+
+void ABaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (DayChangedListenerHandle.IsValid())
+	{
+		DayChangedListenerHandle.Unregister();
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
+void ABaseEnemy::OnDayChanged(const FDayChangedMessage& Msg)
+{
+	if (Msg.bIsDay)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[%s] NightEnd!! Day: %d"), *GetName(), Msg.Day);
+		//MovementSpeed Up 
+		m_Stat = StatDataAsset->DayData;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("[%s] Night Begin!! Day: %d"), *GetName(), Msg.Day);
+		//MovementSpeed Up 
+		m_Stat = StatDataAsset->NightData;
+	}
+	//AI Perception Range Change
+	if (ABaseEnemyAIController* AICon = Cast<ABaseEnemyAIController>(GetController()))
+	{
+		if (!AICon->SightConfig || !AICon->PerceptionComp)
+			return;
+		AICon->ChangeAISightRange(m_Stat.SightRadius, m_Stat.LoseSightRadius,
+			m_Stat.VisionAngleDegrees, m_Stat.MaxAgeSeconds);
+
+	}
 }
 
 void ABaseEnemy::Tick(float DeltaTime)
@@ -35,5 +86,15 @@ void ABaseEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+float ABaseEnemy::GetMoveSpeed_Code(EMovementType type) const
+{
+	return m_Stat.MoveSpeedMap[type];
+}
+
+float ABaseEnemy::GetMontagePlayRate_Code() const
+{
+	return m_Stat.AnimPlayRate;
 }
 

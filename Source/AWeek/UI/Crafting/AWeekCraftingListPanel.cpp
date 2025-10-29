@@ -34,15 +34,16 @@ void UAWeekCraftingListPanel::RefreshCraftingList()
 			UE_LOG(LogTemp, Warning, TEXT("%s: i: %d"), *FString(__FUNCTION__), i);
 			
 			UAWeekCraftingItemSlot* ItemRecipeSlotWidget = CreateWidget<UAWeekCraftingItemSlot>(this, CraftingSlotClass);
-		
+
+			bool bIsCraftable = CraftingComponent->CanCraft(i);
 			ItemRecipeSlotWidget->InitializeCraftingItemSlot(i,
 				CachedCraftingRecipes[i].CraftedItemEntry.ItemData,
 				CachedCraftingRecipes[i].CraftedItemEntry.Quantity,
-				CraftingComponent->CanCraft(i));
+				bIsCraftable);
 
-			ItemRecipeSlotWidget->OnCraftingSlotLeftClicked.AddLambda([this](int32 RecipeIndex)
+			ItemRecipeSlotWidget->OnCraftingSlotLeftClicked.AddLambda([this](int32 RecipeIndex, bool bIsCraftable)
 			{
-				OnRecipeSelected.Broadcast(RecipeIndex);
+				OnRecipeSelected.Broadcast(RecipeIndex, bIsCraftable);
 			});
 			GridPanel->AddChildToUniformGrid(ItemRecipeSlotWidget, i / NumCols, i % NumCols);
 		}

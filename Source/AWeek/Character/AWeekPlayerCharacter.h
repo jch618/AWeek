@@ -61,6 +61,7 @@ protected:
 	UCameraComponent* FollowCamera;
 
 	/*--------------ANIMINST--------------*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAWeekPlayerAnimInstance> mAnimInst;
 
 	/*--------------PAKOUR--------------*/
@@ -75,16 +76,13 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UAWeekWeaponComponent> mWeapon;
 
+	/*--------------WEAPON--------------*/
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UAWeekHungerComponent> mHunger;
+
 	/*--------------DAMAGE--------------*/
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UDamageSystemComponent> mDamageSystem;
-
-	/*--------------PARTICLES--------------*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Effects, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UParticleSystemComponent> ParticleComp;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Effects, meta = (AllowPrivateAccess = "true"))
-	UParticleSystem* FireEffect;
 
 	/*--------------SOUNDS--------------*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Sounds, meta = (AllowPrivateAccess = "true"))
@@ -99,6 +97,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bSprint = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsZooming = false;
 
 	UPROPERTY(EditAnywhere)
 	float mWalkSpeed = 300.f;
@@ -127,11 +128,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float mVaultStaminaUsage = 20;
 
+
 	// =====================================================
 	// INVENTORY SYSTEM
 	// ====================================================
 	UPROPERTY()
 	TObjectPtr<UAWeekGameUIManager> UIManager;
+	
 	
 	UPROPERTY()
 	TObjectPtr<AAWeekPlayerController> PlayerController;
@@ -140,7 +143,7 @@ protected:
 	TScriptInterface<IAWeekInteractionInterface> TargetInteractable;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
-	TObjectPtr<UAWeekInventoryComponent> PlayerInventory;
+	TObjectPtr<UAWeekInventoryComponent> PlayerInventoryComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character | Crafting")
 	TObjectPtr<UAWeekCraftingComponent> CraftingComponent;
@@ -174,16 +177,27 @@ public:
 	void Look(const FInputActionValue& Value);
 	void Jump();
 	void Attack(const FInputActionValue& Value);
-	void Fire();
+	void ZoomHold()
+	{
+		SetCombatBool(true);
+		bIsZooming = true;
+	}
+	void ZoomOut()
+	{
+		SetCombatBool(false);
+		bIsZooming = false;
+	}
+	void StartFire();
 	void EndFire();
 	void SprintStart();
 	void SprintCompleted();
 	void ChangeWeapon();
+	void StartReload();
+	void WeaponReload();
 
 	UFUNCTION()
 	virtual void ClimbEnd();
 	void AttackImpact();
-	void FireBullet();
 
 	UFUNCTION()
 	void OnHit(EDamageResponse Response)
@@ -199,22 +213,21 @@ public:
 	virtual void LedgeStart();
 	virtual void LedgeEnd();
 	virtual void ClimbStart();
-	void SetCombatBool(bool Bool)
-	{
-		// Combat True -> Orient False
-		GetCharacterMovement()->bOrientRotationToMovement = !Bool;
-		bIsCombat = Bool;
-	}
 
-	bool TakeDamage_Implementation(EDamageResponse DamageResponse);
+	UFUNCTION(BlueprintCallable)
+	void SetCombatBool(bool Bool);
+
+	//bool TakeDamage_Implementation(EDamageResponse DamageResponse);
 
 	// =====================================================
 	// INVENTORY SYSTEM
 	// =====================================================
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); }
-	FORCEINLINE TObjectPtr<UAWeekInventoryComponent> GetInventory() const { return PlayerInventory; }
+	FORCEINLINE UAWeekInventoryComponent* GetPlayerInventoryComponent() const { return PlayerInventoryComponent; }
+	FORCEINLINE UAWeekCraftingComponent* GetCraftingComponent() const { return CraftingComponent; }
 	void UpdateInteractionWidget() const;
 	void ToggleInventoryMainPanel();
+	void ToggleMainWidget();
 	void DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop);
 	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 	//void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);

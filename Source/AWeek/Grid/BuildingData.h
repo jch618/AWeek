@@ -4,7 +4,7 @@
 #include "BuildingData.generated.h"
 
 UENUM(BlueprintType)
-enum class EBuildingType : uint8
+enum class EBuildingType_ : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Wall UMETA(DisplayName = "Wall"),
@@ -35,6 +35,6 @@ struct FBuildingStat
 	float CurrentHealth = 1.f;
 	float MaxHealth = 1.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stat")
-	EBuildingType BuildingType = EBuildingType::None;
+	EBuildingType_ BuildingType = EBuildingType_::None;
 	
 };

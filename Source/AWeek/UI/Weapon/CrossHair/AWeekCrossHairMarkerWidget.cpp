@@ -20,7 +20,8 @@ TSharedRef<SWidget> UAWeekCrossHairMarkerWidget::RebuildWidget()
 	MarkerWidget = SNew(SAWeekCrossHairMarkerWidget)
 		.MarkerBrush(&MarkerImage)
 		.Radius(Radius)
-		.MarkerList(MarkerList);
+		.MarkerList(MarkerList)
+		.bReticleCornerOutsideSpreadRadius((bReticleCornerOutsideSpreadRadius));
 
 	return MarkerWidget.ToSharedRef();
 }

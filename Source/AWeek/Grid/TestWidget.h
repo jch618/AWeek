@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "GameFramework/Actor.h"
-#include "TestWidget/MyAWeekActivatableWidget.h"
-#include "TestWidget/MainUIWidget.h"
+#include "AWeek/UI/MainWidget//MyAWeekActivatableWidget.h"
+#include "AWeek/UI/MainWidget/MainUIWidget.h"
 #include "TestWidget.generated.h"
 
 UCLASS(Blueprintable)

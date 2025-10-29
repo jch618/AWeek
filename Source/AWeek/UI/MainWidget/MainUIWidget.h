@@ -6,7 +6,7 @@
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "CommonButtonBase.h"
 #include "AWeek/UI/MainWidget/MainWidgetPanel.h"
-#include "Components/WidgetSwitcher.h"
+#include "CommonActivatableWidgetSwitcher.h"
 #include "MainUIWidget.generated.h"
 
 /**
@@ -19,10 +19,10 @@ class AWEEK_API UMainUIWidget : public UAWeekActivatableWidget
 
 protected:
 	UPROPERTY(meta=(BindWidget))
-	UWidgetSwitcher* PanelSwitcher;
+	UCommonActivatableWidgetSwitcher* PanelSwitcher;
 
 
-	//Widget panel Button (BP_ButtonPanelWidget)
+	//Widget panel Button (WBP_ButtonPanelWidget)
 	UPROPERTY(meta=(BindWidget))
 	UCommonButtonBase* BtnBuilding;
 

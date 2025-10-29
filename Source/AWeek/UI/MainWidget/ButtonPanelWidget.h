@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/Button.h"
 #include "Components/SizeBox.h"
-#include "AWeek/Grid/TestWidget/TestPanelToButton.h"
+#include "AWeek/UI/MainWidget/TestPanelToButton.h"
 
 #include "Blueprint/UserWidget.h"
 #include "Components/Overlay.h"

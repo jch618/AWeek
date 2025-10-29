@@ -26,7 +26,7 @@ AAWeekWeaponProjectile::AAWeekWeaponProjectile()
 	mMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 	mMovement->SetUpdatedComponent(mBody);
 	mMovement->ProjectileGravityScale = 0.f;
-	mMovement->InitialSpeed = 3000.f;
+	mMovement->InitialSpeed = 150000.f;
 	mMovement->OnProjectileStop.AddDynamic(this, &AAWeekWeaponProjectile::ProjectileStop);
 
 }

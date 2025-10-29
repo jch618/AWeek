@@ -23,8 +23,8 @@ public:
 	//	FUNCTIONS
 	//================================================================
 	FORCEINLINE bool IsChestOpen() const { return bIsChestOpen; }
-	FORCEINLINE UAWeekInventoryComponent* GetPlayerInventoryComponent();
-	FORCEINLINE UAWeekInventoryComponent* GetChestInventoryComponent();
+	FORCEINLINE UAWeekInventoryComponent* GetPlayerInventoryComponent() const;
+	FORCEINLINE UAWeekInventoryComponent* GetChestInventoryComponent() const;
 
 	UFUNCTION()
 	void InitializeInventoryMainPanel();
@@ -54,5 +54,5 @@ protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 
-	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	// virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 };

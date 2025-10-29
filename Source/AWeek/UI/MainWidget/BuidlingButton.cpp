@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AWeek/Grid/TestWidget/BuidlingButton.h"
+#include "AWeek/UI/MainWidget/BuidlingButton.h"
 
 #include "AWeek/Grid/GridPlacedSubsystem.h"
-#include "AWeek/Grid/TestWidget/MainUIWidget.h"
+#include "AWeek/UI/MainWidget//MainUIWidget.h"
 #include "CommonUIExtensions.h"
 #include "Kismet/GameplayStatics.h"
 

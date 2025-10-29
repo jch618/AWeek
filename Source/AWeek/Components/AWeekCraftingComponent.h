@@ -6,10 +6,12 @@
 #include "Components/ActorComponent.h"
 #include "AWeekCraftingComponent.generated.h"
 
+struct FAWeekItemEntry;
 struct FAWeekCachedCraftingRecipe;
 class AAWeekPlayerCharacter;
 struct FAWeekItemCraftingRecipe;
 class UAWeekInventoryComponent;
+class UAWeekItemBase;
 
 DECLARE_MULTICAST_DELEGATE(FOnCraftingComponentUpdated)
 
@@ -32,11 +34,15 @@ public:
 	void InitializeCraftingComponent();
 
 	FORCEINLINE const TArray<FAWeekCachedCraftingRecipe>& GetCachedCraftingRecipes() const { return CachedCraftingRecipes; } 
-	FORCEINLINE const FAWeekCachedCraftingRecipe& GetRecipeAt(int32 RecipeIndex) const;
+	FORCEINLINE bool GetRecipeAt(int32 RecipeIndex, FAWeekCachedCraftingRecipe& Recipe) const;
+
+	bool TryCraftRecipe(int32 RecipeIndex);
+	
 	bool CanCraft(int32 RecipeIndex);
 	bool CanCraft(const FAWeekItemCraftingRecipe& CraftingRecipe);
 	bool CanCraft(const FAWeekCachedCraftingRecipe& CachedCraftingRecipe);
 
+	void UpdateInventoryCounts();
 protected:
 	//================================================================
 	//	PROPERTIES & VARIABLES
@@ -62,9 +68,10 @@ protected:
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
-	virtual void BeginPlay() override;
 
-	bool TryCraftItem(int32 RecipeIndex);
+	bool TryConsumeIngredients(const TArray<FAWeekItemEntry>& IngredientItemEntries);
+	UAWeekItemBase* CreateCraftedItem(const FAWeekItemEntry& CraftedItemEntry);
 private:
 	void CacheCraftingRecipes();
+	void LoadCraftingRecipeData();
 };

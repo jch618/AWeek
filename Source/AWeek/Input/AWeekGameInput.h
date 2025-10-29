@@ -23,7 +23,9 @@ public:
 	TObjectPtr<UInputAction>			mJump;
 	TObjectPtr<UInputAction>			mSprint;
 	TObjectPtr<UInputAction>			mAttack;
+	TObjectPtr<UInputAction>			mZoom;
 	TObjectPtr<UInputAction>			mInventory;
 	TObjectPtr<UInputAction>			mInteract;
 	TObjectPtr<UInputAction>			mChangeWeapon;
+	TObjectPtr<UInputAction>			mMainWidget;
 };

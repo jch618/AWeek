@@ -14,13 +14,15 @@ UAWeekCraftingComponent::UAWeekCraftingComponent()
 
 void UAWeekCraftingComponent::InitializeCraftingComponent()
 {
+	LoadCraftingRecipeData();
 	CacheCraftingRecipes();
+	
+	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwner());
+	InventoryComponent = PlayerCharacter->GetPlayerInventoryComponent();
 }
 
-void UAWeekCraftingComponent::BeginPlay()
+void UAWeekCraftingComponent::LoadCraftingRecipeData()
 {
-	Super::BeginPlay();
-
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (IsValid(CraftingRecipesTable))
 	{
@@ -37,23 +39,41 @@ void UAWeekCraftingComponent::BeginPlay()
 			}
 		}
 	}
-
-	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwner());
-	InventoryComponent = PlayerCharacter->GetInventory();
 }
 
-bool UAWeekCraftingComponent::TryCraftItem(int32 RecipeIndex)
+bool UAWeekCraftingComponent::TryCraftRecipe(int32 RecipeIndex)
 {
-	// TODO: if fail to craft item, restore InventoryItemCounts
-	const FAWeekItemCraftingRecipe& CraftingRecipe = CraftingRecipes[RecipeIndex];
-	for (const FAWeekRequiredIngredientItem& IngredientItem : CraftingRecipe.IngredientItems)
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	if (CachedCraftingRecipes.IsValidIndex(RecipeIndex))
 	{
-		const FAWeekItemData* IngredientItemData = IngredientItem.ItemHandle.GetRow<FAWeekItemData>(IngredientItem.ItemHandle.RowName.ToString());
-		if (IngredientItemData)
+		const FAWeekCachedCraftingRecipe& Recipe = CachedCraftingRecipes[RecipeIndex];
+		if (!InventoryComponent->CanAddItem(Recipe.CraftedItemEntry.ItemData.ID,
+			Recipe.CraftedItemEntry.ItemData.NumericData.Weight,
+			Recipe.CraftedItemEntry.Quantity))
 		{
-			if (InventoryComponent->TryRemoveAmountOfItem(IngredientItemData->ID, IngredientItem.RequiredQuantity))
+			UE_LOG(LogTemp, Warning, TEXT("%s: Can't Craft Item because there is no space in inventory."),
+				*FString(__FUNCTION__));
+			return false;
+		}
+		if (TryConsumeIngredients(Recipe.IngredientItemEntries))
+		{
+			UAWeekItemBase* CraftedItem = CreateCraftedItem(Recipe.CraftedItemEntry);
+			InventoryComponent->HandleAddItem(CraftedItem);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UAWeekCraftingComponent::TryConsumeIngredients(const TArray<FAWeekItemEntry>& IngredientItemEntries)
+{
+	for (const FAWeekItemEntry& IngredientItemEntry : IngredientItemEntries)
+	{
+		if (InventoryComponent->TryRemoveAmountOfItem(IngredientItemEntry.ItemData.ID, IngredientItemEntry.Quantity))
+		{
+			if (InventoryItemCounts.Contains(IngredientItemEntry.ItemData.ID))
 			{
-				InventoryItemCounts[IngredientItemData->ID] -= IngredientItem.RequiredQuantity;
+				InventoryItemCounts[IngredientItemEntry.ItemData.ID] -= IngredientItemEntry.Quantity;
 			}
 			else
 			{
@@ -68,8 +88,16 @@ bool UAWeekCraftingComponent::TryCraftItem(int32 RecipeIndex)
 	return true;
 }
 
+UAWeekItemBase* UAWeekCraftingComponent::CreateCraftedItem(const FAWeekItemEntry& CraftedItemEntry)
+{
+	UAWeekItemBase* ResultItem = NewObject<UAWeekItemBase>(this, UAWeekItemBase::StaticClass());
+	ResultItem->InitializeItem(CraftedItemEntry.ItemData, CraftedItemEntry.Quantity);
+	return ResultItem;
+}
+
 void UAWeekCraftingComponent::CacheCraftingRecipes()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (IsValid(CraftingRecipesTable))
 	{
 		// Access all the rows in the data table
@@ -80,6 +108,7 @@ void UAWeekCraftingComponent::CacheCraftingRecipes()
 		{
 			if (Recipe)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("%s: Cache recipe"), *FString(__FUNCTION__));
 				FAWeekCachedCraftingRecipe CachedCraftingRecipe;
 				
 				const FAWeekItemData* CraftedItemData = Recipe->CraftedItem.GetRow<FAWeekItemData>(Recipe->CraftedItem.RowName.ToString());
@@ -132,9 +161,23 @@ bool UAWeekCraftingComponent::CanCraft(const FAWeekCachedCraftingRecipe& CachedC
 	return true;
 }
 
-const FAWeekCachedCraftingRecipe& UAWeekCraftingComponent::GetRecipeAt(int32 RecipeIndex) const
+void UAWeekCraftingComponent::UpdateInventoryCounts()
 {
-	return CachedCraftingRecipes[RecipeIndex];
+	if (InventoryComponent)
+	{
+		InventoryItemCounts = InventoryComponent->GetInventoryItemCounts();
+	}
+}
+
+bool UAWeekCraftingComponent::GetRecipeAt(int32 RecipeIndex, FAWeekCachedCraftingRecipe& Recipe) const
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s: Clicked RecipeIndex=%d"), *FString(__FUNCTION__), RecipeIndex);
+	if (CachedCraftingRecipes.IsValidIndex(RecipeIndex))
+	{
+		Recipe = CachedCraftingRecipes[RecipeIndex];
+		return true;
+	}
+	return false;
 }
 
 bool UAWeekCraftingComponent::CanCraft(int32 RecipeIndex)

@@ -19,7 +19,8 @@ UENUM(BlueprintType)
 enum class EPlayerWeaponState : uint8
 {
 	Default,
-	Gun
+	Firing,
+	Aiming
 };
 
 UCLASS()
@@ -28,10 +29,23 @@ class AWEEK_API UAWeekPlayerAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float ControllerYaw;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float ControllerPitch;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float Direction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool EnableAO = false;
+
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<class AAWeekPlayerCharacter> mOwner;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FName mStatusKey = TEXT("Default");
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -74,6 +88,7 @@ public:
 		mStatusKey = State;
 		mWeaponState = EPlayerWeaponState::Default;
 
+		EnableAO = mAnimMap[mStatusKey].EnableAO;
 		mSequenceMap = mAnimMap[mStatusKey].SequenceMap;
 		mBlendSpaceMap = mAnimMap[mStatusKey].BlendSpaceMap;
 		mMontageMap = mAnimMap[mStatusKey].MontageMap;
@@ -93,11 +108,13 @@ public:
 		mMoveState = MoveState;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	EPlayerWeaponState GetPlayerWeaponState()
 	{
 		return mWeaponState;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	void SetPlayerWeaponState(EPlayerWeaponState WeaponState)
 	{
 		mWeaponState = WeaponState;
@@ -140,5 +157,5 @@ protected:
 	void AnimNotify_MeeleAttack();
 
 	UFUNCTION()
-	void AnimNotify_Fire();
+	void AnimNotify_Reload();
 };

@@ -14,11 +14,11 @@ void UAWeekCraftingItemSlot::InitializeCraftingItemSlot(int32 InRecipeIndex, con
 	bIsCraftable = bInCraftable;
 	if (bIsCraftable)
 	{
-		ItemIcon->SetBrushTintColor(FLinearColor::Green);
+		ItemIcon->SetBrushTintColor(FLinearColor(0.0f, 1.0f, 0.0f, 1.0f));
 	}
 	else
 	{
-		ItemIcon->SetBrushTintColor(FLinearColor::Black);
+		ItemIcon->SetBrushTintColor(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
 	}
 }
 
@@ -28,7 +28,7 @@ FReply UAWeekCraftingItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeomet
 
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-		OnCraftingSlotLeftClicked.Broadcast(RecipeIndex);
+		OnCraftingSlotLeftClicked.Broadcast(RecipeIndex, bIsCraftable);
 		return FReply::Handled();
 	}
 	return Reply.Unhandled();

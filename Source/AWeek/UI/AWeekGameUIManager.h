@@ -6,10 +6,12 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "AWeekGameUIManager.generated.h"
 
+class UAWeekCraftingComponent;
 class UAWeekCraftingMainPanel;
 class UAWeekUIDataAsset;
 class AAWeekPlayerController;
 class UAWeekInventoryMainPanel;
+class UMainUIWidget;
 class UAWeekInteractionWidget;
 struct FAWeekInteractableData;
 class UAWeekInventoryComponent;
@@ -45,12 +47,16 @@ class AWEEK_API UAWeekGameUIManager : public UGameInstanceSubsystem
 
 public:
 	UAWeekGameUIManager();
+
+	
+	
 	void InitializeUIManager();
 	
 	void ToggleInventoryMainPanel();
+	void ToggleMainWidget();
 	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 
-	void ToggleCraftingMainPanel();
+	void ToggleCraftingMainPanel(TObjectPtr<UAWeekCraftingComponent> CraftingComponent, const TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
 	// void ShowCrosshair();
 	// void HideCrosshair();
 
@@ -87,6 +93,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UAWeekCraftingMainPanel> CraftingMainPanelClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UMainUIWidget> MainUIWidgetClass;
+	UPROPERTY()
+	TObjectPtr<UMainUIWidget> MainUIWidget;
 	
 	UPROPERTY()
 	TObjectPtr<UAWeekInventoryMainPanel> InventoryMainPanelWidget;
@@ -116,9 +127,13 @@ protected:
 	void CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem, TObjectPtr<UAWeekInventoryComponent> SourceInventory, int32 SourceItemSlotIndex);
 
 	void ShowInventoryMainPanel();
+	void ShowMainWidget();
+	
 	void HideInventoryMainPanel();
-
+	void HideMainWidget();
 	void ShowCraftingMainPanel();
+
+	void ShowCraftingMainPanel(TObjectPtr<UAWeekCraftingComponent> CraftingComponent, const TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "UI Settings")

@@ -5,8 +5,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Pakour/AWeekPakourComponent.h"
 #include "Stamina/AWeekStaminaComponent.h"
+#include "../Player/Hunger/AWeekHungerComponent.h"
 #include "../Player/Weapon/AWeekWeaponComponent.h"
-#include "../Player/Weapon/AWeekWeaponProjectile.h"
 
 #include "../System/DamageSystemComponent.h"
 #include "../Input/AWeekGameInput.h"
@@ -16,8 +16,7 @@
 #include "AWeek/Interfaces/AWeekInteractionInterface.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/World/AWeekPickupItem.h"
-#include "AWeek/Player/AWeekUIController.h"
-
+#include "AWeek/Player/AWeekPlayerController.h"
 
 DEFINE_LOG_CATEGORY(AWeekPlayerCharacter);
 
@@ -60,13 +59,14 @@ AAWeekPlayerCharacter::AAWeekPlayerCharacter()
 
 	mPakour = CreateDefaultSubobject<UAWeekPakourComponent>(TEXT("Pakour"));
 
-	PlayerInventory = CreateDefaultSubobject<UAWeekInventoryComponent>(TEXT("PlayerInventory"));
+	PlayerInventoryComponent = CreateDefaultSubobject<UAWeekInventoryComponent>(TEXT("PlayerInventory"));
 	CraftingComponent = CreateDefaultSubobject<UAWeekCraftingComponent>(TEXT("CraftingComponent"));
 	
 	InteractionCheckFrequency = 0.1f;
 	InteractionCheckDistance = 250.0f;
 	mStamina = CreateDefaultSubobject<UAWeekStaminaComponent>(TEXT("Stamina"));
 	mWeapon = CreateDefaultSubobject<UAWeekWeaponComponent>(TEXT("Weapon"));
+	mHunger = CreateDefaultSubobject<UAWeekHungerComponent>(TEXT("Hunger"));
 	mDamageSystem = CreateDefaultSubobject<UDamageSystemComponent>(TEXT("DamageSystem"));
 }
 
@@ -84,7 +84,7 @@ void AAWeekPlayerCharacter::BeginPlay()
 	}
 
 	// temporary function
-	CraftingComponent->InitializeComponent();
+	CraftingComponent->InitializeCraftingComponent();
 	
 	if (IsValid(PlayerController))
 	{
@@ -141,26 +141,9 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		if (PC && PC->PlayerCameraManager)
 		{
-			FVector CameraLoc = PC->PlayerCameraManager->GetCameraLocation();
 			FVector CameraDir = PC->PlayerCameraManager->GetActorForwardVector();
-
-			FVector TraceEnd = CameraLoc + CameraDir * 10000.f;
-
-			FHitResult Hit;
-			FCollisionQueryParams Params;
-			Params.AddIgnoredActor(this);
-
-			FVector TargetPoint = TraceEnd;
-			if (GetWorld()->LineTraceSingleByChannel(Hit, CameraLoc, TraceEnd, ECC_Visibility, Params))
-			{
-				TargetPoint = Hit.Location;
-			}
-
-			FVector ToTarget = TargetPoint - GetActorLocation();
-			ToTarget.Z = 0;
-
-			FRotator TargetRot = ToTarget.Rotation();
-			SetActorRotation(FMath::RInterpTo(GetActorRotation(), TargetRot, DeltaTime, 10.f));
+			CameraDir.Z = 0;
+			SetActorRotation(CameraDir.Rotation());
 		}
 	}
 
@@ -227,11 +210,19 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 		EnhancedInput->BindAction(InputCDO->mInteract, ETriggerEvent::Completed,
 			this, &AAWeekPlayerCharacter::EndInteract);
+
+		EnhancedInput->BindAction(InputCDO->mZoom, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::ZoomHold);
+		EnhancedInput->BindAction(InputCDO->mZoom, ETriggerEvent::Completed,
+			this, &AAWeekPlayerCharacter::ZoomOut);
 		
 		EnhancedInput->BindAction(InputCDO->mInventory, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::ToggleInventoryMainPanel);
-		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Triggered,
-			this, &AAWeekPlayerCharacter::Fire);
+		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Started,
+			this, &AAWeekPlayerCharacter::StartFire);
+
+		EnhancedInput->BindAction(InputCDO->mMainWidget, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::ToggleMainWidget);
 
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Completed,
 			this, &AAWeekPlayerCharacter::EndFire);
@@ -303,6 +294,27 @@ void AAWeekPlayerCharacter::Jump()
 	Super::Jump();
 }
 
+void AAWeekPlayerCharacter::SetCombatBool(bool Bool)
+{
+	// Combat True -> Orient False
+	GetCharacterMovement()->bOrientRotationToMovement = !Bool;
+	bIsCombat = Bool;
+
+	if (mAnimInst)
+	{
+		if (Bool)
+		{
+			mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Aiming);
+		}
+			
+		else
+		{
+			mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
+		}
+			
+	}
+}
+
 void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 {
 	if (mAnimInst->IsAnyMontagePlaying())
@@ -317,34 +329,23 @@ void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 	// Apply damage later..
 }
 
-void AAWeekPlayerCharacter::Fire()
+void AAWeekPlayerCharacter::StartFire()
 {
-	if (mAnimInst->GetCurrentOverride() != FName("Rifle"))
+	if (mWeapon->GetWeaponType() != EWeaponType::Ranged)
 		return;
-
-	GetCharacterMovement()->MaxWalkSpeed = mFiringSpeed;
-
-	if (mAnimInst->GetPlayerWeaponState() == EPlayerWeaponState::Default)
+	mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Aiming);
+	if (!mWeapon->StartFire())
 	{
-		mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Gun);
-		mAnimInst->PlayMontageByName(TEXT("Fire"));
-		SetCombatBool(true);
+		StartReload();
 	}
-
-	//mAnimInst->ChangeAnimOverride(TEXT("Rifle_Firing"));
 }
 
 void AAWeekPlayerCharacter::EndFire()
 {
-	if (mAnimInst->GetCurrentOverride() != FName("Rifle"))
-		return;
-
-	GetCharacterMovement()->MaxWalkSpeed = mWalkSpeed;
-	mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
-	mAnimInst->StopMontageByName(TEXT("Fire"));
-	SetCombatBool(false);
-
-	//mAnimInst->ChangeAnimOverride(TEXT("Rifle"));
+	if (!bIsZooming)
+		mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
+	mWeapon->EndFire();
+	
 }
 
 void AAWeekPlayerCharacter::SprintStart()
@@ -353,7 +354,7 @@ void AAWeekPlayerCharacter::SprintStart()
 		GetVelocity().Size() < 50 || 
 		mStamina->GetStamina() < mSprintMinimumStamina ||
 		!mPakour->bCanPakour ||
-		mAnimInst->GetPlayerWeaponState()==EPlayerWeaponState::Gun)
+		bIsCombat)
 		return;
 	GetCharacterMovement()->MaxWalkSpeed = mSprintSpeed;
 	bSprint = true;
@@ -396,6 +397,20 @@ void AAWeekPlayerCharacter::ChangeWeapon()
 		mWeapon->ChangeWeapon(TEXT("Default"));
 		mAnimInst->ChangeAnimOverride(TEXT("Default"));
 	}
+}
+
+void AAWeekPlayerCharacter::StartReload()
+{
+	if (mAnimInst->IsAnyMontagePlaying())
+		return;
+
+	mAnimInst->PlayMontageByName(TEXT("Reload"));
+}
+
+void AAWeekPlayerCharacter::WeaponReload()
+{
+	if (mWeapon)
+		mWeapon->Reload();
 }
 
 void AAWeekPlayerCharacter::VaultStart()
@@ -510,39 +525,10 @@ void AAWeekPlayerCharacter::AttackImpact()
 	}
 }
 
-void AAWeekPlayerCharacter::FireBullet()
-{
-	FVector	MuzzleLoctaion = mWeapon->GetWeaponMuzzle();
-
-	if (FireEffect)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(),
-			FireEffect,
-			MuzzleLoctaion,
-			GetActorRotation(),
-			FVector(1.0f)
-		);
-	}
-
-	if (FireSound)
-	{
-		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzleLoctaion);
-	}
-	
-	FActorSpawnParameters Param;
-	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	AAWeekWeaponProjectile* Bullet = GetWorld()->SpawnActor<AAWeekWeaponProjectile>(MuzzleLoctaion, GetActorRotation(), Param);
-	Bullet->SetDamage(mWeapon->GetWeaponDamage());
-}
-
 void AAWeekPlayerCharacter::Die()
 {
 	mAnimInst->PlayMontageByName(TEXT("Die"));
 }
-
-
-
 
 void AAWeekPlayerCharacter::FootStepEffect(FName SocketName)
 {
@@ -700,6 +686,11 @@ void AAWeekPlayerCharacter::ToggleInventoryMainPanel()
 	// ToggleCraftingMainPanel();
 }
 
+void AAWeekPlayerCharacter::ToggleMainWidget()
+{
+	UIManager->ToggleMainWidget();	
+}
+
 void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop)
 {
 	FActorSpawnParameters SpawnParams;
@@ -736,7 +727,7 @@ void AAWeekPlayerCharacter::CloseChestInventory()
 
 void AAWeekPlayerCharacter::ToggleCraftingMainPanel()
 {
-	UIManager->ToggleCraftingMainPanel();
+	UIManager->ToggleCraftingMainPanel(CraftingComponent, PlayerInventoryComponent);
 }
 
 void AAWeekPlayerCharacter::CloseCraftingMainPanel()

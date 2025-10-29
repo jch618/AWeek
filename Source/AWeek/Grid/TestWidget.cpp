@@ -3,7 +3,7 @@
 
 #include "AWeek/Grid/TestWidget.h"
 
-#include "AWeek/Player/AWeekUIController.h"
+#include "AWeek/Player/AWeekPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "CommonUIExtensions.h"
 
@@ -34,7 +34,7 @@ void ATestWidget::TestStart()
 	UE_LOG(LogTemp, Warning, TEXT("UI Test Start!!!"));
 
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AAWeekUIController* UIPC = Cast<AAWeekUIController>(PC);
+	AAWeekPlayerController* UIPC = Cast<AAWeekPlayerController>(PC);
 
 	if (!IsValid(MainWidget) || !(MainWidget->IsActivated()))
 	{

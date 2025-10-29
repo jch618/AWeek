@@ -43,7 +43,7 @@ int32 UAWeekInventoryComponent::FindNextItemByID(FName ItemID) const
 {
 	for (int32 i = 0; i < InventoryContents.Num(); i++)
 	{
-		if (InventoryContents[i].Item->ID == ItemID)
+		if (IsValid(InventoryContents[i].Item) && InventoryContents[i].Item->ID == ItemID)
 		{
 			return i;
 		}
@@ -328,6 +328,27 @@ int32 UAWeekInventoryComponent::HandleStackableItems(UAWeekItemBase* ItemIn, int
 	// can only be reached if there is no existing stack and no extra capacity slots
 	OnInventoryUpdated.Broadcast();
 	return RequestedAddAmount - AmountToDistribute;
+}
+
+bool UAWeekInventoryComponent::CanAddItem(const FName ItemID, const int32 ItemSingleWeight, const int32 Quantity) const
+{
+	if (!CanAddItemWeight(ItemSingleWeight * Quantity))
+	{
+		return false;
+	}
+	for (const FAWeekInventorySlotData& SlotData : InventoryContents)
+	{
+		if (SlotData.bIsEmpty)
+		{
+			return true;
+		}
+		if (SlotData.Item->ID == ItemID &&
+			(SlotData.Item->NumericData.MaxStackSize - SlotData.Item->Quantity >= Quantity))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 FAWeekItemAddResult UAWeekInventoryComponent::HandleAddItem(UAWeekItemBase* InputItem)

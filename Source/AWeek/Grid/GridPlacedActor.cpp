@@ -64,7 +64,7 @@ void AGridPlacedActor::BeginPlay()
 
 	//Fracture 작동 테스트
 	
-	GetWorldTimerManager().SetTimer(TimerHandle2, this, &AGridPlacedActor::BrokeStructure, 3.0f, false);
+	// GetWorldTimerManager().SetTimer(TimerHandle2, this, &AGridPlacedActor::BrokeStructure, 3.0f, false);
 }
 
 // Called every frame

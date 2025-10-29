@@ -21,6 +21,7 @@ void SAWeekCrossHairMarkerWidget::Construct(const FArguments& InArgs)
 	Radius = InArgs._Radius;
 	bColorAndOpacitySet = InArgs._ColorAndOpacity.IsSet();
 	ColorAndOpacity = InArgs._ColorAndOpacity;
+	bReticleCornerOutsideSpreadRadius = InArgs._bReticleCornerOutsideSpreadRadius;
 }
 
 FSlateRenderTransform SAWeekCrossHairMarkerWidget::GetMarkerRenderTransform(const FCircumferenceMarkerEntry& Marker, const float BaseRadius, const float HUDScale) const

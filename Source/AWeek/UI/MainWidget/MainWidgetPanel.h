@@ -14,5 +14,5 @@ class AWEEK_API UMainWidgetPanel : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
 public:
-	void SetActive();
+	virtual void SetActive();
 };

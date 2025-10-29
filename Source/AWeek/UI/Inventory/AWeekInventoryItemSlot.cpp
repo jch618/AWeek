@@ -5,7 +5,7 @@
 #include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
-#include "AWeek/Player/AWeekUIController.h"
+#include "AWeek/Player/AWeekPlayerController.h"
 
 // engine
 #include "AWeek/UI/AWeekGameUIManager.h"
@@ -36,7 +36,7 @@ void UAWeekInventoryItemSlot::InitializeInventoryItemSlot(TObjectPtr<UAWeekItemB
 	}
 
 
-	AAWeekUIController* Controller = Cast<AAWeekUIController>(GetWorld()->GetFirstPlayerController());
+	AAWeekPlayerController* Controller = Cast<AAWeekPlayerController>(GetWorld()->GetFirstPlayerController());
 	UAWeekGameUIManager* UIManager = GetGameInstance()->GetSubsystem<UAWeekGameUIManager>();
 	OnLeftClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotLeftClick);
 	OnRightClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotRightClick);

@@ -19,10 +19,12 @@ class AWEEK_API UAWeekCraftingListPanel : public UAWeekActivatableWidget
 	GENERATED_BODY()
 
 public:
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnRecipeSelected, int32 SelectedRecipeIndex);
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnRecipeSelected, int32 SelectedRecipeIndex, bool bIsCraftable);
 	FOnRecipeSelected OnRecipeSelected;
 
 	FORCEINLINE void SetCraftingComponent(UAWeekCraftingComponent* NewCraftingComponent) { CraftingComponent = NewCraftingComponent; }
+
+	void RefreshCraftingList();
 protected:
 	UAWeekCraftingListPanel();
 	
@@ -39,5 +41,4 @@ protected:
 	int32 NumCols;
 
 	virtual void NativeConstruct() override;
-	void RefreshCraftingList();
 };

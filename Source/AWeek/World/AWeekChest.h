@@ -40,7 +40,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Chest")
 	TObjectPtr<UStaticMeshComponent> ChestMesh;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = "Chest")
 	TObjectPtr<USphereComponent> ChestExitSphere;
 
 	UPROPERTY(EditAnywhere, Category = "Chest | Initialization")

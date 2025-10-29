@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AWeek/Grid/TestWidget/MainUIWidget.h"
+#include "AWeek/UI/MainWidget/MainUIWidget.h"
 #include "AWeek/UI/AWeekActivatableWidget.h"
 
 void UMainUIWidget::NativeConstruct()

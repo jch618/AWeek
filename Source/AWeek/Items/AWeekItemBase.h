@@ -54,7 +54,7 @@ public:
 	//================================================================
 	UAWeekItemBase();
 
-	void InitializeItem(const FAWeekItemData* ItemData, int32 InQuantity);
+	void InitializeItem(const FAWeekItemData& ItemData, int32 InQuantity);
 	
 	UFUNCTION(Category = "Item")
 	UAWeekItemBase* CreateItemCopy() const;

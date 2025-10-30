@@ -15,6 +15,9 @@ class AWEEK_API UAWeekAudioSettings : public UDeveloperSettings
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(Config, EditAnywhere, Category = "AudioSettings", meta = (AllowedClasses = "SoundMix"))
+	FSoftObjectPath DefaultSoundMix;
+
 	UPROPERTY(Config, EditAnywhere, Category = "AudioSettings", meta = (AllowedClasses = "SoundClass"))
 	FSoftObjectPath OverallClassPath;
 

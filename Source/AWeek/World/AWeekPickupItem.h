@@ -30,7 +30,7 @@ public:
 
 	void InitializeDrop(TObjectPtr<UAWeekItemBase> ItemToDrop, const int32 InQuantity);
 
-	FORCEINLINE TObjectPtr<UAWeekItemBase> GetItemData() { return ItemReference; }
+	FORCEINLINE TObjectPtr<UAWeekItemBase> GetItemData() { return Item; }
 
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
@@ -44,7 +44,7 @@ protected:
 	TObjectPtr<UStaticMeshComponent> PickupMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Pickup | Item Reference")
-	TObjectPtr<UAWeekItemBase> ItemReference;
+	TObjectPtr<UAWeekItemBase> Item;
 
 	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Initialization")
 	int32 ItemQuantity;

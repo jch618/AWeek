@@ -53,12 +53,12 @@ void UAWeekInventoryMainPanel::NativeConstruct()
 
 UAWeekInventoryComponent* UAWeekInventoryMainPanel::GetPlayerInventoryComponent() const
 {
-	return PlayerInventoryPanel->GetInventoryReference();
+	return PlayerInventoryPanel->GetInventory();
 }
 
 UAWeekInventoryComponent* UAWeekInventoryMainPanel::GetChestInventoryComponent() const
 {
-	return ChestInventoryPanel->GetInventoryReference();
+	return ChestInventoryPanel->GetInventory();
 }
 
 void UAWeekInventoryMainPanel::InitializeInventoryMainPanel()

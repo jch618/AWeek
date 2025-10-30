@@ -304,7 +304,7 @@ void UAWeekGameUIManager::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TO
 		else
 		{
 			// if target slot item is same as clicked item, merge item quantity as possible and hold remaining quantity of item 
-			if (ClickedItemSlot.Item->ID == HeldItem->GetItemReference()->ID)
+			if (ClickedItemSlot.Item->GetID() == HeldItem->GetItem()->GetID())
 			{
 				MergeItem(ClickedItemSlotIndex, OwningInventory);
 			}
@@ -313,7 +313,7 @@ void UAWeekGameUIManager::HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TO
 			{
 				UAWeekItemBase* ClickedItem = OwningInventory->ReleaseItemAt(ClickedItemSlotIndex);
 				OwningInventory->PlaceItemAt(HeldItem->ReleaseHeldItem(), ClickedItemSlotIndex);
-				HeldItem->SetItemReference(ClickedItem);
+				HeldItem->SetItem(ClickedItem);
 			}
 		}
 	}
@@ -334,10 +334,10 @@ void UAWeekGameUIManager::HandleItemSlotRightClick(int32 ClickedItemSlotIndex, T
 	{
 		if (!ClickedItemSlot.bIsEmpty)
 		{
-			if (HeldItem->GetItemReference()->ID == ClickedItemSlot.Item->ID)
+			if (HeldItem->GetItem()->GetID() == ClickedItemSlot.Item->GetID())
 			{
 				OwningInventory->RemoveAmountOfItem(ClickedItemSlotIndex, 1);
-				HeldItem->SetHeldItemQuantity(HeldItem->GetItemReference()->Quantity + 1);
+				HeldItem->SetHeldItemQuantity(HeldItem->GetItem()->GetQuantity() + 1);
 			}
 		}
 	}
@@ -358,7 +358,7 @@ void UAWeekGameUIManager::MergeItem(int32 ClickedItemSlotIndex, TObjectPtr<UAWee
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s: Merge Item"), *FString(__FUNCTION__));
 
-	int32 HeldItemQuantity = HeldItem->GetItemReference()->Quantity;
+	int32 HeldItemQuantity = HeldItem->GetItem()->GetQuantity();
 	int32 ActualAmountAdded = OwningInventory->AddItemQuantityAt(ClickedItemSlotIndex, HeldItemQuantity);
 	HeldItemQuantity -= ActualAmountAdded;
 	HeldItem->SetHeldItemQuantity(HeldItemQuantity);
@@ -379,7 +379,7 @@ void UAWeekGameUIManager::CreateHeldItem(TObjectPtr<UAWeekItemBase> NewHeldItem,
 		{
 			FHeldItemData HeldItemData;
 			HeldItemData.HeldItemVisual = HeldItemVisual;
-			HeldItemData.ItemReference = NewHeldItem;
+			HeldItemData.Item = NewHeldItem;
 			HeldItemData.SourceInventory = SourceInventory;
 			HeldItemData.SourceSlotIndex = SourceItemSlotIndex;
 

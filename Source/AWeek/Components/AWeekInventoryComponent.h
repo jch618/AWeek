@@ -20,8 +20,8 @@ struct FAWeekInventorySlotData
 {
 	GENERATED_BODY()
 
-	FAWeekInventorySlotData(int32 NewItemSlotIndex, UAWeekInventoryComponent* NewOwningInventory, UAWeekItemBase* NewItem = nullptr) :
-		bIsEmpty(NewItem == nullptr), ItemSlotIndex(NewItemSlotIndex), OwningInventory(NewOwningInventory), Item(NewItem)
+	FAWeekInventorySlotData(int32 InItemSlotIndex, UAWeekInventoryComponent* InOwningInventory, UAWeekItemBase* NewItem = nullptr) :
+		bIsEmpty(NewItem == nullptr), ItemSlotIndex(InItemSlotIndex), OwningInventory(InOwningInventory), Item(NewItem)
 	{ }
 	FAWeekInventorySlotData() :
 		bIsEmpty(true), ItemSlotIndex(-1), OwningInventory(nullptr), Item(nullptr)

@@ -23,7 +23,7 @@ struct FHeldItemData
 	TObjectPtr<UAWeekHeldItemVisual> HeldItemVisual;
 
 	UPROPERTY()
-	TObjectPtr<UAWeekItemBase> ItemReference;
+	TObjectPtr<UAWeekItemBase> Item;
 
 	UPROPERTY()
 	TObjectPtr<UAWeekInventoryComponent> SourceInventory;
@@ -39,11 +39,11 @@ class AWEEK_API UAWeekHeldItem : public UObject
 public:
 	UAWeekHeldItem();
 	
-	FORCEINLINE bool IsEmpty() const { return HeldItemData.ItemReference == nullptr; }
+	FORCEINLINE bool IsEmpty() const { return HeldItemData.Item == nullptr; }
 	FORCEINLINE const UAWeekInventoryComponent* GetSourceInventory() const { return HeldItemData.SourceInventory; }
-	FORCEINLINE const UAWeekItemBase* GetItemReference() const { return HeldItemData.ItemReference; }
+	FORCEINLINE const UAWeekItemBase* GetItem() const { return HeldItemData.Item; }
 	void SetHeldItemQuantity(int32 Quantity);
-	void SetItemReference(TObjectPtr<UAWeekItemBase> NewItemReference);
+	void SetItem(TObjectPtr<UAWeekItemBase> Item);
 	UAWeekItemBase* ReleaseHeldItem();
 	void InitializeHeldItem(const FHeldItemData& NewHeldItemData);
 	void UpdateHeldVisualPosition(FVector2D MousePos);

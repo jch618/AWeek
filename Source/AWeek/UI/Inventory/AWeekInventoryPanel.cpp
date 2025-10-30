@@ -61,12 +61,12 @@ void UAWeekInventoryPanel::LinkToInventory(TObjectPtr<UAWeekInventoryComponent> 
 	if (InputInventory)
 	{
 		// verify that the inventory reference is different from the incoming inventory
-		if (this->InventoryReference != InputInventory)
+		if (this->Inventory != InputInventory)
 		{
-			this->InventoryReference = InputInventory;
-			this->InventoryReference->SetIsLinkedToInventoryPanel(true);
+			this->Inventory = InputInventory;
+			this->Inventory->SetIsLinkedToInventoryPanel(true);
 			// bind the delegate so that changes in the linked inventory call RefreshInventory
-			this->InventoryReference->OnInventoryUpdated.AddUObject(this, &UAWeekInventoryPanel::RefreshInventory);
+			this->Inventory->OnInventoryUpdated.AddUObject(this, &UAWeekInventoryPanel::RefreshInventory);
 
 			// update the panel text and display its contents
 			SetInfoText();
@@ -85,7 +85,7 @@ void UAWeekInventoryPanel::LinkToInventory(TObjectPtr<UAWeekInventoryComponent> 
 				L"%s: Inventory %s is already linked to inventory: %s",
 				*FString(__FUNCTION__),
 				*GetName(),
-				*InventoryReference->GetName());
+				*Inventory->GetName());
 		}
 	}
 	else
@@ -99,16 +99,16 @@ void UAWeekInventoryPanel::UnlinkFromInventory()
 {
 	UE_LOG(LogTemp, Error, TEXT("Unlink To Inventory"));
 	
-	InventoryReference->SetIsLinkedToInventoryPanel(false);
+	Inventory->SetIsLinkedToInventoryPanel(false);
 	// removes all functions from the delegate's invocation list that are bound to the specified UserObject
-	const uint8 DelegatesRemoved = InventoryReference->OnInventoryUpdated.RemoveAll(this);
+	const uint8 DelegatesRemoved = Inventory->OnInventoryUpdated.RemoveAll(this);
 	if (DelegatesRemoved > 0)
 	{
 		UE_LOG(LogTemp, Warning, L"%s: %d InventoryWasUpdated delegates unbound from %s.",
 			*FString(__FUNCTION__), DelegatesRemoved, *GetName());
 	}
 
-	InventoryReference = nullptr;
+	Inventory = nullptr;
 	//if (IsValid(SubMenu))
 	//{
 	//	SubMenu->BeginDestroy();
@@ -121,11 +121,11 @@ void UAWeekInventoryPanel::UnlinkFromInventory()
 void UAWeekInventoryPanel::RefreshInventory()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	if (InventoryReference && InventorySlotClass)
+	if (Inventory && InventorySlotClass)
 	{
 		InventoryGridPanel->ClearChildren();
 
-		const TArray<FAWeekInventorySlotData>& InventoryContents = InventoryReference->GetInventoryContents();
+		const TArray<FAWeekInventorySlotData>& InventoryContents = Inventory->GetInventoryContents();
 		//UE_LOG(LogTemp, Warning, TEXT("%s: InventorySlots = %d"), *FString(__FUNCTION__), InventoryContents.Num());
 		if (InventorySlotClass == nullptr)
 		{
@@ -136,8 +136,8 @@ void UAWeekInventoryPanel::RefreshInventory()
 		{
 			TObjectPtr<UAWeekInventoryItemSlot> ItemSlot = CreateWidget<UAWeekInventoryItemSlot>(this, InventorySlotClass);
 			ItemSlot->SetItemSlotIndex(i);
-			ItemSlot->SetInventory(InventoryReference);
-			ItemSlot->InitializeInventoryItemSlot(InventoryReference->GetItemSlotAt(i).Item);
+			ItemSlot->SetInventory(Inventory);
+			ItemSlot->InitializeInventoryItemSlot(Inventory->GetItemSlotAt(i).Item);
 
 			UUniformGridSlot* GridSlot = InventoryGridPanel->AddChildToUniformGrid(ItemSlot,
 				InventoryContents[i].ItemSlotIndex / NumCols,
@@ -156,12 +156,12 @@ void UAWeekInventoryPanel::HandleShiftClickOnSlot(const FAWeekInventorySlotData&
 void UAWeekInventoryPanel::SetInfoText() const
 {
 	const FString WeightInfoValue =
-		FString::SanitizeFloat(InventoryReference->GetInventoryTotalWeight()) + "/"
-		+ FString::SanitizeFloat(InventoryReference->GetWeightCapacity());
+		FString::SanitizeFloat(Inventory->GetInventoryTotalWeight()) + "/"
+		+ FString::SanitizeFloat(Inventory->GetWeightCapacity());
 
 	const FString CapacityInfoValue =
-		FString::FromInt(InventoryReference->GetSlotsCapacity() - InventoryReference->GetEmptySlotsNum()) + "/"
-		+ FString::FromInt(InventoryReference->GetSlotsCapacity());
+		FString::FromInt(Inventory->GetSlotsCapacity() - Inventory->GetEmptySlotsNum()) + "/"
+		+ FString::FromInt(Inventory->GetSlotsCapacity());
 
 	WeightInfo->SetText(FText::FromString(WeightInfoValue));
 	CapacityInfo->SetText(FText::FromString(CapacityInfoValue));
@@ -177,7 +177,7 @@ bool UAWeekInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDrag
 	}
 	const FAWeekInventorySlotData& ItemSlot = ItemDragDrop->SourceInventory->GetItemSlotAt(ItemDragDrop->ItemSlotIndex);
 
-	if (!ItemSlot.bIsEmpty && InventoryReference)
+	if (!ItemSlot.bIsEmpty && Inventory)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Detected an item drop on InventoryPanel"));
 

@@ -28,7 +28,7 @@ public:
 	bool bIsLinkedToInventory;
 
 	UAWeekInventoryPanel();
-	FORCEINLINE UAWeekInventoryComponent* GetInventoryReference() { return InventoryReference; }
+	FORCEINLINE UAWeekInventoryComponent* GetInventory() { return Inventory; }
 	UFUNCTION()
 	void RefreshInventory();
 	void LinkToInventory(TObjectPtr<UAWeekInventoryComponent> InputInventory, TObjectPtr<AAWeekPlayerCharacter> InputCharacter = nullptr);
@@ -51,7 +51,7 @@ protected:
 	AAWeekPlayerCharacter* PlayerCharacter;
 
 	UPROPERTY()
-	UAWeekInventoryComponent* InventoryReference;
+	UAWeekInventoryComponent* Inventory;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UAWeekInventoryItemSlot> InventorySlotClass;

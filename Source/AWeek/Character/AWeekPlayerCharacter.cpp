@@ -724,7 +724,6 @@ void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekInventorySlotData& 
 	const int32 RemoveQuantity = ItemSlot.OwningInventory->RemoveAmountOfItem(ItemSlot.ItemSlotIndex, QuantityToDrop);
 
 	AAWeekPickupItem* Pickup = GetWorld()->SpawnActor<AAWeekPickupItem>(AAWeekPickupItem::StaticClass(), SpawnTransform, SpawnParams);
-
 	Pickup->InitializeDrop(ItemToDrop, RemoveQuantity);
 }
 

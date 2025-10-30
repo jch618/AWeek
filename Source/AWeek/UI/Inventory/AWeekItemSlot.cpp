@@ -8,29 +8,11 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 
-void UAWeekItemSlot::InitializeItemSlot(const FAWeekItemData& ItemData, int32 ItemQuantity)
+void UAWeekItemSlot::InitializeItemSlot(const FAWeekItemData& ItemData, const int Quantity)
 {
-	InitializeItemSlot(ItemData.ItemQuality, ItemData.NumericData, ItemData.AssetData, ItemQuantity);
-}
-
-void UAWeekItemSlot::InitializeItemSlot(TObjectPtr<UAWeekItemBase> ItemReference)
-{
-	if (IsValid(ItemReference))
-	{
-		InitializeItemSlot(ItemReference->ItemQuality, ItemReference->NumericData, ItemReference->AssetData, ItemReference->Quantity);
-	}
-	else
-	{
-		ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
-		ItemIcon->SetVisibility(ESlateVisibility::Collapsed);
-		ItemBorder->SetBrushColor(FLinearColor(0.1f, 0.1f, 0.1f));
-	}
-}
-
-void UAWeekItemSlot::InitializeItemSlot(EAWeekItemQuality ItemQuality, const FAWeekItemNumericData& ItemNumericData,
-                                        const FAWeekItemAssetData& ItemAssetData, int32 ItemQuantity)
-{
-	switch (ItemQuality)
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	
+	switch (ItemData.ItemQuality)
 	{
 	case EAWeekItemQuality::Shoddy:
 		ItemBorder->SetBrushColor(FLinearColor::Gray);
@@ -51,14 +33,30 @@ void UAWeekItemSlot::InitializeItemSlot(EAWeekItemQuality ItemQuality, const FAW
 		break;
 	}
 
-	ItemIcon->SetBrushFromTexture(ItemAssetData.Icon);
+	ItemIcon->SetBrushFromTexture(ItemData.AssetData.Icon);
 
-	if (ItemNumericData.bIsStackable)
+	if (ItemData.NumericData.bIsStackable)
 	{
-		ItemQuantityText->SetText(FText::AsNumber(ItemQuantity));
+		ItemQuantityText->SetText(FText::AsNumber(Quantity));
 	}
 	else
 	{
 		ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
+
+void UAWeekItemSlot::InitializeItemSlot(const TObjectPtr<UAWeekItemBase> Item)
+{
+	if (IsValid(Item))
+	{
+		InitializeItemSlot(Item->GetItemData(), Item->GetQuantity());
+	}
+	else
+	{
+		ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
+		ItemIcon->SetVisibility(ESlateVisibility::Collapsed);
+		ItemBorder->SetBrushColor(FLinearColor(0.1f, 0.1f, 0.1f));
+	}
+}
+
+

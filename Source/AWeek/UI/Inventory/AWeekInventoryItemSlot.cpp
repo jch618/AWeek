@@ -12,21 +12,21 @@
 #include "Components/Image.h"
 
 
-const UAWeekItemBase* UAWeekInventoryItemSlot::GetItemReference() const
+const UAWeekItemBase* UAWeekInventoryItemSlot::GetItem() const
 {
 	return OwningInventory->GetItemSlotAt(ItemSlotIndex).Item;
 }
 
-void UAWeekInventoryItemSlot::InitializeInventoryItemSlot(TObjectPtr<UAWeekItemBase> ItemReference)
+void UAWeekInventoryItemSlot::InitializeInventoryItemSlot(const TObjectPtr<UAWeekItemBase> Item)
 {
-	Super::InitializeItemSlot(ItemReference);
-	
-	if (IsValid(ItemReference) && ToolTipClass)
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	Super::InitializeItemSlot(Item);
+	if (IsValid(Item) && ToolTipClass)
 	{
 		UAWeekInventoryToolTip* ToolTip = CreateWidget<UAWeekInventoryToolTip>(this, ToolTipClass);
 		if (IsValid(ToolTip))
 		{
-			ToolTip->InitializeToolTip(this);
+			ToolTip->InitializeToolTip(Item);
 			SetToolTip(ToolTip);
 		}
 		else
@@ -34,8 +34,7 @@ void UAWeekInventoryItemSlot::InitializeInventoryItemSlot(TObjectPtr<UAWeekItemB
 			UE_LOG(LogTemp, Warning, TEXT("%s: ToolTip is invalid"), *FString(__FUNCTION__));
 		}
 	}
-
-
+	
 	AAWeekPlayerController* Controller = Cast<AAWeekPlayerController>(GetWorld()->GetFirstPlayerController());
 	UAWeekGameUIManager* UIManager = GetGameInstance()->GetSubsystem<UAWeekGameUIManager>();
 	OnLeftClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotLeftClick);

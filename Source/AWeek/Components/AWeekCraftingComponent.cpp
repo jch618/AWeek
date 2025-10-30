@@ -90,9 +90,7 @@ bool UAWeekCraftingComponent::TryConsumeIngredients(const TArray<FAWeekItemEntry
 
 UAWeekItemBase* UAWeekCraftingComponent::CreateCraftedItem(const FAWeekItemEntry& CraftedItemEntry)
 {
-	UAWeekItemBase* ResultItem = NewObject<UAWeekItemBase>(this, UAWeekItemBase::StaticClass());
-	ResultItem->InitializeItem(CraftedItemEntry.ItemData, CraftedItemEntry.Quantity);
-	return ResultItem;
+	return UAWeekItemBase::CreateFromData(CraftedItemEntry.ItemData, CraftedItemEntry.Quantity, this);
 }
 
 void UAWeekCraftingComponent::CacheCraftingRecipes()

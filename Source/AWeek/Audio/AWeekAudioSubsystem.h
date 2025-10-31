@@ -26,6 +26,8 @@ class AWEEK_API UAWeekAudioSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 public:
+	static UAWeekAudioSubsystem* Get(const UWorld* World);
+	
 	virtual void PostInitialize() override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	

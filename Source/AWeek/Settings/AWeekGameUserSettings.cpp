@@ -3,6 +3,8 @@
 
 #include "AWeekGameUserSettings.h"
 
+#include "AWeek/Audio/AWeekAudioSubsystem.h"
+
 UAWeekGameUserSettings* UAWeekGameUserSettings::Get()
 {
 	return CastChecked<UAWeekGameUserSettings>(GEngine->GetGameUserSettings());
@@ -16,6 +18,10 @@ float UAWeekGameUserSettings::GetOverallVolume() const
 void UAWeekGameUserSettings::SetOverallVolume(float InOverallVolume)
 {
 	OverallVolume = InOverallVolume;
+	if (const UWorld* World = GEngine->GetCurrentPlayWorld())
+	{
+		UAWeekAudioSubsystem::Get(World)->SetSoundVolume(ESoundChannel::Overall, OverallVolume);
+	}
 }
 
 float UAWeekGameUserSettings::GetMusicVolume() const

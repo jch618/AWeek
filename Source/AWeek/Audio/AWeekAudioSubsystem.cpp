@@ -9,6 +9,11 @@
 #include "Sound/SoundClass.h"
 #include "Sound/SoundMix.h"
 
+UAWeekAudioSubsystem* UAWeekAudioSubsystem::Get(const UWorld* World)
+{
+	return IsValid(World) == true ? World->GetSubsystem<UAWeekAudioSubsystem>() : nullptr;
+}
+
 void UAWeekAudioSubsystem::PostInitialize()
 {
 	Super::PostInitialize();
@@ -37,7 +42,7 @@ void UAWeekAudioSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	Super::OnWorldBeginPlay(InWorld);
 
 	check(DefaultSoundMix);
-	
+
 	UGameplayStatics::SetBaseSoundMix(&InWorld, DefaultSoundMix);
 	UGameplayStatics::PushSoundMixModifier(&InWorld, DefaultSoundMix);
 }
@@ -53,7 +58,7 @@ void UAWeekAudioSubsystem::SetSoundVolume(const ESoundChannel Channel, const flo
 			Volume,
 			1.0f,
 			0.0f,
-			false);
+			true);
 	}
 }
 

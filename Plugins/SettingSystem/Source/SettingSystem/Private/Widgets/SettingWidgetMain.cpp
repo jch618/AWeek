@@ -4,6 +4,7 @@
 #include "Widgets/SettingWidgetMain.h"
 
 #include "SettingRegistry.h"
+#include "Widgets/SettingWidgetPanel.h"
 
 void USettingWidgetMain::NativeConstruct()
 {
@@ -33,7 +34,7 @@ void USettingWidgetMain::Cancel()
 void USettingWidgetMain::SetPanelSetting(FName DevName)
 {
 	USettingItem* Setting = Registry->FindByRootSettingDevName(DevName);
-
+	Panel->RefreshSetting(Setting);
 	// Panel에 정리
 }
 

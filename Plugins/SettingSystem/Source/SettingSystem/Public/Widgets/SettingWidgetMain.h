@@ -6,6 +6,7 @@
 #include "CommonActivatableWidget.h"
 #include "SettingWidgetMain.generated.h"
 
+class USettingWidgetPanel;
 class USettingItem;
 class USettingRegistry;
 /**
@@ -38,4 +39,7 @@ protected:
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<USettingRegistry> Registry;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USettingWidgetPanel> Panel;
 };

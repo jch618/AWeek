@@ -38,7 +38,7 @@ public class SettingSystem : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"PropertyPath",
+				"PropertyPath", "CommonUI","UMG"
 			}
 			);
 	}

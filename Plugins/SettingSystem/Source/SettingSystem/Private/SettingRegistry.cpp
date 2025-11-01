@@ -3,6 +3,8 @@
 
 #include "SettingRegistry.h"
 
+#include "SettingValueItem.h"
+
 void USettingRegistry::Init(ULocalPlayer* InLocalPlayer)
 {
 }
@@ -13,6 +15,19 @@ void USettingRegistry::Apply()
 	{
 		USettingItem* Setting = Entry.Value;
 		Setting->Apply();
+	}
+
+	DirtySettings.Reset();
+}
+
+void USettingRegistry::Cancel()
+{
+	for (auto Entry:DirtySettings)
+	{
+		if (USettingValueItem* Setting = Cast<USettingValueItem>(Entry.Value))
+		{
+			Setting->Restore();
+		}
 	}
 
 	DirtySettings.Reset();

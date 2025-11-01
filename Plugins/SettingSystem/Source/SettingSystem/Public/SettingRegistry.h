@@ -23,6 +23,7 @@ public:
 public:
 	virtual void Init(ULocalPlayer* InLocalPlayer);
 	virtual void Apply();
+	virtual void Cancel();
 
 	void RegisterSetting(USettingItem* Setting);
 	void InitSetting(USettingItem* Setting);

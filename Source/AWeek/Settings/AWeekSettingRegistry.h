@@ -21,5 +21,6 @@ protected:
 	USettingItem* RegisterAudioSetting();
 
 protected:
+	UPROPERTY()
 	TObjectPtr<USettingItem> AudioSetting;
 };

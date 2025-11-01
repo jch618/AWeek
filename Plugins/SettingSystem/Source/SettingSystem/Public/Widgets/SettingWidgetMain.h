@@ -1,0 +1,38 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "CommonActivatableWidget.h"
+#include "SettingWidgetMain.generated.h"
+
+class USettingItem;
+class USettingRegistry;
+/**
+ * 
+ */
+UCLASS()
+class SETTINGSYSTEM_API USettingWidgetMain : public UCommonActivatableWidget
+{
+	GENERATED_BODY()
+
+protected:
+	virtual void NativeConstruct() override;
+	
+	UFUNCTION(BlueprintCallable)
+	void Apply();
+
+	UFUNCTION(BlueprintCallable)
+	void Cancel();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	USettingRegistry* CreateRegistry();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ChangeDirtyState(bool bSettingDirty);
+	
+	void HandleSettingChanged(USettingItem* Setting);
+private:
+	UPROPERTY(Transient)
+	TObjectPtr<USettingRegistry> Registry;
+};

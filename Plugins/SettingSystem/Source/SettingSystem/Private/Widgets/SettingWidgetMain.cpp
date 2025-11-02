@@ -9,9 +9,10 @@
 
 void USettingWidgetMain::NativeConstruct()
 {
-	Super::NativeConstruct();
 	Registry = CreateRegistry();
+	Registry->Init(GetOwningLocalPlayer());
 	Registry->OnSettingChanged.AddUObject(this, &ThisClass::HandleSettingChanged);
+	Super::NativeConstruct();
 }
 
 void USettingWidgetMain::Apply()
@@ -30,11 +31,6 @@ void USettingWidgetMain::Cancel()
 		Registry->Cancel();
 	}
 	ChangeDirtyState(false);
-}
-
-void USettingWidgetMain::RegisterSettingTab(const FTabRegistry& TabRegistry)
-{
-	TabList->RegisterTab(TabRegistry.DevName, TabRegistry.ButtonWidgetType, nullptr);
 }
 
 void USettingWidgetMain::SetPanelSetting(FName DevName)

@@ -28,6 +28,7 @@ public:
 	void RegisterSetting(USettingItem* Setting);
 	void InitSetting(USettingItem* Setting);
 
+	UFUNCTION(BlueprintCallable)
 	USettingItem* FindByRootSettingDevName(const FName&  DevName);
 protected:
 	void HandleSettingChanged(USettingItem* Setting);

@@ -50,10 +50,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void Cancel();
-
-	UFUNCTION(BlueprintCallable)
-	void RegisterSettingTab(const FTabRegistry& TabRegistry);
-
+	
 	UFUNCTION(BlueprintCallable)
 	void SetPanelSetting(FName DevName);
 
@@ -71,7 +68,4 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USettingWidgetPanel> Panel;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UCommonTabListWidgetBase> TabList;
 };

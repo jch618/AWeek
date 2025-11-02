@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class AWEEK_API UAWeekSettingRegistry : public USettingRegistry
 {
 	GENERATED_BODY()

@@ -3,6 +3,7 @@
 
 #include "Widgets/SettingWidgetMain.h"
 
+#include "CommonTabListWidgetBase.h"
 #include "SettingRegistry.h"
 #include "Widgets/SettingWidgetPanel.h"
 
@@ -29,6 +30,11 @@ void USettingWidgetMain::Cancel()
 		Registry->Cancel();
 	}
 	ChangeDirtyState(false);
+}
+
+void USettingWidgetMain::RegisterSettingTab(const FTabRegistry& TabRegistry)
+{
+	TabList->RegisterTab(TabRegistry.DevName, TabRegistry.ButtonWidgetType, nullptr);
 }
 
 void USettingWidgetMain::SetPanelSetting(FName DevName)

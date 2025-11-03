@@ -15,5 +15,5 @@ TSubclassOf<UUserWidget> USettingWidgetTypeData::GetListViewItemForSetting(const
 			return ListViewItem;
 		}
 	}
-	return TSubclassOf<USettingListViewItem>();
+	return nullptr;
 }

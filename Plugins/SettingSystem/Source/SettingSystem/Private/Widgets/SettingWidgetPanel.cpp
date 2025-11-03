@@ -8,22 +8,20 @@
 
 void USettingWidgetPanel::RefreshSetting(USettingItem* RootSetting)
 {
-	TArray<USettingItem*> CurrentSettings;
+	TArray<UObject*> CurrentSettings;
 	if (RootSetting)
 	{
 		AppendSettingChild(RootSetting, CurrentSettings);
 	}
-
 	ListView->SetListItems(CurrentSettings);
 }
 
-void USettingWidgetPanel::AppendSettingChild(USettingItem* Setting, TArray<USettingItem*>& InOutSettings)
+void USettingWidgetPanel::AppendSettingChild(USettingItem* Setting, TArray<UObject*>& InOutSettings)
 {
 	InOutSettings.Add(Setting);
 
 	for (USettingItem* Child: Setting->GetSettings())
 	{
-		InOutSettings.Add(Child);
 		AppendSettingChild(Child, InOutSettings);
 	}
 }

@@ -11,13 +11,13 @@ class USettingWidgetTypeData;
  * 
  */
 UCLASS()
-class SETTINGSYSTEM_API USettingListView : public UCommonListView
+class SETTINGSYSTEM_API USettingListView : public UListView
 {
 	GENERATED_BODY()
 
 	virtual TSubclassOf<UUserWidget> GetDesiredEntryClassForItem(UObject* Item) const override;
-
+	virtual UUserWidget& OnGenerateEntryWidgetInternal(UObject* Item, TSubclassOf<UUserWidget> DesiredEntryClass, const TSharedRef<STableViewBase>& OwnerTable) override;
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<USettingWidgetTypeData> WidgetTypeData;
 };

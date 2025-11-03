@@ -20,7 +20,7 @@ public:
 	void RefreshSetting(USettingItem* RootSetting);
 
 protected:
-	void AppendSettingChild(USettingItem* Setting, TArray<USettingItem*>& InOutSettings);
+	void AppendSettingChild(USettingItem* Setting, TArray<UObject*>& InOutSettings);
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<USettingListView> ListView;

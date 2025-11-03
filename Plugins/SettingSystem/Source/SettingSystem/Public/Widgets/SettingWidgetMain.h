@@ -50,12 +50,14 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void Cancel();
-	
+
 	UFUNCTION(BlueprintCallable)
 	void SetPanelSetting(FName DevName);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	USettingRegistry* CreateRegistry();
+	UFUNCTION(BlueprintCallable)
+	USettingItem* FindByRootSettingDevName(const FName& DevName);
+
+	virtual USettingRegistry* CreateRegistry() PURE_VIRTUAL(CreateRegistry, return nullptr;);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeDirtyState(bool bSettingDirty);

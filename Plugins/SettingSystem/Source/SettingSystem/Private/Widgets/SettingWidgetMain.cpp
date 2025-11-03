@@ -39,6 +39,16 @@ void USettingWidgetMain::SetPanelSetting(FName DevName)
 	Panel->RefreshSetting(Setting);
 }
 
+USettingItem* USettingWidgetMain::FindByRootSettingDevName(const FName& DevName)
+{
+	if (Registry)
+	{
+		return Registry->FindByRootSettingDevName(DevName);
+	}
+
+	return nullptr;
+}
+
 void USettingWidgetMain::HandleSettingChanged(USettingItem* Setting)
 {
 	ChangeDirtyState(true);

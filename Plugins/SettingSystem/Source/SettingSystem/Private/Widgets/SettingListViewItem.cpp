@@ -7,10 +7,13 @@
 
 void USettingListViewItem::Init(USettingItem* InGameSetting)
 {
-	Setting = InGameSetting;
-	DisplayText = Setting->GetDisplayName();
-	Setting->OnSettingChangedEvent.AddUObject(this, &ThisClass::HandleSettingChangedApplied);
-	HandleInit();
+	if (InGameSetting)
+	{
+		Setting = InGameSetting;
+		DisplayText = Setting->GetDisplayName();
+		Setting->OnSettingChangedEvent.AddUObject(this, &ThisClass::HandleSettingChangedApplied);
+		HandleInit();
+	}
 }
 
 void USettingListViewItem::HandleSettingChangedApplied(USettingItem* ChangedSetting)

@@ -32,4 +32,8 @@ float UAWeekGameUserSettings::GetMusicVolume() const
 void UAWeekGameUserSettings::SetMusicVolume(float InMusicVolume)
 {
 	MusicVolume = InMusicVolume;
+	if (const UWorld* World = GEngine->GetCurrentPlayWorld())
+	{
+		UAWeekAudioSubsystem::Get(World)->SetSoundVolume(ESoundChannel::Music, MusicVolume);
+	}
 }

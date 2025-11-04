@@ -15,6 +15,10 @@ void USettingRegistry::Apply()
 	{
 		USettingItem* Setting = Entry.Value;
 		Setting->Apply();
+		if (USettingValueItem* SettingValueItem = Cast<USettingValueItem>(Setting))
+		{
+			SettingValueItem->Store();
+		}
 	}
 
 	DirtySettings.Reset();
@@ -44,8 +48,8 @@ void USettingRegistry::RegisterSetting(USettingItem* Setting)
 
 void USettingRegistry::InitSetting(USettingItem* Setting)
 {
-	Setting->OnSettingChangedEvent.AddUObject(this, &USettingRegistry::HandleSettingApplied);
-	Setting->OnSettingAppliedEvent.AddUObject(this, &USettingRegistry::HandleSettingChanged);
+	Setting->OnSettingChangedEvent.AddUObject(this, &USettingRegistry::HandleSettingChanged);
+	Setting->OnSettingAppliedEvent.AddUObject(this, &USettingRegistry::HandleSettingApplied);
 	
 	for (USettingItem* ChildSetting: Setting->GetSettings())
 	{
@@ -74,4 +78,5 @@ void USettingRegistry::HandleSettingChanged(USettingItem* Setting)
 
 void USettingRegistry::HandleSettingApplied(USettingItem* Setting)
 {
+	
 }

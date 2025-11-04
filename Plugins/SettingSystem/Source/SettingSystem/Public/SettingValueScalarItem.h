@@ -18,12 +18,17 @@ public:
 	virtual void Reset() override;
 	virtual void Store() override;
 	virtual void Restore() override;
+
+	void SetInitialValue(double InValue);
 	
 	void SetValue(double InValue);
 	double GetValue();
 
 	void SetMinValue(double InMinValue);
 	void SetMaxValue(double InMaxValue);
+	
+	double GetMinValue();
+	double GetMaxValue();
 
 	void SetGetter(const TSharedRef<FSettingPropertyResolver>& InGetter);
 	void SetSetter(const TSharedRef<FSettingPropertyResolver>& InSetter);

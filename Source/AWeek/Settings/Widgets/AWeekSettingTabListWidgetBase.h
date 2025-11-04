@@ -35,7 +35,7 @@ public:
 
 protected:
 	virtual void HandleTabCreation_Implementation(FName TabNameID, UCommonButtonBase* TabButton) override;
-
+	
 	UPROPERTY()
 	TMap<FName, FAWeekSettingTabInfo> RegisteredTabs;
 };

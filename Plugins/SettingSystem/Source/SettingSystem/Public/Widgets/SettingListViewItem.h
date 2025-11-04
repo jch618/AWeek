@@ -7,6 +7,7 @@
 #include "Blueprint/IUserObjectListEntry.h"
 #include "SettingListViewItem.generated.h"
 
+class UTextBlock;
 class USettingItem;
 /**
  * 
@@ -28,6 +29,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	FText DisplayText;
 
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional))
+	TObjectPtr<UTextBlock> SettingTextBlock; 
 protected:
-	void HandleSettingChangedApplied(USettingItem* ChangedSetting);
+	virtual void HandleSettingChangedApplied(USettingItem* ChangedSetting);
 };

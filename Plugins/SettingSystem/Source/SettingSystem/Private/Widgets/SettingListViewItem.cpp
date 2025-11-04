@@ -4,6 +4,7 @@
 #include "Widgets/SettingListViewItem.h"
 
 #include "SettingItem.h"
+#include "Components/TextBlock.h"
 
 void USettingListViewItem::Init(USettingItem* InGameSetting)
 {
@@ -12,6 +13,10 @@ void USettingListViewItem::Init(USettingItem* InGameSetting)
 		Setting = InGameSetting;
 		DisplayText = Setting->GetDisplayName();
 		Setting->OnSettingChangedEvent.AddUObject(this, &ThisClass::HandleSettingChangedApplied);
+		if (SettingTextBlock)
+		{
+			SettingTextBlock->SetText(DisplayText);
+		}
 		HandleInit();
 	}
 }

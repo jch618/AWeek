@@ -23,6 +23,11 @@ void USettingValueScalarItem::Restore()
 	SetValue(InitialValue);
 }
 
+void USettingValueScalarItem::SetInitialValue(double InValue)
+{
+	InitialValue = InValue;
+}
+
 void USettingValueScalarItem::SetValue(double InValue)
 {
 	if (MinValue.IsSet())
@@ -59,6 +64,16 @@ void USettingValueScalarItem::SetMinValue(double InMinValue)
 void USettingValueScalarItem::SetMaxValue(double InMaxValue)
 {
 	MaxValue = InMaxValue;
+}
+
+double USettingValueScalarItem::GetMinValue()
+{
+	return MinValue.GetValue();
+}
+
+double USettingValueScalarItem::GetMaxValue()
+{
+	return MaxValue.GetValue();
 }
 
 void USettingValueScalarItem::SetGetter(const TSharedRef<FSettingPropertyResolver>& InGetter)

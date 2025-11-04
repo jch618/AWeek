@@ -21,7 +21,7 @@ void UAWeekSettingRegistry::Init(ULocalPlayer* InLocalPlayer)
 
 	OwningLocalPlayer = InLocalPlayer;
 	AudioSetting = RegisterAudioSetting();
-	RootSettings.Add(AudioSetting);
+	RegisterSetting(AudioSetting);
 }
 
 USettingItem* UAWeekSettingRegistry::RegisterAudioSetting()
@@ -34,10 +34,21 @@ USettingItem* UAWeekSettingRegistry::RegisterAudioSetting()
 	OverallSetting->SetDevName(TEXT("OverallSetting"));
 	OverallSetting->SetDisplayName(LOCTEXT("NAME_OverallSetting","OverallSetting"));
 	OverallSetting->SetMinValue(0.0f);
-	OverallSetting->SetMaxValue(1.0f);
+	OverallSetting->SetMaxValue(2.0f);
+	OverallSetting->SetInitialValue(GetDefault<UAWeekGameUserSettings>()->GetOverallVolume());
 	OverallSetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetOverallVolume));
 	OverallSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetOverallVolume));
 	Setting->AddSetting(OverallSetting);
+
+	USettingValueScalarItem* MusicSetting = NewObject<USettingValueScalarItem>();
+	MusicSetting->SetDevName(TEXT("MusicSetting"));
+	MusicSetting->SetDisplayName(LOCTEXT("NAME_MusicSetting","MusicSetting"));
+	MusicSetting->SetMinValue(0.0f);
+	MusicSetting->SetMaxValue(2.0f);
+	MusicSetting->SetInitialValue(GetDefault<UAWeekGameUserSettings>()->GetMusicVolume());
+	MusicSetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetMusicVolume));
+	MusicSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetMusicVolume));
+	Setting->AddSetting(MusicSetting);
 	
 	return Setting;
 }

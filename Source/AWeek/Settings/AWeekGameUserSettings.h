@@ -15,6 +15,16 @@ class AWEEK_API UAWeekGameUserSettings : public UGameUserSettings
 	GENERATED_BODY()
 public:
 	static UAWeekGameUserSettings* Get();
+
+	UFUNCTION()
+	float GetMouseSensitivityX() const { return MouseSensitivityX; }
+	UFUNCTION()
+	void SetMouseSensitivityX(const float InValue) { MouseSensitivityX = InValue; }
+
+	UFUNCTION()
+	float GetMouseSensitivityY() const { return MouseSensitivityY; }
+	UFUNCTION()
+	void SetMouseSensitivityY(const float InValue) { MouseSensitivityY = InValue; }
 	
 	UFUNCTION()
 	float GetOverallVolume() const;
@@ -27,6 +37,12 @@ public:
 	void SetMusicVolume(float InMusicVolume);
 	
 private:
+	UPROPERTY(Config)
+	float MouseSensitivityX = 1.0f;
+
+	UPROPERTY(Config)
+	float MouseSensitivityY = 1.0f;
+	
 	UPROPERTY(Config)
 	float OverallVolume = 1.0f;
 

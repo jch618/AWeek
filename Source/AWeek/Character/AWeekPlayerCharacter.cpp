@@ -17,6 +17,7 @@
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/World/AWeekPickupItem.h"
 #include "AWeek/Player/AWeekPlayerController.h"
+#include "AWeek/Settings/AWeekGameUserSettings.h"
 
 DEFINE_LOG_CATEGORY(AWeekPlayerCharacter);
 
@@ -268,12 +269,13 @@ void AAWeekPlayerCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
+	UAWeekGameUserSettings* Settings = UAWeekGameUserSettings::Get();
+	if (Controller != nullptr && Settings)
 	{
+		
 		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		AddControllerYawInput(LookAxisVector.X * Settings->GetMouseSensitivityX());
+		AddControllerPitchInput(LookAxisVector.Y * Settings->GetMouseSensitivityY());
 	}
 }
 

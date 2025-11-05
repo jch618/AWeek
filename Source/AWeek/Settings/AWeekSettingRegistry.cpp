@@ -20,8 +20,40 @@ void UAWeekSettingRegistry::Init(ULocalPlayer* InLocalPlayer)
 	Super::Init(InLocalPlayer);
 
 	OwningLocalPlayer = InLocalPlayer;
+	GameplaySetting = RegisterGameplaySetting();
+	RegisterSetting(GameplaySetting);
+	
 	AudioSetting = RegisterAudioSetting();
 	RegisterSetting(AudioSetting);
+}
+
+USettingItem* UAWeekSettingRegistry::RegisterGameplaySetting()
+{
+	USettingItemCategory* Setting = NewObject<USettingItemCategory>();
+	Setting->SetDevName(TEXT("GameplayCategory"));
+	Setting->SetDisplayName(LOCTEXT("NAME_GameplayCategory","Gameplay"));
+
+	USettingValueScalarItem* MouseSensitivityX = NewObject<USettingValueScalarItem>();
+	MouseSensitivityX->SetDevName(TEXT("MouseSensitivityX"));
+	MouseSensitivityX->SetDisplayName(LOCTEXT("NAME_MouseSensitivityX","MouseSensitivityX"));
+	MouseSensitivityX->SetMinValue(0.0f);
+	MouseSensitivityX->SetMaxValue(2.0f);
+	MouseSensitivityX->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetMouseSensitivityX());
+	MouseSensitivityX->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetMouseSensitivityX));
+	MouseSensitivityX->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetMouseSensitivityX));
+	Setting->AddSetting(MouseSensitivityX);
+
+	USettingValueScalarItem* MouseSensitivityY = NewObject<USettingValueScalarItem>();
+	MouseSensitivityY->SetDevName(TEXT("MouseSensitivityY"));
+	MouseSensitivityY->SetDisplayName(LOCTEXT("NAME_MouseSensitivityY","MouseSensitivityY"));
+	MouseSensitivityY->SetMinValue(0.0f);
+	MouseSensitivityY->SetMaxValue(2.0f);
+	MouseSensitivityY->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetMouseSensitivityY());
+	MouseSensitivityY->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetMouseSensitivityY));
+	MouseSensitivityY->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetMouseSensitivityY));
+	Setting->AddSetting(MouseSensitivityY);
+	
+	return Setting;
 }
 
 USettingItem* UAWeekSettingRegistry::RegisterAudioSetting()
@@ -35,7 +67,7 @@ USettingItem* UAWeekSettingRegistry::RegisterAudioSetting()
 	OverallSetting->SetDisplayName(LOCTEXT("NAME_OverallSetting","OverallSetting"));
 	OverallSetting->SetMinValue(0.0f);
 	OverallSetting->SetMaxValue(2.0f);
-	OverallSetting->SetInitialValue(GetDefault<UAWeekGameUserSettings>()->GetOverallVolume());
+	OverallSetting->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetOverallVolume());
 	OverallSetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetOverallVolume));
 	OverallSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetOverallVolume));
 	Setting->AddSetting(OverallSetting);
@@ -45,7 +77,7 @@ USettingItem* UAWeekSettingRegistry::RegisterAudioSetting()
 	MusicSetting->SetDisplayName(LOCTEXT("NAME_MusicSetting","MusicSetting"));
 	MusicSetting->SetMinValue(0.0f);
 	MusicSetting->SetMaxValue(2.0f);
-	MusicSetting->SetInitialValue(GetDefault<UAWeekGameUserSettings>()->GetMusicVolume());
+	MusicSetting->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetMusicVolume());
 	MusicSetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetMusicVolume));
 	MusicSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetMusicVolume));
 	Setting->AddSetting(MusicSetting);

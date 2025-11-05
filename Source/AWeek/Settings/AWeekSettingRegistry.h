@@ -18,9 +18,13 @@ public:
 	virtual void Init(ULocalPlayer* InLocalPlayer) override;
 
 protected:
+	USettingItem* RegisterGameplaySetting();
 	USettingItem* RegisterAudioSetting();
 
 protected:
+	UPROPERTY()
+	TObjectPtr<USettingItem> GameplaySetting;
+	
 	UPROPERTY()
 	TObjectPtr<USettingItem> AudioSetting;
 };

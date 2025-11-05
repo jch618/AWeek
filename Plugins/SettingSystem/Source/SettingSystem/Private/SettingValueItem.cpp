@@ -3,3 +3,8 @@
 
 #include "SettingValueItem.h"
 
+void USettingValueItem::Init()
+{
+	Super::Init();
+	Store();
+}

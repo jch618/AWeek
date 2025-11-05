@@ -8,7 +8,6 @@
 void USettingValueScalarItem::Init()
 {
 	Super::Init();
-	InitialValue = GetValue();
 }
 
 void USettingValueScalarItem::Reset()

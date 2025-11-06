@@ -172,11 +172,12 @@ bool UAWeekPakourComponent::TryLedge()
 {
 	float GroundHeight = mOwner->GetMesh()->GetComponentLocation().Z;
 	float WallHeight = mFirstWallHit.Location.Z - GroundHeight;
+	float PlayerHeight = 190.f;
 
 	if (FVector::Dist(mFirstTopHit.Location, mLastTopHit.Location) > 60 &&
 		WallHeight >= 220 && WallHeight <= 300)
 	{
-		SetLedgeMotionWarping(WallHeight);
+		SetLedgeMotionWarping(PlayerHeight);
 		SetClimbMotionWarping();
 		mOwner->LedgeStart();
 		return true;
@@ -204,11 +205,11 @@ void UAWeekPakourComponent::SetVaultMotionWarping()
 	);
 }
 
-void UAWeekPakourComponent::SetLedgeMotionWarping(float WallHeight)
+void UAWeekPakourComponent::SetLedgeMotionWarping(float PlayerHeight)
 {
 	FVector Dest = mFirstTopHit.ImpactPoint - mOwner->GetActorForwardVector()*50;
 
-	Dest.Z-=210;
+	Dest.Z-=PlayerHeight;
 
 	mOwnerMWC->AddOrUpdateWarpTargetFromLocationAndRotation(
 		FName("Ledge"),
@@ -219,7 +220,7 @@ void UAWeekPakourComponent::SetLedgeMotionWarping(float WallHeight)
 
 void UAWeekPakourComponent::SetClimbMotionWarping()
 {
-	FVector Dest = mFirstWallHit.Location;
+	FVector Dest = mFirstWallHit.ImpactPoint;
 	mOwnerMWC->AddOrUpdateWarpTargetFromLocationAndRotation(
 		FName("Climb"),
 		Dest,

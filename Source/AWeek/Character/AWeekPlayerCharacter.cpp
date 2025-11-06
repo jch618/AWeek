@@ -394,6 +394,11 @@ void AAWeekPlayerCharacter::ChangeWeapon()
 		mWeapon->ChangeWeapon(TEXT("Rifle"));
 		mAnimInst->ChangeAnimOverride(TEXT("Rifle"));
 	}
+	else if (mAnimInst->GetCurrentOverride() == FName("Rifle"))
+	{
+		mWeapon->ChangeWeapon(TEXT("Pistol"));
+		mAnimInst->ChangeAnimOverride(TEXT("Pistol"));
+	}
 	else
 	{
 		mWeapon->ChangeWeapon(TEXT("Default"));
@@ -442,7 +447,6 @@ void AAWeekPlayerCharacter::LedgeStart()
 	if (!mStamina->UseStamina(EStaminaUseType::LedgeStart))
 		return;
 	mAnimInst->PlayMontageByName(TEXT("Ledge"));
-	mAnimInst->SetPlayerMoveState(EPlayerMoveState::Ledge);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 	CameraBoom->bDoCollisionTest = false;
@@ -450,6 +454,7 @@ void AAWeekPlayerCharacter::LedgeStart()
 
 void AAWeekPlayerCharacter::LedgeEnd()
 {
+	mAnimInst->SetPlayerMoveState(EPlayerMoveState::Ledge);
 	GetMovementComponent()->StopMovementImmediately();
 	CameraBoom->bDoCollisionTest = true;
 }

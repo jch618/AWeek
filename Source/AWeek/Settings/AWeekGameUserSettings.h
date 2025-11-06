@@ -17,6 +17,12 @@ public:
 	static UAWeekGameUserSettings* Get();
 
 	UFUNCTION()
+	bool GetFullScreenModeTemp() const;
+
+	UFUNCTION()
+	void SetFullScreenModeTemp(bool InValue);
+
+	UFUNCTION()
 	float GetMouseSensitivityX() const { return MouseSensitivityX; }
 	UFUNCTION()
 	void SetMouseSensitivityX(const float InValue) { MouseSensitivityX = InValue; }
@@ -37,6 +43,9 @@ public:
 	void SetMusicVolume(float InMusicVolume);
 	
 private:
+	UPROPERTY(Config)
+	bool IsFullScreenMode = true;
+	
 	UPROPERTY(Config)
 	float MouseSensitivityX = 1.0f;
 

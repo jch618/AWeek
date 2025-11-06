@@ -17,6 +17,9 @@ class AWEEK_API UAWeekSettingRegistry : public USettingRegistry
 public:
 	virtual void Init(ULocalPlayer* InLocalPlayer) override;
 
+	virtual void Apply() override;
+	virtual void Cancel() override;
+
 protected:
 	USettingItem* RegisterGameplaySetting();
 	USettingItem* RegisterAudioSetting();

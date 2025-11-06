@@ -10,6 +10,24 @@ UAWeekGameUserSettings* UAWeekGameUserSettings::Get()
 	return CastChecked<UAWeekGameUserSettings>(GEngine->GetGameUserSettings());
 }
 
+bool UAWeekGameUserSettings::GetFullScreenModeTemp() const
+{
+	return IsFullScreenMode;
+}
+
+void UAWeekGameUserSettings::SetFullScreenModeTemp(bool InValue)
+{
+	IsFullScreenMode = InValue;
+	if (IsFullScreenMode)
+	{
+		SetFullscreenMode(EWindowMode::Type::Fullscreen);
+	}
+	else
+	{
+		SetFullscreenMode(EWindowMode::Type::Windowed);
+	}
+}
+
 float UAWeekGameUserSettings::GetOverallVolume() const
 {
 	return OverallVolume;

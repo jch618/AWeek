@@ -6,6 +6,7 @@
 #include "AWeekGameUserSettings.h"
 #include "SettingItemCategory.h"
 #include "SettingPropertyResolver.h"
+#include "SettingValueDiscreteItem_Bool.h"
 #include "SettingValueScalarItem.h"
 #include "AWeek/Player/AWeekLocalPlayer.h"
 
@@ -25,6 +26,20 @@ void UAWeekSettingRegistry::Init(ULocalPlayer* InLocalPlayer)
 	
 	AudioSetting = RegisterAudioSetting();
 	RegisterSetting(AudioSetting);
+}
+
+void UAWeekSettingRegistry::Apply()
+{
+	Super::Apply();
+	if (UAWeekLocalPlayer* LocalPlayer = Cast<UAWeekLocalPlayer>(OwningLocalPlayer))
+	{
+		LocalPlayer->GetGameUserSettings()->ApplySettings(false);
+	}
+}
+
+void UAWeekSettingRegistry::Cancel()
+{
+	Super::Cancel();
 }
 
 USettingItem* UAWeekSettingRegistry::RegisterGameplaySetting()
@@ -52,6 +67,14 @@ USettingItem* UAWeekSettingRegistry::RegisterGameplaySetting()
 	MouseSensitivityY->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetMouseSensitivityY));
 	MouseSensitivityY->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetMouseSensitivityY));
 	Setting->AddSetting(MouseSensitivityY);
+
+	USettingValueDiscreteItem_Bool* FullScreen = NewObject<USettingValueDiscreteItem_Bool>();
+	FullScreen->SetDevName(TEXT("FullScreenMode"));
+	FullScreen->SetDisplayName(LOCTEXT("FullScreenMode","IsFullScreen"));
+	FullScreen->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetFullScreenModeTemp());
+	FullScreen->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetFullScreenModeTemp));
+	FullScreen->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetFullScreenModeTemp));
+	Setting->AddSetting(FullScreen);
 	
 	return Setting;
 }

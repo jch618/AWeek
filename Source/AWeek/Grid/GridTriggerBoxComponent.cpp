@@ -2,10 +2,22 @@
 
 
 #include "GridTriggerBoxComponent.h"
+#include "Engine/EngineTypes.h"
+
+static const FName NAME_BuildingArea(TEXT("BuildingArea"));
+static const FName NAME_BuildingTrigger(TEXT("BuildingTrigger"));
 
 UGridTriggerBoxComponent::UGridTriggerBoxComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	/*SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SetGenerateOverlapEvents(true);
+
+	SetCollisionResponseToAllChannels(ECR_Ignore);*/
+
+	
+
 }
 
 void UGridTriggerBoxComponent::BeginPlay()
@@ -37,16 +49,24 @@ void UGridTriggerBoxComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	GetOverlappingComponents(OverlappingComps);
 	static const FName TestTag(TEXT("Test1"));
 	bool bHasTaggedComp = false;
+	bool bBuildingArea = false;
+	
 	for (UPrimitiveComponent* Comp : OverlappingComps)
 	{
 		if (!Comp) continue;
-
-		if (Comp->ComponentHasTag(TestTag))
+		if (IsBuildingArea(Comp))
 		{
-			UE_LOG(LogTemp, Log, TEXT("Overlapping component has tag Test1 : %s"), *Comp->GetName());
+			bBuildingArea = true;
+			//UE_LOG(LogTemp, Log, TEXT("BuildingArea Enter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
+			//continue;
+		}
+		if (Comp->ComponentHasTag(TestTag) && bBuildingArea)
+		{
+			//UE_LOG(LogTemp, Log, TEXT("Overlapping component has tag Test1 : %s"), *Comp->GetName());
 			bHasTaggedComp = true;
 			break;
 		}
+		
 		
 	}	
 	if (OwnerClass)
@@ -74,3 +94,12 @@ void UGridTriggerBoxComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 		
 	}else{OwnerClass->CheckMaterial(false);}*/
 }
+
+bool UGridTriggerBoxComponent::IsBuildingArea(const UPrimitiveComponent* Comp)
+{
+	return Comp&& (Comp->GetCollisionProfileName() == NAME_BuildingArea);
+}
+
+
+
+

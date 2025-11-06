@@ -31,18 +31,7 @@ void UPreviewObjectWidget::NativeOnActivated()
 		}
 	}
 
-	/*if (LeftClickBindingHandle.IsValid())
-	{
-		UE_LOG(LogTemp, Log, TEXT("adsfasdfasdf1"));
-		RemoveActionBinding(LeftClickBindingHandle);
-		LeftClickBindingHandle = FUIActionBindingHandle();
-	}
-	if (RightClickBindingHandle.IsValid())
-	{
-		UE_LOG(LogTemp, Log, TEXT("adsfasdfasdf2"));
-		RemoveActionBinding(RightClickBindingHandle);
-		RightClickBindingHandle = FUIActionBindingHandle();
-	}*/
+	
 	/*const FUIActionTag LTag = FUIActionTag::TryConvert(FGameplayTag::RequestGameplayTag(TEXT("UI.Action.LeftClick"), /*bErrorIfNotFound#1#false));
 	const FUIActionTag RTag = FUIActionTag::TryConvert(FGameplayTag::RequestGameplayTag(TEXT("UI.Action.RightClick"), /*bErrorIfNotFound#1#false));*/
 
@@ -80,32 +69,6 @@ void UPreviewObjectWidget::NativeOnActivated()
 void UPreviewObjectWidget::NativeOnDeactivated()
 {
 	
-
-	//TODO Active Atack
-	/*if (ULocalPlayer* LP = GetOwningLocalPlayer())
-	{
-		if (auto* Subsys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LP))
-		{
-			if (AttackMappingContext)
-			{
-				Subsys->AddMappingContext(AttackMappingContext, AttackContextPriority);
-			}
-		}
-	}*/
-
-	UE_LOG(LogTemp, Log, TEXT("Preview Object widget click binding Handle!!!!!!!!!!! b"));
-	
-
-	/*if (LeftClickBindingHandle.IsValid())
-	{
-		RemoveActionBinding(LeftClickBindingHandle);
-		LeftClickBindingHandle = FUIActionBindingHandle();
-	}
-	if (RightClickBindingHandle.IsValid())
-	{
-		RemoveActionBinding(RightClickBindingHandle);
-		RightClickBindingHandle = FUIActionBindingHandle();
-	}*/
 	Super::NativeOnDeactivated();
 }
 

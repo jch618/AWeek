@@ -25,4 +25,14 @@ protected:
 	AActor* Owner;
 	UPROPERTY()
 	APreviewObject* OwnerClass;
+	
+	UStaticMeshComponent* StaticMesh;
+	bool IsBuildingArea(const UPrimitiveComponent* Comp);
+
+	
+
+public:
+	void SetBoxMesh(UStaticMeshComponent* StaticMeshComponent);
+
+	
 };

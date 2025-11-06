@@ -42,11 +42,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="BoxComponent")
 	UStaticMeshComponent* BoxMesh;
-	UPROPERTY(VisibleAnywhere, Category="BoxComponent")
-	UBoxComponent* BoxComponent;
+	UPROPERTY(EditAnywhere, Category="BoxComponent")
+	UGridTriggerBoxComponent* BoxComponent;
 	UPROPERTY(VisibleAnywhere, Category="BoxComponent")
 	UStaticMesh* BoxMeshAsset;
-	
+	UPROPERTY(EditAnywhere, Category="Preview|Size")
+	bool bSizeDrivenByMesh = true;
 
 	//GirdSize는 나중에 확정지을것. 여기서는 아닐듯
 	UPROPERTY(EditAnywhere, Category="BoxComponent")
@@ -68,10 +69,26 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Visual")
 	bool bBottomAlign = true;
+
+	void SyncBoxComponentToBoxMesh();
+
+	bool bOnBuildingArea = true;
+
+	TArray<UPrimitiveComponent*> BlockObjects;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void CheckMaterial(bool value);
+
+	UFUNCTION()
+	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+						   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+						   bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+						 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 /*public:	
 	// Sets default values for this actor's properties

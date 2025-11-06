@@ -157,12 +157,6 @@ void UGridPlacedSubsystem::EnsureGridUIShown(APlayerController* PC, TSubclassOf<
     
     if (!PC) return;
 
-    /*if (GridUI.IsValid())
-    {
-        GridUI->ActivateWidget();           // 이미 레이어에 올라간 동일 인스턴스 활성화
-        return;
-    }*/
-
     if (ULocalPlayer* LP = PC->GetLocalPlayer())
     {
         auto* Inst = UCommonUIExtensions::PushContentToLayer_ForPlayer(

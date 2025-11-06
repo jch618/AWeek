@@ -25,7 +25,7 @@ APreviewObject::APreviewObject()
 	//Struct 크기 정하기
 
 	//BoxComponent
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+	BoxComponent = CreateDefaultSubobject<UGridTriggerBoxComponent>(TEXT("UGridTriggerBoxComponent"));
 	BoxComponent->SetupAttachment(RootComponent);
 	BoxComponent->SetCollisionProfileName(TEXT("OverlapStructure"));
 	BoxComponent->SetHiddenInGame(true);
@@ -43,6 +43,9 @@ APreviewObject::APreviewObject()
 		BoxMeshAsset = CubeRef.Object;
 		BoxMesh->SetStaticMesh(BoxMeshAsset);
 	}
+
+	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &APreviewObject::OnBoxBeginOverlap);
+	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &APreviewObject::OnBoxEndOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -105,16 +108,21 @@ void APreviewObject::Rebuild()
 
 	const FVector DesiredSize(CellX * GridSize, CellY * GridSize, CellZ * GridSize);
 	BoxComponent->SetBoxExtent(DesiredSize * 0.5f, true);
-
+	BoxComponent->SetGenerateOverlapEvents(true);
 
 	
 	if (!BoxMesh->GetStaticMesh() && BoxMeshAsset)
 	{
+		UE_LOG(LogTemp, Log, TEXT("BoxMesh Component test!!!!!!!!!"));
 		BoxMesh->SetStaticMesh(BoxMeshAsset);
 		
 	}
 
-	
+	if (bSizeDrivenByMesh)
+	{
+		SyncBoxComponentToBoxMesh();
+		return;
+	}
 
 	if (UStaticMesh* SM = BoxMesh->GetStaticMesh())
 	{
@@ -132,6 +140,8 @@ void APreviewObject::Rebuild()
 	const FVector Offset(0.f, 0.f, ZOffset);
 	BoxComponent->SetRelativeLocation(Offset);
 	BoxMesh->SetRelativeLocation(Offset);
+
+	
 }
 
 
@@ -173,6 +183,54 @@ bool APreviewObject::PlaceActor(AGridPlacedActor* ParentGridPlacedActor)
 	}else{return false;}
 	return true;
 }
+
+void APreviewObject::SyncBoxComponentToBoxMesh()
+{
+	if (!BoxComponent || !BoxMesh || !BoxMesh->GetStaticMesh())return;
+
+	const FBoxSphereBounds MeshworldBounds = BoxMesh->CalcBounds(BoxMesh->GetComponentTransform());
+
+	BoxComponent->SetWorldLocation(MeshworldBounds.Origin);
+	BoxComponent->SetBoxExtent(MeshworldBounds.BoxExtent, true);
+
+	
+}
+
+void APreviewObject::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherComp->GetCollisionProfileName() == FName(TEXT("BuildingArea")))
+	{
+		//TODO Check Overlapped Object
+		if (BlockObjects.Num() == 0)
+		{
+			BoxMesh->SetMaterial(0, TrueMaterial);
+		}
+	}else
+	{
+		BoxMesh->SetMaterial(0, FalseMaterial);
+		BlockObjects.Add(OtherComp);
+	}
+}
+
+void APreviewObject::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+
+	if (OtherComp->GetCollisionProfileName() == FName(TEXT("BuildingArea")))
+	{
+		BoxMesh->SetMaterial(0, FalseMaterial);
+	}else
+	{
+		//TODO Check Overlapped Object
+		BlockObjects.Remove(OtherComp);
+		if (BlockObjects.Num() == 0)
+		{
+			BoxMesh->SetMaterial(0, TrueMaterial);
+		}
+	}
+}
+
+
+
 
 
 

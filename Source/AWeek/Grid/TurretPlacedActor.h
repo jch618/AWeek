@@ -49,8 +49,28 @@ public:
 	UFUNCTION()
 	void OnSenseEnd(UPrimitiveComponent* Overlapped, AActor* Other, UPrimitiveComponent* OtherComp, int32 BodyIndex);
 
-protected:
-	virtual void BeginPlay() override;	
-
 	
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+
+	void PickOrValidateTarget();
+	void AimAtTarget(float DT);
+
+	static float StepAngle(float Current, float Target, float SpeedDegPerSec, float DT);
+
+	TArray<UPrimitiveComponent*> Targets;
+	TWeakObjectPtr<class APawn> CurrentTarget;
+	bool bActive = false;
+
+	void LookAtYawOnly(AActor* Target, float DeltaTime, float Speed = 6.f);
+
+	AActor* PlayerActor;
+
+	UPROPERTY(EditAnywhere, Category="Turret|Aiming") float YawSpeedDegPerSec   = 180.f;
+	UPROPERTY(EditAnywhere, Category="Turret|Aiming") float PitchSpeedDegPerSec = 120.f;
+	UPROPERTY(EditAnywhere, Category="Turret|Aiming") float PitchUpMax   = 60.f;
+	UPROPERTY(EditAnywhere, Category="Turret|Aiming") float PitchDownMax = -15.f;
+	UPROPERTY(EditAnywhere, Category="Turret|Aiming") float AngleDeadzoneDeg = 0.25f;
 };

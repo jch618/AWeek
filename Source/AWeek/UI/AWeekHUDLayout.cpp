@@ -15,7 +15,11 @@ UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_ACTION_ESCAPE, "UI.Action.Escape");
 void UAWeekHUDLayout::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	//RegisterUIActionBinding(FBindUIActionArgs(FUIActionTag::ConvertChecked(TAG_UI_ACTION_ESCAPE), false, FSimpleDelegate::CreateUObject(this, &ThisClass::HandleEscapeAction)));
+	FUIActionTag ActionTag = FUIActionTag::TryConvert(TAG_UI_ACTION_ESCAPE);
+	if (ActionTag.IsValid())
+	{
+		RegisterUIActionBinding(FBindUIActionArgs(ActionTag, false, FSimpleDelegate::CreateUObject(this, &ThisClass::HandleEscapeAction)));
+	}
 }
 
 void UAWeekHUDLayout::NativeDestruct()

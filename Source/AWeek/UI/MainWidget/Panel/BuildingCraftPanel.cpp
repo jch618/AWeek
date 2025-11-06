@@ -14,6 +14,9 @@
 #include "Components/Button.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "Components/SizeBox.h"
+#include "AWeek/Grid/PreviewObject.h"
+#include "AWeek/Grid/GridPlacedSubsystem.h"
+#include "AWeek/Character/AWeekPlayerCharacter.h"
 
 void UBuildingCraftPanel::ActivatePanel()
 {
@@ -32,7 +35,9 @@ void UBuildingCraftPanel::UpdateData(const FAWeekBuildingData* Data)
 	if (Data == nullptr){UpdateItemCount();}
 	BuildingName->SetText(FText::FromName(Data->ID));
 	BuildingIcon->SetBrushFromTexture(Data->Image);
-	BuildingText->SetText(FText::FromString(Data->BuildingText));
+	//BuildingText->SetText(FText::FromString(Data->BuildingText));
+	ApplyText(Data->BuildingText);
+	PreviewObjectClass = Data->PreviewObjectClass.LoadSynchronous();
 	
 	bCheck = true;
 	for (FAWeekCost Cost : Data->Costs)
@@ -44,7 +49,6 @@ void UBuildingCraftPanel::UpdateData(const FAWeekBuildingData* Data)
 
 void UBuildingCraftPanel::UpdateItemCount()
 {
-	UE_LOG(LogTemp, Log, TEXT("BuildingCraftPanel::UpdateItemCount"));
 	bInventoryCheck = true;
 	for (UBuildCostPill* Pill : Pills)
 	{
@@ -57,7 +61,6 @@ void UBuildingCraftPanel::UpdateItemCount()
 void UBuildingCraftPanel::DeactivateWidget()
 {
 	Super::DeactivateWidget();
-	UE_LOG(LogTemp, Error, TEXT("BuildingCraftPanel DeactivateWidget!"));
 }
 
 void UBuildingCraftPanel::CreateCostPill(const FAWeekCost Cost)
@@ -70,15 +73,12 @@ void UBuildingCraftPanel::CreateCostPill(const FAWeekCost Cost)
 		return;
 	}
 	const FString Ctx = TEXT("GetItemDataFromCost");
-	UE_LOG(LogTemp, Warning, TEXT("Test1"));
 	if (const FAWeekItemData* Row = Cost.ItemRow.GetRow<FAWeekItemData>(Ctx))
 	{
 		Pill->SetImage(Row->AssetData.Icon);
 		Pill->SetName(Row->TextData.Name);
 		Pill->SetItemID(Row->ID);
-		UE_LOG(LogTemp, Warning, TEXT("Test2"));
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Test3"));
 	Pill->SetCount(Cost.Amount);
 	HierBox->AddChild(Pill);
 	Pills.Add(Pill);
@@ -104,8 +104,50 @@ void UBuildingCraftPanel::CreateBuilding()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Create Building!!"));
 	//TODO Grid setting
-	//TODO Remove Cost
+	if (!PreviewObjectClass) return;
+    
+        APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+        if (!PC) return;
+    
+        if (UGridPlacedSubsystem* Sub = GetWorld()->GetSubsystem<UGridPlacedSubsystem>())
+        {
+            Sub->StartPlacement(PreviewObjectClass, PC, this);
+        	AAWeekPlayerCharacter* Ch = Cast<AAWeekPlayerCharacter>(PC->GetPawn());
+        	Ch->ToggleMainWidget();
+        }
 }
+
+void UBuildingCraftPanel::RemoveItem()
+{
+	for (UBuildCostPill* Pill : Pills)
+	{
+		if (!Pill->RemoveItem())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Item Lack!! This Error must be solved"));
+		}
+	}
+}
+
+void UBuildingCraftPanel::ApplyText(FString BuildingText_)
+{
+	if (!BuildingText) return;
+
+	FString S = BuildingText_;         
+	/*S.ReplaceInline(TEXT("\\r\\n"), TEXT("\n"));
+	S.ReplaceInline(TEXT("\\n"), TEXT("\n"));*/
+
+	S.ReplaceInline(TEXT("\\r\\n"), TEXT("\n"));
+	S.ReplaceInline(TEXT("\\n"), TEXT("\n"));
+
+
+	S.ReplaceInline(TEXT(" \n"), TEXT("\n"));
+	S.ReplaceInline(TEXT("\n "), TEXT("\n"));
+	
+
+	BuildingText->SetText(FText::FromString(S));
+}
+
+
 
 
 

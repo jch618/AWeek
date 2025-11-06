@@ -39,11 +39,17 @@ protected:
 	///////////////////////////
 
 	virtual void NativeConstruct() override;
+	virtual void NativeOnDeactivated() override;
 
 
 	//Widget panel Button Clicked
-	void ShowInventory() {PanelSwitcher->SetActiveWidgetIndex(0); InventoryPanel->SetActive();};
-	void ShowBuilding(){PanelSwitcher->SetActiveWidgetIndex(1); BuildingPanel->SetActive();};
+	void ShowInventory() {PanelSwitcher->SetActiveWidgetIndex(1); InventoryPanel->SetActive();};
+	void ShowBuilding(){PanelSwitcher->SetActiveWidgetIndex(2); BuildingPanel->SetActive();};
 	//////////////////////////
+
+
+
+	
+	
 	
 };

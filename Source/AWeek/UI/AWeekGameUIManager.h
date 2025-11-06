@@ -14,6 +14,7 @@ class UAWeekUIDataAsset;
 class AAWeekPlayerController;
 class UAWeekInventoryMainPanel;
 class UMainUIWidget;
+class UPreviewObjectWidget;
 class UAWeekInteractionWidget;
 struct FAWeekInteractableData;
 class UAWeekInventoryComponent;
@@ -66,6 +67,9 @@ public:
 	//
 	// void ToggleCraftingMainPanel(TObjectPtr<UAWeekCraftingComponent> CraftingComponent, const TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
 
+	void PreviewObjectRotateL();
+	void PreviewObjectRotateR();
+
 	void ShowInteractionWidget();
 	void HideInteractionWidget() const;
 	void UpdateInteractionWidget(const FAWeekInteractableData* InteractableData);
@@ -105,6 +109,11 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAWeekInventoryHubWidget> InventoryHubWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UPreviewObjectWidget> PreviewObjectWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TObjectPtr<UPreviewObjectWidget> PreviewObjectWidget;
 	
 	UPROPERTY()
 	TObjectPtr<UAWeekInventoryMainPanel> InventoryMainPanelWidget;

@@ -10,7 +10,7 @@
 bool UBuildCostPill::CheckItem()
 {
 	if (!InventoryComponent || !ItemCount)return false;
-
+	if (RequiredCount == 0) return true;
 	
 	TMap<FName, int32> InventoryItem = InventoryComponent->GetInventoryItemCounts();
 	//TODO ItemCheck
@@ -26,6 +26,15 @@ bool UBuildCostPill::CheckItem()
 		return false;
 	}
 }
+
+bool UBuildCostPill::RemoveItem()
+{
+	if (!InventoryComponent || !ItemCount)return false;
+	if (RequiredCount == 0) return true;
+	
+	return InventoryComponent->TryRemoveAmountOfItem(ItemID, RequiredCount);
+}
+
 
 
 

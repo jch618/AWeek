@@ -5,6 +5,7 @@
 #include "BuildingData.h"
 #include "Components/BoxComponent.h"
 #include "CoreMinimal.h"
+#include "AWeek/System/IDamageAble.h"
 #include "GameFramework/Actor.h"
 #include "GridPlacedActor.generated.h"
 
@@ -12,7 +13,7 @@
 class UGeometryCollection;
 class UGeometryCollectionComponent;
 UCLASS()
-class AWEEK_API AGridPlacedActor : public AActor
+class AWEEK_API AGridPlacedActor : public AActor, public IDamageAble
 {
 	GENERATED_BODY()
 	
@@ -71,7 +72,10 @@ protected:
 
 	static void MatchBoxToMesh(UBoxComponent* BoxComponent_, UStaticMeshComponent* BoxMesh_);
 
+	UFUNCTION(BlueprintCallable, Category="Building|Fracture" /*, meta=(BlueprintAuthorityOnly="true")*/)
 	void BrokeStructure();
+
+	
 	void Rebuild();
 	void CleanupAfterBreak();
 

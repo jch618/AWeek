@@ -20,6 +20,7 @@ class AWEEK_API UBuildCostPill : public UAWeekActivatableWidget
 
 public:
 	bool CheckItem();
+	bool RemoveItem();
 
 	void SetName(FText Name);
 	void SetImage(UTexture2D* Image);

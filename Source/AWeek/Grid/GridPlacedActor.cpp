@@ -32,6 +32,8 @@ AGridPlacedActor::AGridPlacedActor()
 	GeoComponent->SetCollisionProfileName(UCollisionProfile::BlockAll_ProfileName);
 	GeoComponent->SetSimulatePhysics(false);
 
+		
+
 	BoxMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BoxMesh"));
 	BoxMesh->SetupAttachment(Root);
 

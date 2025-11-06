@@ -50,5 +50,15 @@ UAWeekGameInput::UAWeekGameInput()
 
 	mInteract = InteractAction.Object;
 
+	static ConstructorHelpers::FObjectFinder<UInputAction>
+		PlaceBuildingAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_PlaceBuilding.IA_PlaceBuilding'"));
+
+	mPlaceBuilding = PlaceBuildingAction.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>
+		CancelBuildingAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_CancelBuilding.IA_CancelBuilding'"));
+
+	mCancelBuilding = CancelBuildingAction.Object;
+
 	
 }

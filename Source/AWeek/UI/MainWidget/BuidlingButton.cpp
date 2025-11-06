@@ -45,7 +45,7 @@ void UBuidlingButton::HandleClicked()
 					UE_LOG(LogTemp, Log, TEXT("PreviewObjectClass is null"));
 				}
 				
-				Sub->StartPlacement(PreviewObjectClass, PC);
+				//Sub->StartPlacement(PreviewObjectClass, PC);
 			}
 		}
 	}

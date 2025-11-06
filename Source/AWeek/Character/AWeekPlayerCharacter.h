@@ -251,6 +251,9 @@ public:
 	}
 	FORCEINLINE UAWeekInventoryComponent* GetChestInventoryComponent() const { return ChestInventoryComponent;}
 
+	void WheelUpPreviewObject();
+	void WheelDownPreviewObject();
+
 public:
 	// =====================================================
 	// INVENTORY SYSTEM

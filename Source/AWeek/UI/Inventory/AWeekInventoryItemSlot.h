@@ -39,21 +39,21 @@ public:
 	FORCEINLINE int32 GetItemSlotIndex() const { return ItemSlotIndex; }
 
 	FORCEINLINE void SetInventory(TObjectPtr<UAWeekInventoryComponent> Inventory) { OwningInventory = Inventory; }
-	const UAWeekItemBase* GetItemReference() const;
+	const UAWeekItemBase* GetItem() const;
 
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
-	void InitializeInventoryItemSlot(TObjectPtr<UAWeekItemBase> ItemReference);
+	void InitializeInventoryItemSlot(TObjectPtr<UAWeekItemBase> Item);
 
 protected:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
-	UPROPERTY(EditDefaultsOnly, Category = "Inventory Slot")
-	TSubclassOf<UAWeekInventoryToolTip> ToolTipClass;
+	// UPROPERTY(EditDefaultsOnly, Category = "Inventory Slot")
+	// TSubclassOf<UAWeekInventoryToolTip> ToolTipClass;
 
-	TObjectPtr<UAWeekInventoryComponent> OwningInventory;
+	TWeakObjectPtr<UAWeekInventoryComponent> OwningInventory;
 	int32 ItemSlotIndex;
 	
 	//================================================================

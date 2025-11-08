@@ -19,54 +19,39 @@ public:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
-	//UPROPERTY()
-	//UInventoryComponent* OwningInventory;
 
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	int32 Quantity;
-
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	FName ID;
-
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	EAWeekItemType ItemType;
-
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	EAWeekItemQuality ItemQuality;
-
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	FAWeekItemStatistics ItemStatistics;
-
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	FAWeekItemTextData TextData;
-
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	FAWeekItemNumericData NumericData;
-
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	FAWeekItemAssetData AssetData;
-
-	bool bIsCopy;
-	bool bIsPickup;
 
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
 	UAWeekItemBase();
 
-	void InitializeItem(const FAWeekItemData& ItemData, int32 InQuantity);
+	// getters and setters
+	FORCEINLINE FName GetID() const { return ItemData.ID; }
+	FORCEINLINE int GetQuantity() const { return Quantity; }
+	FORCEINLINE EAWeekItemType GetItemType() const { return ItemData.ItemType; }
+	FORCEINLINE EAWeekItemQuality GetItemQuality() const { return ItemData.ItemQuality; }
+	FORCEINLINE const FAWeekItemTextData& GetTextData() const { return ItemData.TextData; }
+	FORCEINLINE const FAWeekItemAssetData& GetAssetData() const { return ItemData.AssetData; }
+	FORCEINLINE const FAWeekItemNumericData& GetNumericData() const { return ItemData.NumericData; }
+	FORCEINLINE const FAWeekItemStatistics& GetStatistics() const { return ItemData.ItemStatistics; }
+	FORCEINLINE const FAWeekItemData& GetItemData() const { return ItemData; }
+
+	FORCEINLINE bool IsCopy() const { return bIsCopy; }
+	FORCEINLINE bool IsPickup() const { return bIsPickup; }
+	void InitializeFromItemData(const FAWeekItemData& ItemData, int32 InQuantity);
 	
 	UFUNCTION(Category = "Item")
 	UAWeekItemBase* CreateItemCopy() const;
 
 	UFUNCTION(Category = "Item")
-	FORCEINLINE float GetItemStackWeight() const { return Quantity * NumericData.Weight; }
+	FORCEINLINE float GetItemStackWeight() const { return Quantity * ItemData.NumericData.Weight; }
 
 	UFUNCTION(Category = "Item")
-	FORCEINLINE float GetItemSingleWeight() const { return NumericData.Weight; }
+	FORCEINLINE float GetItemSingleWeight() const { return ItemData.NumericData.Weight; }
 
 	UFUNCTION(Category = "Item")
-	FORCEINLINE bool IsFullItemStack() const { return Quantity == NumericData.MaxStackSize; }
+	FORCEINLINE bool IsFullItemStack() const { return Quantity == ItemData.NumericData.MaxStackSize; }
 
 	UFUNCTION(Category = "Item")
 	void SetQuantity(const int32 NewQuantity);
@@ -76,17 +61,34 @@ public:
 
 	void ResetItemFlags();
 
+	static UAWeekItemBase* CreateFromData(const FAWeekItemData& InItemData, int32 InQuantity, UObject* Outer);
+	static UAWeekItemBase* CreateFromRowHandle(const FDataTableRowHandle& RowHandle, int32 InQuantity, UObject* Outer);
+
 protected:
+	//================================================================
+	//	PROPERTIES & VARIABLES
+	//================================================================
+	UPROPERTY(VisibleAnywhere, Category = "Item")
+	int32 Quantity;
+
+	bool bIsCopy;
+	bool bIsPickup;
+	
+	//================================================================
+	//	FUNCTIONS
+	//================================================================
 	bool operator==(const FName& OtherID) const
 	{
-		return this->ID == OtherID;
+		return ItemData.ID == OtherID;
 	}
-
+	
 private:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
-
+	UPROPERTY(VisibleAnywhere, Category = "Item")
+	FAWeekItemData ItemData;
+	
 	//================================================================
 	//	FUNCTIONS
 	//================================================================

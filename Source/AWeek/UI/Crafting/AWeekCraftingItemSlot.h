@@ -19,7 +19,7 @@ class AWEEK_API UAWeekCraftingItemSlot : public UAWeekItemSlot
 public:
 	FOnCraftingSlotLeftClicked OnCraftingSlotLeftClicked;
 	
-	FORCEINLINE void SetIsCraftable(bool bNewIsCraftable) { bIsCraftable = bNewIsCraftable; }
+	FORCEINLINE void SetIsCraftable(bool bInIsCraftable) { bIsCraftable = bInIsCraftable; }
 
 	void InitializeCraftingItemSlot(int32 InRecipeIndex, const FAWeekItemData& InItemData, int32 InItemQuantity, bool bInCraftable);
 protected:

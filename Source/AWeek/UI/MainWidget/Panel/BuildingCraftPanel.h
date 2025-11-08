@@ -18,6 +18,7 @@ struct FAWeekCost;
 class UBuildCostPill;
 class UButton;
 class UAWeekInventoryComponent;
+class APreviewObject;
 UCLASS()
 class AWEEK_API UBuildingCraftPanel : public UMainWidgetPanel
 {
@@ -25,9 +26,9 @@ class AWEEK_API UBuildingCraftPanel : public UMainWidgetPanel
 
 public:
 	virtual void ActivatePanel();
-	void UpdateData(const FAWeekBuildingData* Data = nullptr);
 	virtual void DeactivateWidget();
-
+	void UpdateData(const FAWeekBuildingData* Data = nullptr);
+	void RemoveItem();
 protected:
 	UPROPERTY(meta=(BindWidget))
 	UCommonHierarchicalScrollBox* HierBox;
@@ -48,12 +49,17 @@ protected:
 	TSubclassOf<UBuildCostPill> CostPillClass;
 	UPROPERTY()
 	UAWeekInventoryComponent* InventoryComponent = nullptr;
+	
+	UPROPERTY()
+	TSubclassOf<APreviewObject> PreviewObjectClass;
 
 	UFUNCTION()
 	void CreateBuilding();
 
 	void CreateCostPill(const FAWeekCost Cost);
 	void UpdateItemCount();
+
+	void ApplyText(FString BuildingText);
 	UPROPERTY()
 	bool bCheck = false;
 	UPROPERTY()

@@ -23,16 +23,14 @@ void UAWeekCraftingListPanel::RefreshCraftingList()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	AAWeekPlayerCharacter* PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwningPlayerPawn());
-	CraftingComponent = Cast<UAWeekCraftingComponent>(PlayerCharacter->GetComponentByClass(UAWeekCraftingComponent::StaticClass()));
-	if (IsValid(CraftingComponent))
+	CraftingComponent = PlayerCharacter->GetCraftingComponent();
+	if (IsValid(CraftingComponent) && GridPanel)
 	{
 		GridPanel->ClearChildren();
 
 		const TArray<FAWeekCachedCraftingRecipe>& CachedCraftingRecipes = CraftingComponent->GetCachedCraftingRecipes();
 		for (int i = 0; i < CachedCraftingRecipes.Num(); i++)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s: i: %d"), *FString(__FUNCTION__), i);
-			
+		{		
 			UAWeekCraftingItemSlot* ItemRecipeSlotWidget = CreateWidget<UAWeekCraftingItemSlot>(this, CraftingSlotClass);
 
 			bool bIsCraftable = CraftingComponent->CanCraft(i);

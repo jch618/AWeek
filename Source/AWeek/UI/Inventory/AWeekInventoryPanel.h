@@ -28,10 +28,10 @@ public:
 	bool bIsLinkedToInventory;
 
 	UAWeekInventoryPanel();
-	FORCEINLINE UAWeekInventoryComponent* GetInventoryReference() { return InventoryReference; }
+	FORCEINLINE UAWeekInventoryComponent* GetInventory() { return InventoryComponent; }
 	UFUNCTION()
 	void RefreshInventory();
-	void LinkToInventory(TObjectPtr<UAWeekInventoryComponent> InputInventory, TObjectPtr<AAWeekPlayerCharacter> InputCharacter = nullptr);
+	void LinkToInventory(TObjectPtr<UAWeekInventoryComponent> InInventoryComponent, TObjectPtr<AAWeekPlayerCharacter> InCharacter = nullptr);
 	void UnlinkFromInventory();
 
 protected:
@@ -51,7 +51,7 @@ protected:
 	AAWeekPlayerCharacter* PlayerCharacter;
 
 	UPROPERTY()
-	UAWeekInventoryComponent* InventoryReference;
+	UAWeekInventoryComponent* InventoryComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UAWeekInventoryItemSlot> InventorySlotClass;
@@ -64,4 +64,8 @@ protected:
 	void SetInfoText() const;
 	virtual void NativeOnInitialized() override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+private:
+	UFUNCTION()
+	void OnEncumeredStatusChanged(bool bIsEncumbered) const;
 };

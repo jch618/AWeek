@@ -12,17 +12,22 @@
 void UAWeekCraftingDetailPanel::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+}
+
+void UAWeekCraftingDetailPanel::InitializeCraftingDetailPanel()
+{
 	if (CraftButton)
 	{
 		CraftButton->OnClicked.AddDynamic(this, &UAWeekCraftingDetailPanel::OnCraftButtonClicked);
 	}
+	
+	IngredientsContainer->ClearChildren();	
 }
 
-void UAWeekCraftingDetailPanel::SetRecipe(int32 RecipeIndex, const UAWeekCraftingComponent* CraftingComponent, bool bIsCraftable)
+void UAWeekCraftingDetailPanel::SetRecipe(int32 RecipeIndex, bool bIsCraftable)
 {
 	FAWeekCachedCraftingRecipe ItemRecipe;
-	if (CraftingComponent->GetRecipeAt(RecipeIndex, ItemRecipe))
+	if (CraftingComponent && CraftingComponent->GetRecipeAt(RecipeIndex, ItemRecipe))
 	{
 		CurrentRecipeIndex = RecipeIndex;
 		
@@ -44,22 +49,26 @@ void UAWeekCraftingDetailPanel::SetRecipe(int32 RecipeIndex, const UAWeekCraftin
 	}
 }
 
+void UAWeekCraftingDetailPanel::UpdateCraftButton()
+{
+	if (CraftingComponent && CurrentRecipeIndex != -1)
+	{
+		CraftButton->SetIsEnabled(CraftingComponent->CanCraft(CurrentRecipeIndex));
+	}
+}
+
 void UAWeekCraftingDetailPanel::ClearCraftingDetails()
 {
 	
 }
-
 
 void UAWeekCraftingDetailPanel::UpdateIngredientSlots()
 {
 	
 }
 
-void UAWeekCraftingDetailPanel::UpdateCraftButton()
-{
-}
-
 void UAWeekCraftingDetailPanel::OnCraftButtonClicked()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	OnCraftButtonLeftClicked.Broadcast(CurrentRecipeIndex);
 }

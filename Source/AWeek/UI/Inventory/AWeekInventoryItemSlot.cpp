@@ -6,41 +6,26 @@
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/Player/AWeekPlayerController.h"
+#include "AWeek/UI/Controller/AWeekInventoryController.h"
 
 // engine
 #include "AWeek/UI/AWeekGameUIManager.h"
 #include "Components/Image.h"
 
 
-const UAWeekItemBase* UAWeekInventoryItemSlot::GetItemReference() const
+const UAWeekItemBase* UAWeekInventoryItemSlot::GetItem() const
 {
 	return OwningInventory->GetItemSlotAt(ItemSlotIndex).Item;
 }
 
-void UAWeekInventoryItemSlot::InitializeInventoryItemSlot(TObjectPtr<UAWeekItemBase> ItemReference)
+void UAWeekInventoryItemSlot::InitializeInventoryItemSlot(const TObjectPtr<UAWeekItemBase> Item)
 {
-	Super::InitializeItemSlot(ItemReference);
-	
-	if (IsValid(ItemReference) && ToolTipClass)
-	{
-		UAWeekInventoryToolTip* ToolTip = CreateWidget<UAWeekInventoryToolTip>(this, ToolTipClass);
-		if (IsValid(ToolTip))
-		{
-			ToolTip->InitializeToolTip(this);
-			SetToolTip(ToolTip);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s: ToolTip is invalid"), *FString(__FUNCTION__));
-		}
-	}
+	Super::InitializeItemSlot(Item);
 
-
-	AAWeekPlayerController* Controller = Cast<AAWeekPlayerController>(GetWorld()->GetFirstPlayerController());
-	UAWeekGameUIManager* UIManager = GetGameInstance()->GetSubsystem<UAWeekGameUIManager>();
-	OnLeftClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotLeftClick);
-	OnRightClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotRightClick);
-	OnShiftLeftClick.BindUObject(UIManager, &UAWeekGameUIManager::HandleItemSlotShiftLeftClick);
+	UAWeekInventoryController* InventoryController = GetGameInstance()->GetSubsystem<UAWeekGameUIManager>()->GetInventoryController();
+	OnLeftClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotLeftClick);
+	OnRightClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotRightClick);
+	OnShiftLeftClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotShiftLeftClick);
 }
 
 FReply UAWeekInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -57,14 +42,14 @@ FReply UAWeekInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeome
 			OnShiftLeftClick.ExecuteIfBound(ClickedItemSlot);
 			return FReply::Handled();
 		}
-		OnLeftClick.ExecuteIfBound(ItemSlotIndex, OwningInventory);
+		OnLeftClick.ExecuteIfBound(ItemSlotIndex, OwningInventory.Get());
 		return FReply::Handled();
 
 		//return Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
 	}
 	else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
 	{
-		OnRightClick.ExecuteIfBound(ItemSlotIndex, OwningInventory);
+		OnRightClick.ExecuteIfBound(ItemSlotIndex, OwningInventory.Get());
 		return FReply::Handled();
 	}
 	return Reply.Unhandled();

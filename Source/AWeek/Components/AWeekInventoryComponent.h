@@ -5,7 +5,8 @@
 #include "AWeekInventoryComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated)
-
+/* when weight capacity exceeds */ 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnEncumberedStatusChanged, bool bIsEncumbered)
 class UAWeekItemBase;
 UENUM(BluePrintType)
 enum class EAWeekItemAddResult : uint8
@@ -20,8 +21,8 @@ struct FAWeekInventorySlotData
 {
 	GENERATED_BODY()
 
-	FAWeekInventorySlotData(int32 NewItemSlotIndex, UAWeekInventoryComponent* NewOwningInventory, UAWeekItemBase* NewItem = nullptr) :
-		bIsEmpty(NewItem == nullptr), ItemSlotIndex(NewItemSlotIndex), OwningInventory(NewOwningInventory), Item(NewItem)
+	FAWeekInventorySlotData(int32 InItemSlotIndex, UAWeekInventoryComponent* InOwningInventory, UAWeekItemBase* InItem = nullptr) :
+		bIsEmpty(InItem == nullptr), ItemSlotIndex(InItemSlotIndex), OwningInventory(InOwningInventory), Item(InItem)
 	{ }
 	FAWeekInventorySlotData() :
 		bIsEmpty(true), ItemSlotIndex(-1), OwningInventory(nullptr), Item(nullptr)
@@ -100,6 +101,7 @@ public:
 	//	PROPERTIES & VARIABLES
 	//================================================================
 	FOnInventoryUpdated OnInventoryUpdated;
+	FOnEncumberedStatusChanged OnEncumberedStatusChanged;
 
 
 	//================================================================
@@ -113,13 +115,16 @@ public:
 	bool CanAddItem(const FName ItemID, const int32 ItemSingleWeight, const int32 Quantity) const;
 	UFUNCTION(Category = "Inventory")
 	FAWeekItemAddResult HandleAddItem(UAWeekItemBase* InputItem);
-
+	
+	/* Find Item Functions */
 	UFUNCTION(Category = "Inventory")
 	UAWeekItemBase* FindMatchingItem(UAWeekItemBase* ItemIn) const;
 	UFUNCTION(Category = "Inventory")
 	int32 FindNextItemByID(FName ItemID) const;
 	FAWeekInventorySlotData* FindNextPartialStack(UAWeekItemBase* ItemIn);
 
+
+	/* Remove Item Functions */
 	UFUNCTION(Category = "Inventory")
 	int32 RemoveAmountOfItem(FAWeekInventorySlotData& ItemSlot, int32 DesiredAmountToRemove);
 	int32 RemoveAmountOfItem(int32 TargetItemSlotIndex, int32 DesiredAmountToRemove);
@@ -128,30 +133,26 @@ public:
 	UFUNCTION(Category = "Inventory")
 	void SplitExistingStack(FAWeekInventorySlotData& ItemSlot, const int32 AmountToSplit);
 
-	void SwapItemSlotWith(const int32 ItemSlotIndex, const int32 OtherItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OtherInventory);
+	// void SwapItemSlotWith(const int32 ItemSlotIndex, const int32 OtherItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OtherInventory);
 	int32 GetFirstEmptySlotIndex();
 
-	// getters
+	/* Getters */
 	// -------------------------------------
 	UFUNCTION(Category = "Inventory")
 	int32 GetEmptySlotsNum() const;
 
 	UFUNCTION(Category = "Inventory")
-
 	FORCEINLINE float GetInventoryTotalWeight() const { return InventoryTotalWeight; }
 	UFUNCTION(Category = "Inventory")
-
 	FORCEINLINE float GetWeightCapacity() const { return InventoryWeightCapacity; }
 	UFUNCTION(Category = "Inventory")
-
 	FORCEINLINE int32 GetSlotsCapacity() const { return InventorySlotsCapacity; }
 	UFUNCTION(Category = "Inventory")
-
 	FORCEINLINE TArray<FAWeekInventorySlotData>& GetInventoryContents() { return InventoryContents; }
 	FORCEINLINE const TArray<FAWeekInventorySlotData>& GetInventoryContents() const { return InventoryContents; }
-
 	FORCEINLINE const FAWeekInventorySlotData& GetItemSlotAt(int32 Index) const { return InventoryContents[Index]; }
 	FORCEINLINE bool IsLinkedToInventoryPanel() const { return bIsLinkedToInventoryPanel; }
+	FORCEINLINE bool IsEncumbered() const { return InventoryTotalWeight > InventoryWeightCapacity; }
 
 	// setters
 	// -------------------------------------
@@ -204,4 +205,5 @@ protected:
 private:
 	void SetItemQuantity(FAWeekInventorySlotData& ItemSlot, const int32 Quantity);
 	int32 FindItemIndex(const UAWeekItemBase* ItemIn) const;
+	void UpdateInventoryTotalWeight(int32 DeltaWeight);
 };

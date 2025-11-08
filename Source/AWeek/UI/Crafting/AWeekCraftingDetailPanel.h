@@ -23,9 +23,16 @@ class AWEEK_API UAWeekCraftingDetailPanel : public UAWeekActivatableWidget
 
 public:
 	FOnCraftButtonClicked OnCraftButtonLeftClicked;
-	void SetRecipe(int32 RecipeIndex, const UAWeekCraftingComponent* InCraftingComponent, bool bIsCraftable);
 
+	void InitializeCraftingDetailPanel();
+	void SetRecipe(int32 RecipeIndex, bool bIsCraftable);
+
+	UFUNCTION()
+	void UpdateCraftButton();
+	
 	void ClearCraftingDetails();
+	FORCEINLINE int32 GetCurrentRecipeIndex() const { return CurrentRecipeIndex; }
+	FORCEINLINE void SetCraftingComponent(TObjectPtr<UAWeekCraftingComponent> InCraftingComponent) { CraftingComponent = InCraftingComponent; }
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UAWeekItemSlot> ItemSlotClass;
@@ -55,9 +62,9 @@ private:
 protected:
 
 private:
-	void UpdateCraftButton();
-
+	UPROPERTY()
+	TObjectPtr<UAWeekCraftingComponent> CraftingComponent;
+	
 	UFUNCTION()
 	void OnCraftButtonClicked();
-	
 };

@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "AWeekInventoryToolTip.generated.h"
 
+class UAWeekItemBase;
+struct FAWeekItemData;
 class UTextBlock;
 
 class UAWeekInventoryItemSlot;
@@ -16,11 +18,13 @@ class AWEEK_API UAWeekInventoryToolTip : public UAWeekActivatableWidget
 	GENERATED_BODY()
 
 public:
-	void InitializeToolTip(TObjectPtr<UAWeekInventoryItemSlot> NewItemSlotWidget);
+	// void InitializeToolTip(TObjectPtr<UAWeekInventoryItemSlot> NewItemSlotWidget);
+	void InitializeToolTip(const TObjectPtr<UAWeekItemBase> Item);
+	void InitializeToolTip(const FAWeekItemData& ItemData, const int ItemQuantity = 0);
 
 protected:
 	TObjectPtr<UAWeekInventoryItemSlot> ItemSlotWidget;
-
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemName;
 

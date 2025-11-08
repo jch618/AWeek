@@ -156,7 +156,7 @@ void ULinkBoxComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
 
 void ULinkBoxComponent::DebugDrawLink()
 {
-	UE_LOG(LogTemp, Log, TEXT("asd"));
+	//UE_LOG(LogTemp, Log, TEXT("asd"));
 	if (!LinkProxy)return;
 	const FTransform& T = LinkProxy->GetActorTransform();
 

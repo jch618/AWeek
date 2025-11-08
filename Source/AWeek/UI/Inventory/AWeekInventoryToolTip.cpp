@@ -3,24 +3,24 @@
 #include "AWeek/UI/Inventory/AWeekInventoryItemSlot.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
+#include "AWeek/Data/AWeekItemDataStructs.h"
 
 // engine
 #include "Components/TextBlock.h"
 
-void UAWeekInventoryToolTip::InitializeToolTip(TObjectPtr<UAWeekInventoryItemSlot> NewItemSlotWidget)
+void UAWeekInventoryToolTip::InitializeToolTip(const TObjectPtr<UAWeekItemBase> Item)
 {
-	if (!IsValid(NewItemSlotWidget))
+	if (!IsValid(Item))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: NewItemSlotWidget is invalid"), *FString(__FUNCTION__));
+		UE_LOG(LogTemp, Warning, TEXT("%s: Item is invalid!"), *FString(__FUNCTION__));
 		return;
 	}
-	const UAWeekItemBase* ItemBeingHovered = NewItemSlotWidget->GetItemReference();
-	if (!IsValid(ItemBeingHovered))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: ItemBeingHovered is invalid"), *FString(__FUNCTION__));
-		return;
-	}
-	switch (ItemBeingHovered->ItemType)
+	InitializeToolTip(Item->GetItemData(), Item->GetQuantity());
+}
+
+void UAWeekInventoryToolTip::InitializeToolTip(const FAWeekItemData& ItemData, const int ItemQuantity)
+{
+	switch (ItemData.ItemType)
 	{
 	case EAWeekItemType::Armor:
 		break;
@@ -56,19 +56,19 @@ void UAWeekInventoryToolTip::InitializeToolTip(TObjectPtr<UAWeekInventoryItemSlo
 		break;
 	}
 
-	ItemName->SetText(ItemBeingHovered->TextData.Name);
-	DamageValue->SetText(FText::AsNumber(ItemBeingHovered->ItemStatistics.DamageValue));
-	ArmorRating->SetText(FText::AsNumber(ItemBeingHovered->ItemStatistics.ArmorRating));
-	UsageText->SetText(ItemBeingHovered->TextData.UsageText);
-	ItemDescription->SetText(ItemBeingHovered->TextData.Description);
-	//SellValue->SetText(FText::AsNumber(ItemBeingHovered->ItemStatistics.SellValue));
+	ItemName->SetText(ItemData.TextData.Name);
+	DamageValue->SetText(FText::AsNumber(ItemData.ItemStatistics.DamageValue));
+	ArmorRating->SetText(FText::AsNumber(ItemData.ItemStatistics.ArmorRating));
+	UsageText->SetText(ItemData.TextData.UsageText);
+	ItemDescription->SetText(ItemData.TextData.Description);
+	//SellValue->SetText(FText::AsNumber(ItemData.ItemStatistics.SellValue));
 
-	const FString WeightInfo = "Weight: " + FString::SanitizeFloat(ItemBeingHovered->GetItemStackWeight());
+	const FString WeightInfo = "Weight: " + FString::SanitizeFloat(ItemData.NumericData.Weight);
 	StackWeight->SetText(FText::FromString(WeightInfo));
-
-	if (ItemBeingHovered->NumericData.bIsStackable)
+	
+	if (ItemData.NumericData.bIsStackable)
 	{
-		const FString StackInfo = "Max stack size: " + FString::FromInt(ItemBeingHovered->NumericData.MaxStackSize);
+		const FString StackInfo = "Max stack size: " + FString::FromInt(ItemData.NumericData.MaxStackSize);
 		MaxStackSize->SetText(FText::FromString(StackInfo));
 	}
 	else

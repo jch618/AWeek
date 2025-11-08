@@ -12,19 +12,9 @@
 void UBuildingPanel::NativeOnDeactivated()
 {
 	
-	UE_LOG(LogTemp, Log, TEXT("Deactivated Building Panel"));
 	if (PanelSwitcher)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Deactivated Building Panel to CraftPanel"));
-		if (UWidget* Old = PanelSwitcher->GetActiveWidget())
-		{
-			UE_LOG(LogTemp, Log, TEXT("Deactivated Building Panel to CraftPanel Deactive!"));
-			if (auto* BuildingCraftPanel = Cast<UBuildingCraftPanel>(Old))
-			{
-				UE_LOG(LogTemp, Error, TEXT("Deactivated Building Panel to CraftPanel Deactive!"));
-				BuildingCraftPanel->DeactivateWidget();
-			}
-		}
+		PanelSwitcher->SetActiveWidgetIndex(0);
 	}
 	Super::NativeOnDeactivated();
 }
@@ -36,7 +26,6 @@ void UBuildingPanel::NativeOnDeactivated()
 void UBuildingPanel::SetActive()
 {
 	Super::SetActive(); //Nothing
-	//UE_LOG(LogTemp, Error, TEXT("Active BuildindPanel!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
 
 
 	static const FString Ctx = TEXT("Read BuildingData");
@@ -77,10 +66,8 @@ void UBuildingPanel::SetActive()
 	{
 		if (UWidget* Old = PanelSwitcher->GetActiveWidget())
 		{
-			//UE_LOG(LogTemp, Log, TEXT("Deactivated Building Panel to CraftPanel Deactive!"));
 			if (auto* BuildingCraftPanel = Cast<UBuildingCraftPanel>(Old))
 			{
-				//UE_LOG(LogTemp, Error, TEXT("Deactivated Building Panel to CraftPanel Deactive!"));
 				BuildingCraftPanel->UpdateData();
 			}
 		}

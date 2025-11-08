@@ -28,4 +28,8 @@ public:
 	TObjectPtr<UInputAction>			mInteract;
 	TObjectPtr<UInputAction>			mChangeWeapon;
 	TObjectPtr<UInputAction>			mMainWidget;
+	TObjectPtr<UInputAction>			mPlaceBuilding;
+	TObjectPtr<UInputAction>			mCancelBuilding;
+	TObjectPtr<UInputAction>			mPreviewRotateL;
+	TObjectPtr<UInputAction>			mPreviewRotateR;
 };

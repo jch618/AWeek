@@ -40,22 +40,6 @@ struct FAWeekItemCraftingRecipe : public FTableRowBase
 };
 
 USTRUCT()
-struct FAWeekItemEntry
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FAWeekItemData ItemData;
-
-	UPROPERTY()
-	int32 Quantity;
-
-	FAWeekItemEntry() = default;
-	FAWeekItemEntry(const FAWeekItemData& InItemData, int32 InQuantity):
-		ItemData(InItemData), Quantity(InQuantity) { }
-};
-
-USTRUCT()
 struct FAWeekCachedCraftingRecipe
 {
 	GENERATED_BODY()

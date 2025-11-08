@@ -15,8 +15,10 @@
 #include "AWeek/UI/AWeekGameUIManager.h"
 #include "AWeek/Interfaces/AWeekInteractionInterface.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
+#include "AWeek/Components/AWeekLootComponent.h"
 #include "AWeek/World/AWeekPickupItem.h"
 #include "AWeek/Player/AWeekPlayerController.h"
+#include "AWeek/UI/Controller/AWeekInventoryController.h"
 #include "AWeek/Settings/AWeekGameUserSettings.h"
 
 DEFINE_LOG_CATEGORY(AWeekPlayerCharacter);
@@ -78,13 +80,16 @@ void AAWeekPlayerCharacter::BeginPlay()
 
 	PlayerController = Cast<AAWeekPlayerController>(GetController());
 
+	// Initialize UI Manager
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		UIManager = GameInstance->GetSubsystem<UAWeekGameUIManager>();
-		UIManager->InitializeUIManager();
+		UIManager->InitializeUIManager(this);
 	}
 
-	// temporary function
+	PlayerInventoryComponent->OnEncumberedStatusChanged.AddUObject(this, &AAWeekPlayerCharacter::OnEncumbered);
+	
+	// Initialize crafting component
 	CraftingComponent->InitializeCraftingComponent();
 	
 	if (IsValid(PlayerController))
@@ -157,12 +162,12 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 	// update held item ui position
 	if (UIManager)
 	{
-		if (UIManager->IsHoldingItem())
+		if (UIManager->GetInventoryController()->IsHoldingItem())
 		{
 			FVector2D MousePos;
 			if (PlayerController->GetMousePosition(MousePos.X, MousePos.Y))
 			{
-				UIManager->UpdateHeldItemPosition(MousePos);
+				UIManager->GetInventoryController()->UpdateHeldItemPosition(MousePos);
 			}
 		}
 	}
@@ -218,12 +223,17 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 			this, &AAWeekPlayerCharacter::ZoomOut);
 		
 		EnhancedInput->BindAction(InputCDO->mInventory, ETriggerEvent::Triggered,
-			this, &AAWeekPlayerCharacter::ToggleInventoryMainPanel);
+			this, &AAWeekPlayerCharacter::ToggleInventoryHub);
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Started,
 			this, &AAWeekPlayerCharacter::StartFire);
 
 		EnhancedInput->BindAction(InputCDO->mMainWidget, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::ToggleMainWidget);
+
+		EnhancedInput->BindAction(InputCDO->mPreviewRotateL, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::WheelDownPreviewObject);
+		EnhancedInput->BindAction(InputCDO->mPreviewRotateR, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::WheelUpPreviewObject);
 
 		EnhancedInput->BindAction(InputCDO->mAttack, ETriggerEvent::Completed,
 			this, &AAWeekPlayerCharacter::EndFire);
@@ -544,6 +554,18 @@ void AAWeekPlayerCharacter::FootStepEffect(FName SocketName)
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FootStepVFX, Position);
 }
 
+void AAWeekPlayerCharacter::OnEncumbered(bool bIsEncumbered)
+{
+	if (bIsEncumbered)
+	{
+		// TODO: Player get panelty
+	}
+	else
+	{
+		// TODO: Player get back to normal
+	}
+}
+
 // ================================
 // INVENTORY SYSTEM
 // ================================
@@ -686,59 +708,44 @@ void AAWeekPlayerCharacter::UpdateInteractionWidget() const
 	}
 }
 
-void AAWeekPlayerCharacter::ToggleInventoryMainPanel()
+void AAWeekPlayerCharacter::ToggleInventoryHub()
 {
-	UIManager->ToggleInventoryMainPanel();
-	// test
-	// ToggleCraftingMainPanel();
+	UIManager->ToggleInventoryHub(EAWeekInventoryHubPanel::Crafting);
 }
 
 void AAWeekPlayerCharacter::ToggleMainWidget()
 {
-	UIManager->ToggleMainWidget();	
+	UIManager->ToggleMainWidget();
 }
 
-void AAWeekPlayerCharacter::DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop)
+void AAWeekPlayerCharacter::WheelDownPreviewObject()
 {
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.bNoFail = true;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	const FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 50.0f;
-	const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
-	UAWeekItemBase* ItemToDrop = ItemSlot.Item;
-
-	//const int32 RemoveQuantity = PlayerInventory->RemoveAmountOfItem(ItemSlot, QuantityToDrop);
-	const int32 RemoveQuantity = ItemSlot.OwningInventory->RemoveAmountOfItem(ItemSlot.ItemSlotIndex, QuantityToDrop);
-
-	AAWeekPickupItem* Pickup = GetWorld()->SpawnActor<AAWeekPickupItem>(AAWeekPickupItem::StaticClass(), SpawnTransform, SpawnParams);
-
-	Pickup->InitializeDrop(ItemToDrop, RemoveQuantity);
+	UIManager->PreviewObjectRotateL();	
 }
 
-void AAWeekPlayerCharacter::ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
+void AAWeekPlayerCharacter::WheelUpPreviewObject()
 {
-	UIManager->ToggleChestInventory(ChestInventory);
+	UIManager->PreviewObjectRotateR();
 }
 
-//void AAWeekPlayerCharacter::OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory)
-//{
-//	UIManager->ActivateChestInventory(ChestInventory);
-//}
+void AAWeekPlayerCharacter::ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> InChestInventoryComponent)
+{
+	ChestInventoryComponent = InChestInventoryComponent;
+	UIManager->ToggleInventoryHub(EAWeekInventoryHubPanel::Chest);
+}
 
 void AAWeekPlayerCharacter::CloseChestInventory()
 {
-	UIManager->DeactivateChestInventory();
+	UIManager->CloseChestInventory();
 }
 
-void AAWeekPlayerCharacter::ToggleCraftingMainPanel()
+void AAWeekPlayerCharacter::ToggleCraftingPanel()
 {
-	UIManager->ToggleCraftingMainPanel(CraftingComponent, PlayerInventoryComponent);
+	UIManager->ToggleInventoryHub(EAWeekInventoryHubPanel::Crafting);
 }
 
-void AAWeekPlayerCharacter::CloseCraftingMainPanel()
+void AAWeekPlayerCharacter::CloseCraftingPanel()
 {
-	UIManager->HideCraftingMainPanel();
+	UIManager->ToggleInventoryHub(EAWeekInventoryHubPanel::Crafting);
 }
 

@@ -115,3 +115,19 @@ struct FAWeekItemData : public FTableRowBase
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	FAWeekItemAssetData AssetData;
 };
+
+USTRUCT()
+struct FAWeekItemEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FAWeekItemData ItemData;
+
+	UPROPERTY()
+	int32 Quantity;
+
+	FAWeekItemEntry() = default;
+	FAWeekItemEntry(const FAWeekItemData& InItemData, int32 InQuantity):
+		ItemData(InItemData), Quantity(InQuantity) { }
+};

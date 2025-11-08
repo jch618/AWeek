@@ -9,21 +9,21 @@
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/UI/AWeekGameUIManager.h"
 #include "AWeek/UI/Inventory/AWeekInventoryPanel.h"
+#include "AWeek/UI/Controller/AWeekCraftingController.h"
 
 void UAWeekCraftingMainPanel::NativeConstruct()
 {
 	Super::NativeConstruct();
 }
 
-void UAWeekCraftingMainPanel::InitializeCraftingMainPanel(const TObjectPtr<UAWeekCraftingComponent> NewCraftingComponent,
-	const TObjectPtr<UAWeekInventoryComponent> NewInventoryComponent)
+void UAWeekCraftingMainPanel::InitializeCraftingMainPanel(const TObjectPtr<UAWeekCraftingController> InCraftingController,
+                                                          const TObjectPtr<UAWeekInventoryComponent> InInventoryComponent)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	CraftingComponent = NewCraftingComponent;
-	ensure(CraftingComponent);
-	if (!CraftingComponent)
+	CraftingController = InCraftingController;
+	if (!CraftingController)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: Crafting Component is null"), *FString(__FUNCTION__));
+		UE_LOG(LogTemp, Warning, TEXT("%s: Crafting Controller is null"), *FString(__FUNCTION__));
 	}
 	
 	if (CraftingListPanel)
@@ -31,21 +31,20 @@ void UAWeekCraftingMainPanel::InitializeCraftingMainPanel(const TObjectPtr<UAWee
 		CraftingListPanel->OnRecipeSelected.AddUObject(this, &UAWeekCraftingMainPanel::OnRecipeSelected);
 	}
 
-	CraftingListPanel->SetCraftingComponent(CraftingComponent);
+	CraftingListPanel->SetCraftingComponent(CraftingController->GetCraftingComponent());
 	CraftingListPanel->RefreshCraftingList();
 
 	CraftingDetailPanel->OnCraftButtonLeftClicked.AddUObject(this, &UAWeekCraftingMainPanel::OnCraftButtonLeftClicked);
 
-	PlayerInventoryPanel->LinkToInventory(NewInventoryComponent, Cast<AAWeekPlayerCharacter>(NewInventoryComponent->GetOwner()));
+	PlayerInventoryPanel->LinkToInventory(InInventoryComponent, Cast<AAWeekPlayerCharacter>(InInventoryComponent->GetOwner()));
 }
 
 void UAWeekCraftingMainPanel::OnRecipeSelected(int32 RecipeIndex, bool bIsCraftable)
 {
-	if (CraftingDetailPanel && CraftingComponent)
+	if (CraftingDetailPanel && CraftingController)
 	{
-		// UE_LOG(LogTemp, Warning, TEXT("%s: CraftingComponent RecipesNum:%d"), *FString(__FUNCTION__),
-		// 	CraftingComponent->GetCachedCraftingRecipes().Num());
-		CraftingDetailPanel->SetRecipe(RecipeIndex, CraftingComponent, bIsCraftable);
+		bIsCraftable = CraftingController->CanCraftRecipe(RecipeIndex);
+		CraftingDetailPanel->SetRecipe(RecipeIndex, bIsCraftable);
 	}
 }
 
@@ -53,9 +52,10 @@ void UAWeekCraftingMainPanel::OnCraftButtonLeftClicked(int32 RecipeIndex)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s: Recipe Index: %d"), *FString(__FUNCTION__), RecipeIndex);
     
-	if (CraftingComponent)
-	{        
-		if (CraftingComponent->TryCraftRecipe(RecipeIndex))
+	if (CraftingController)
+	{
+		FCraftingResult CraftingResult = CraftingController->TryCraftRecipe(RecipeIndex);
+		if (CraftingResult.Result == ECraftingFailureReason::Success)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Crafting Success!"));
 			CraftingListPanel->RefreshCraftingList();

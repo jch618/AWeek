@@ -46,7 +46,7 @@ void AAWeekCraftingTable::Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerChara
 {
 	if (IsValid(PlayerCharacter))
 	{
-		PlayerCharacter->ToggleCraftingMainPanel();
+		PlayerCharacter->ToggleCraftingPanel();
 	}
 }
 
@@ -58,7 +58,7 @@ void AAWeekCraftingTable::OnCraftingTableRadiusExit(UPrimitiveComponent* Overlap
 		AAWeekPlayerCharacter* PlayerCharacter = Cast<AAWeekPlayerCharacter>(OtherActor);
 		if (IsValid(PlayerCharacter))
 		{
-			PlayerCharacter->CloseCraftingMainPanel();
+			PlayerCharacter->CloseCraftingPanel();
 		}
 	}
 }

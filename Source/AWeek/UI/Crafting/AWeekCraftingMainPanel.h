@@ -6,6 +6,7 @@
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "AWeekCraftingMainPanel.generated.h"
 
+class UAWeekCraftingController;
 class UAWeekInventoryComponent;
 class UAWeekCraftingComponent;
 class UAWeekCraftingDetailPanel;
@@ -24,7 +25,7 @@ class AWEEK_API UAWeekCraftingMainPanel : public UAWeekActivatableWidget
 public:
 	void ShowDetailPanel();
 
-	void InitializeCraftingMainPanel(const TObjectPtr<UAWeekCraftingComponent> NewCraftingComponent, const TObjectPtr<UAWeekInventoryComponent> NewInventoryComponent);
+	void InitializeCraftingMainPanel(TObjectPtr<UAWeekCraftingController> InCraftingController, const TObjectPtr<UAWeekInventoryComponent> InInventoryComponent);
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAWeekCraftingListPanel> CraftingListPanel;
@@ -34,9 +35,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAWeekInventoryPanel> PlayerInventoryPanel;
-	
+
 	UPROPERTY()
-	TObjectPtr<UAWeekCraftingComponent> CraftingComponent;
+	TObjectPtr<UAWeekCraftingController> CraftingController;
 	
 	virtual void NativeConstruct() override;
 

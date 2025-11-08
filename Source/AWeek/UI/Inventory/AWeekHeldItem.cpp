@@ -15,30 +15,30 @@ UAWeekHeldItem::UAWeekHeldItem() : HeldItemVisualXOffset(5.0), HeldItemVisualYOf
 
 void UAWeekHeldItem::SetHeldItemQuantity(int32 Quantity)
 {
-	if (IsValid(HeldItemData.ItemReference))
+	if (IsValid(HeldItemData.Item))
 	{
-		HeldItemData.ItemReference->SetQuantity(Quantity);
+		HeldItemData.Item->SetQuantity(Quantity);
 		UpdateHeldItem();
 	}
 }
 
-void UAWeekHeldItem::SetItemReference(TObjectPtr<UAWeekItemBase> NewItemReference)
+void UAWeekHeldItem::SetItem(TObjectPtr<UAWeekItemBase> Item)
 {
-	if (IsValid(NewItemReference))
+	if (IsValid(Item))
 	{
-		HeldItemData.ItemReference = NewItemReference;
+		HeldItemData.Item = Item;
 		UpdateHeldItem();
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: NewHeldItemData.ItemReference is not valid"), *FString(__FUNCTION__));
+		UE_LOG(LogTemp, Warning, TEXT("%s: NewHeldItemData.Item is not valid"), *FString(__FUNCTION__));
 	}
 }
 
 UAWeekItemBase* UAWeekHeldItem::ReleaseHeldItem()
 {
-	UAWeekItemBase* Item = HeldItemData.ItemReference;
-	HeldItemData.ItemReference = nullptr;
+	UAWeekItemBase* Item = HeldItemData.Item;
+	HeldItemData.Item = nullptr;
 	return Item;
 }
 
@@ -54,23 +54,23 @@ void UAWeekHeldItem::InitializeHeldItem(const FHeldItemData& NewHeldItemData)
 
 void UAWeekHeldItem::UpdateHeldItem()
 {
-	if (HeldItemData.ItemReference && HeldItemData.HeldItemVisual)
+	if (HeldItemData.Item && HeldItemData.HeldItemVisual)
 	{
-		if (HeldItemData.ItemReference->Quantity == 0)
+		if (HeldItemData.Item->GetQuantity() == 0)
 		{
 			ClearHeldItem();
 		}
 		else
 		{
-			HeldItemData.HeldItemVisual->ItemIcon->SetBrushFromTexture(HeldItemData.ItemReference->AssetData.Icon);
+			HeldItemData.HeldItemVisual->ItemIcon->SetBrushFromTexture(HeldItemData.Item->GetAssetData().Icon);
 
 			//HeldItemVisual->ItemBorder->SetBrushColor(ItemBorder->GetBrushColor());
 
-			HeldItemData.ItemReference->NumericData.bIsStackable
-				? HeldItemData.HeldItemVisual->ItemQuantity->SetText(FText::AsNumber(HeldItemData.ItemReference->Quantity))
+			HeldItemData.Item->GetNumericData().bIsStackable
+				? HeldItemData.HeldItemVisual->ItemQuantity->SetText(FText::AsNumber(HeldItemData.Item->GetQuantity()))
 				: HeldItemData.HeldItemVisual->ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
 
-			HeldItemData.HeldItemVisual->ItemQuantity->SetText(FText::AsNumber(HeldItemData.ItemReference->Quantity));
+			HeldItemData.HeldItemVisual->ItemQuantity->SetText(FText::AsNumber(HeldItemData.Item->GetQuantity()));
 		}
 	}
 }
@@ -93,7 +93,7 @@ void UAWeekHeldItem::ClearHeldItem()
 		HeldItemData.HeldItemVisual->RemoveFromParent();
 		HeldItemData.HeldItemVisual = nullptr;
 	}
-	HeldItemData.ItemReference = nullptr;
+	HeldItemData.Item = nullptr;
 	HeldItemData.SourceInventory = nullptr;
 	HeldItemData.SourceSlotIndex = -1;
 }
@@ -103,11 +103,11 @@ void UAWeekHeldItem::ReturnHeldItemToInventory()
 	const FAWeekInventorySlotData& ItemSlot = HeldItemData.SourceInventory->GetItemSlotAt(HeldItemData.SourceSlotIndex);
 	if (ItemSlot.bIsEmpty)
 	{
-		HeldItemData.SourceInventory->PlaceItemAt(HeldItemData.ItemReference, HeldItemData.SourceSlotIndex);
+		HeldItemData.SourceInventory->PlaceItemAt(HeldItemData.Item, HeldItemData.SourceSlotIndex);
 	}
-	else if (ItemSlot.Item->ID == HeldItemData.ItemReference->ID)
+	else if (ItemSlot.Item->GetID() == HeldItemData.Item->GetID())
 	{
-		HeldItemData.SourceInventory->AddItemQuantityAt(HeldItemData.SourceSlotIndex, HeldItemData.ItemReference->Quantity);
+		HeldItemData.SourceInventory->AddItemQuantityAt(HeldItemData.SourceSlotIndex, HeldItemData.Item->GetQuantity());
 	}
 	ClearHeldItem();
 }

@@ -13,7 +13,7 @@ struct FAWeekItemCraftingRecipe;
 class UAWeekInventoryComponent;
 class UAWeekItemBase;
 
-DECLARE_MULTICAST_DELEGATE(FOnCraftingComponentUpdated)
+DECLARE_MULTICAST_DELEGATE(FOnCraftingFinished)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AWEEK_API UAWeekCraftingComponent : public UActorComponent
@@ -24,7 +24,7 @@ public:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
-	FOnCraftingComponentUpdated OnCraftingComponentUpdated;
+	FOnCraftingFinished OnCraftingFinished;
 
 	//================================================================
 	//	FUNCTIONS

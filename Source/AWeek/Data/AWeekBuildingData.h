@@ -22,7 +22,7 @@ struct FAWeekCost
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Cost")
 	FDataTableRowHandle ItemRow; // DT_Items의 Row
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Cost", meta=(ClampMin="1"))
-	int32 Amount = 1;
+	int32 Amount = 0;
 };
 
 USTRUCT(BlueprintType)

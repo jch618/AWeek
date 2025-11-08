@@ -24,7 +24,7 @@ AAWeekChest::AAWeekChest() : ChestExitRadius(250.0f)
 void AAWeekChest::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	ChestExitSphere->OnComponentEndOverlap.AddDynamic(this, &AAWeekChest::OnChestRadiusExit);
 }
 

@@ -21,6 +21,7 @@ class AWEEK_API AAWeekChest : public AActor, public IAWeekInteractionInterface
 public:
 	AAWeekChest();
 
+	FORCEINLINE UAWeekInventoryComponent* GetInventoryComponent() const { return InventoryComponent;}
 	void BeginFocus() override;
 	void EndFocus() override;
 	void BeginInteract() override;

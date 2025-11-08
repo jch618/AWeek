@@ -28,14 +28,13 @@ void AAWeekPickupItem::Tick(float DeltaTime)
 
 void AAWeekPickupItem::InitializePickupItem(const int32 InQuantity)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (!ItemRowHandle.IsNull())
 	{
-		const FAWeekItemData* ItemData = ItemRowHandle.GetRow<FAWeekItemData>(ItemRowHandle.RowName.ToString());
-
-		ItemReference = NewObject<UAWeekItemBase>(this, UAWeekItemBase::StaticClass());
-		ItemReference->InitializeItem(*ItemData, InQuantity);
-
-		PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+		Item = UAWeekItemBase::CreateFromRowHandle(ItemRowHandle, InQuantity, GetWorld());
+		UE_LOG(LogTemp, Warning, TEXT("%s: ID: %s, Weight: %f"), *FString(__FUNCTION__), *Item->GetID().ToString(), Item->GetNumericData().Weight);
+		
+		PickupMesh->SetStaticMesh(Item->GetAssetData().Mesh);
 
 		UpdateInteractableData();
 	}
@@ -43,10 +42,10 @@ void AAWeekPickupItem::InitializePickupItem(const int32 InQuantity)
 
 void AAWeekPickupItem::InitializeDrop(TObjectPtr<UAWeekItemBase> ItemToDrop, const int32 InQuantity)
 {
-	ItemReference = ItemToDrop;
-	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
-	ItemReference->NumericData.Weight = ItemToDrop->GetItemSingleWeight();
-	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
+	Item = ItemToDrop;
+	InQuantity <= 0 ? Item->SetQuantity(1) : Item->SetQuantity(InQuantity);
+	// Item->GetNumericData().Weight = ItemToDrop->GetItemSingleWeight();
+	PickupMesh->SetStaticMesh(ItemToDrop->GetAssetData().Mesh);
 
 	UpdateInteractableData();
 }
@@ -54,9 +53,9 @@ void AAWeekPickupItem::InitializeDrop(TObjectPtr<UAWeekItemBase> ItemToDrop, con
 void AAWeekPickupItem::UpdateInteractableData()
 {
 	InstanceInteractableData.InteractableType = EAWeekInteractableType::Pickup;
-	InstanceInteractableData.Action = ItemReference->TextData.InteractionText;
-	InstanceInteractableData.Name = ItemReference->TextData.Name;
-	InstanceInteractableData.Quantity = ItemReference->Quantity;
+	InstanceInteractableData.Action = Item->GetTextData().InteractionText;
+	InstanceInteractableData.Name = Item->GetTextData().Name;
+	InstanceInteractableData.Quantity = Item->GetQuantity();
 	InteractableData = InstanceInteractableData;
 }
 
@@ -89,11 +88,12 @@ void AAWeekPickupItem::TakePickup(const TObjectPtr<AAWeekPlayerCharacter> Taker)
 {
 	if (!IsPendingKillPending())
 	{
-		if (ItemReference)
+		if (Item)
 		{
 			if (TObjectPtr<UAWeekInventoryComponent> PlayerInventory = Taker->GetPlayerInventoryComponent())
 			{
-				const FAWeekItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
+				UE_LOG(LogTemp, Warning, TEXT("%s: ID: %s, Weight: %f"), *FString(__FUNCTION__), *Item->GetID().ToString(), Item->GetNumericData().Weight);
+				const FAWeekItemAddResult AddResult = PlayerInventory->HandleAddItem(Item);
 
 				switch (AddResult.OperationResult)
 				{

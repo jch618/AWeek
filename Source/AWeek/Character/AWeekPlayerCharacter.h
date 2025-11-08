@@ -21,6 +21,8 @@
 #include "AWeekPlayerCharacter.generated.h"
 
 
+enum class EAWeekInventoryHubPanel : uint8;
+class UAWeekLootComponent;
 class AAWeekPlayerController;
 class UAWeekCraftingComponent;
 class UAWeekGameUIManager;
@@ -145,9 +147,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
 	TObjectPtr<UAWeekInventoryComponent> PlayerInventoryComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
+	TObjectPtr<UAWeekInventoryComponent> ChestInventoryComponent;
+	
 	UPROPERTY(VisibleAnywhere, Category = "Character | Crafting")
 	TObjectPtr<UAWeekCraftingComponent> CraftingComponent;
-	
+
+	// =====================================================
+	// INTERACTION
+	// ====================================================
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float InteractionCheckFrequency;
 
@@ -225,15 +233,26 @@ public:
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); }
 	FORCEINLINE UAWeekInventoryComponent* GetPlayerInventoryComponent() const { return PlayerInventoryComponent; }
 	FORCEINLINE UAWeekCraftingComponent* GetCraftingComponent() const { return CraftingComponent; }
+
 	void UpdateInteractionWidget() const;
-	void ToggleInventoryMainPanel();
+	
+	void ToggleInventoryHub();
 	void ToggleMainWidget();
-	void DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop);
-	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
+	// void DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop);
+	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> InChestInventoryComponent);
 	//void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 	void CloseChestInventory();
-	void ToggleCraftingMainPanel();
-	void CloseCraftingMainPanel();
+	void ToggleCraftingPanel();
+	void CloseCraftingPanel();
+
+	FORCEINLINE void SetChestInventoryComponent(const TObjectPtr<UAWeekInventoryComponent> InChestInventoryComponent)
+	{
+		ChestInventoryComponent = InChestInventoryComponent;
+	}
+	FORCEINLINE UAWeekInventoryComponent* GetChestInventoryComponent() const { return ChestInventoryComponent;}
+
+	void WheelUpPreviewObject();
+	void WheelDownPreviewObject();
 
 public:
 	// =====================================================
@@ -250,4 +269,9 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 	void FootStepEffect(FName SocketName);
+
+private:
+	/* When inventory capacity exceed, player character takes debuff */
+	UFUNCTION(Category = "Inventory")
+	void OnEncumbered(bool bIsEncumbered);
 };

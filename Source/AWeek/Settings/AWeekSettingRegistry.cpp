@@ -4,11 +4,14 @@
 #include "AWeekSettingRegistry.h"
 
 #include "AWeekGameUserSettings.h"
+#include "EnhancedInputSubsystems.h"
+#include "GameplayTagContainer.h"
 #include "SettingItemCategory.h"
 #include "SettingPropertyResolver.h"
 #include "SettingValueDiscreteItem_Bool.h"
 #include "SettingValueScalarItem.h"
 #include "AWeek/Player/AWeekLocalPlayer.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 #define LOCTEXT_NAMESPACE "AWeek"
 
@@ -26,6 +29,9 @@ void UAWeekSettingRegistry::Init(ULocalPlayer* InLocalPlayer)
 	
 	AudioSetting = RegisterAudioSetting();
 	RegisterSetting(AudioSetting);
+
+	KeyboardAndMouseSetting = RegisterKeyboardAndMouseSetting();
+	RegisterSetting(KeyboardAndMouseSetting);
 }
 
 void UAWeekSettingRegistry::Apply()
@@ -105,5 +111,28 @@ USettingItem* UAWeekSettingRegistry::RegisterAudioSetting()
 	MusicSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetMusicVolume));
 	Setting->AddSetting(MusicSetting);
 	
+	return Setting;
+}
+
+USettingItem* UAWeekSettingRegistry::RegisterKeyboardAndMouseSetting()
+{
+	USettingItemCategory* Setting = NewObject<USettingItemCategory>();
+	Setting->SetDevName(TEXT("KeyboardAndMouseCategory"));
+	Setting->SetDisplayName(LOCTEXT("NAME_KeyboardAndMouseCategory","KeyboardAndMouse"));
+
+	const UEnhancedInputLocalPlayerSubsystem* InputSubsystem = OwningLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	const UEnhancedInputUserSettings* UserSettings = InputSubsystem->GetUserSettings();
+	for (const TPair<FGameplayTag, TObjectPtr<UEnhancedPlayerMappableKeyProfile>>& ProfilePair : UserSettings->GetAllSavedKeyProfiles())
+	{
+		const FGameplayTag& ProfileName = ProfilePair.Key;
+		const TObjectPtr<UEnhancedPlayerMappableKeyProfile>& Profile = ProfilePair.Value;
+
+		for (const TPair<FName, FKeyMappingRow>& RowPair : Profile->GetPlayerMappingRows())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *RowPair.Key.ToString());
+		}
+	}
+		
+
 	return Setting;
 }

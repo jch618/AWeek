@@ -17,7 +17,8 @@
 				"UMG",
 				"AIModule",
 				"SettingSystem",
-				"DeveloperSettings"
+				"DeveloperSettings",
+				"GameFeatures"
 			]
 		}
 	],

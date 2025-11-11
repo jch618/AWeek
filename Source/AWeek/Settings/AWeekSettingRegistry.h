@@ -23,6 +23,7 @@ public:
 protected:
 	USettingItem* RegisterGameplaySetting();
 	USettingItem* RegisterAudioSetting();
+	USettingItem* RegisterKeyboardAndMouseSetting();
 
 protected:
 	UPROPERTY()
@@ -30,4 +31,7 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<USettingItem> AudioSetting;
+	
+	UPROPERTY()
+	TObjectPtr<USettingItem> KeyboardAndMouseSetting;
 };

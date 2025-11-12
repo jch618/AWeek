@@ -41,6 +41,10 @@ void UAWeekSettingRegistry::Apply()
 	if (UAWeekLocalPlayer* LocalPlayer = Cast<UAWeekLocalPlayer>(OwningLocalPlayer))
 	{
 		LocalPlayer->GetGameUserSettings()->ApplySettings(false);
+		const UEnhancedInputLocalPlayerSubsystem* InputSubsystem = OwningLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		UEnhancedInputUserSettings* UserSettings = InputSubsystem->GetUserSettings();
+		UserSettings->ApplySettings();
+		UserSettings->SaveSettings();
 	}
 }
 

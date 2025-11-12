@@ -11,6 +11,7 @@
 #include "SettingValueDiscreteItem_Bool.h"
 #include "SettingValueScalarItem.h"
 #include "AWeek/Player/AWeekLocalPlayer.h"
+#include "Custom/SettingValueItem_Input.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 #define LOCTEXT_NAMESPACE "AWeek"
@@ -121,7 +122,7 @@ USettingItem* UAWeekSettingRegistry::RegisterKeyboardAndMouseSetting()
 	Setting->SetDisplayName(LOCTEXT("NAME_KeyboardAndMouseCategory","KeyboardAndMouse"));
 
 	const UEnhancedInputLocalPlayerSubsystem* InputSubsystem = OwningLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-	const UEnhancedInputUserSettings* UserSettings = InputSubsystem->GetUserSettings();
+	UEnhancedInputUserSettings* UserSettings = InputSubsystem->GetUserSettings();
 	for (const TPair<FGameplayTag, TObjectPtr<UEnhancedPlayerMappableKeyProfile>>& ProfilePair : UserSettings->GetAllSavedKeyProfiles())
 	{
 		const FGameplayTag& ProfileName = ProfilePair.Key;
@@ -137,28 +138,16 @@ USettingItem* UAWeekSettingRegistry::RegisterKeyboardAndMouseSetting()
 				Options.KeyToMatch = EKeys::A;
 				Options.bMatchBasicKeyTypes = true;
 
-				
-
-
 				for (const FPlayerKeyMapping& Mapping : RowPair.Value.Mappings)
 				{
 					if (!Profile->DoesMappingPassQueryOptions(Mapping, Options))
 					{
 						continue;
 					}
-					
-					USettingItemCategory* InputSetting = NewObject<USettingItemCategory>();
-					InputSetting->SetDevName(Mapping.GetMappingName());
-					InputSetting->SetDisplayName(Mapping.GetDisplayName());
+					USettingValueItem_Input* InputSetting = NewObject<USettingValueItem_Input>();
+					InputSetting->Init(Profile, RowPair.Value, Options, UserSettings);
 					Setting->AddSetting(InputSetting);
 				}
-				// ULyraSettingKeyboardInput* InputBinding = NewObject<ULyraSettingKeyboardInput>();
-				//
-				// InputBinding->InitializeInputData(Profile, RowPair.Value, Options);
-				// InputBinding->AddEditCondition(WhenPlatformSupportsMouseAndKeyboard);
-				//
-				// Collection->AddSetting(InputBinding);
-				// CreatedMappingNames.Add(RowPair.Key);
 			}
 		}
 	}

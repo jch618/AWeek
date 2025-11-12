@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class AWEEK_API UKeyIconDataAsset : public UDataAsset
 {
 	GENERATED_BODY()

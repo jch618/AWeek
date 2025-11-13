@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AWeek/Character/AWeekPlayerCharacter.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeekPlayerInventoryComponent.generated.h"
 
@@ -26,7 +27,8 @@ protected:
 
 public:
 	/* Hot Bar Function */
-	void UseSelectedItem(const int32 Index);
+	void UseSelectedItemPrimary(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter);
+	void UseSelectedItemSecondary(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter);
 
 	int32 PreviousIndex = HotBarCurrentIndex;
 	void SelectItemInHotBar(const int32 KeyboardNum);

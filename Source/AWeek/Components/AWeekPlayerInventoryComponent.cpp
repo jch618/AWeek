@@ -23,10 +23,24 @@ void UAWeekPlayerInventoryComponent::BeginPlay()
 	TrashCanSlotIndex = InventoryContents.Num() - 1;
 }
 
-void UAWeekPlayerInventoryComponent::UseSelectedItem(const int32 Index)
+void UAWeekPlayerInventoryComponent::UseSelectedItemPrimary(const TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter)
 {
-	
+	const FAWeekInventorySlotData& SlotData = InventoryContents[HotBarCurrentIndex];
+	if (!SlotData.bIsEmpty)
+	{
+		SlotData.Item->UsePrimary(PlayerCharacter);
+	}
 }
+
+void UAWeekPlayerInventoryComponent::UseSelectedItemSecondary(const TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter)
+{
+	const FAWeekInventorySlotData& SlotData = InventoryContents[HotBarCurrentIndex];
+	if (!SlotData.bIsEmpty)
+	{
+		SlotData.Item->UseSecondary(PlayerCharacter);
+	}
+}
+
 
 void UAWeekPlayerInventoryComponent::SelectItemInHotBar(const int32 KeyboardNum)
 {
@@ -52,7 +66,7 @@ void UAWeekPlayerInventoryComponent::SelectPreviousItemInHotBar()
 void UAWeekPlayerInventoryComponent::SelectCurrentItemInHotBar()
 {
 	const FAWeekInventorySlotData& SlotData = InventoryContents[HotBarCurrentIndex];
-	if (SlotData.Item->GetItemType() == EAWeekItemType::Weapon)
+	if (SlotData.Item && SlotData.Item->GetItemType() == EAWeekItemType::Weapon)
 	{
 		if (AAWeekPlayerCharacter* PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwner()))
 		{

@@ -21,7 +21,7 @@ void USettingListViewItem_Discrete::Init(USettingItem* InGameSetting)
 			Rotator->PopulateTextLabels(OptionTexts);
 			Rotator->SetSelectedItem(DiscreteSetting->GetValueOptionIndex());
 		}
-		
+		OnValueChanged(DiscreteSetting->GetValueOptionIndex());
 		Rotator->OnRotatedEvent.AddUObject(this, &ThisClass::HandleRotatorValueChanged);
 		NextButton->OnClicked().AddUObject(this, &ThisClass::HandleNextButtonClicked);
 		PrevButton->OnClicked().AddUObject(this, &ThisClass::HandlePrevButtonClicked);

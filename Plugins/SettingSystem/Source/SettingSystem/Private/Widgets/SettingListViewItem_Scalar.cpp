@@ -17,6 +17,7 @@ void USettingListViewItem_Scalar::Init(USettingItem* InGameSetting)
 		if (Slider)
 		{
 			const float Value = ScalarSetting->GetValue();
+			OnValueChanged(Value);
 			Slider->SetValue(Value);
 			Slider->SetMinValue(ScalarSetting->GetMinValue());
 			Slider->SetMaxValue(ScalarSetting->GetMaxValue());

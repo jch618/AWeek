@@ -16,6 +16,7 @@ void USettingListViewItem_InputKey::Init(USettingItem* InGameSetting)
 		InputChord.Key = InputSetting->GetKey();
 		KeySelector->SetSelectedKey(InputChord);
 		
+		OnKeySelected(InputSetting->GetKey());
 		if (ensure(KeySelector))
 		{
 			KeySelector->OnKeySelected.AddDynamic(this, &ThisClass::HandleKeySelected);

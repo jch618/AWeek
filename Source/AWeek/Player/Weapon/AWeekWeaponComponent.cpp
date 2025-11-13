@@ -2,6 +2,9 @@
 
 
 #include "AWeekWeaponComponent.h"
+
+#include <AWeek/Components/AWeekPlayerInventoryComponent.h>
+
 #include "../../Components/AWeekInventoryComponent.h"
 #include "../../AWeekAssetManager.h"
 #include "AWeekWeaponProjectile.h"

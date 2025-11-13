@@ -30,6 +30,4 @@ protected:
 private :
 	UPROPERTY()
 	class UActorPoolSubSystem* ActorPoolSubsystem;
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 };

@@ -145,7 +145,7 @@ bool UAWeekPakourComponent::ScanWall(FHitResult Hit)
 	End.Z -= Height;
 	mVaultLandHit = WallTracing(ETraceType::Sphere,
 		Start,
-		End, FColor::Red);
+		End, FColor::Red, true, ECC_Visibility);
 
 	if (mPakourType==EPakourType::Vault && mVaultLandHit.bBlockingHit)
 		return TryVault();

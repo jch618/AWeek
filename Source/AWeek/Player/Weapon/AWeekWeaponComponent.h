@@ -42,7 +42,7 @@ protected:
 	float mDamage = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TObjectPtr<AActor> mProjectile;
+	TSubclassOf<class AAWeekWeaponProjectile> mProjectile;
 
 	bool bOutOfBullet = false;
 
@@ -90,7 +90,7 @@ public:
 	bool StartFire()
 	{
 		// �Ѿ� �پ��� false ����
-		if (bOutOfBullet)
+		if (bOutOfBullet || mCurrentBullet <= 0)
 			return false;
 		bIsFiring = true;
 		return true;
@@ -104,11 +104,7 @@ public:
 	void ChangeWeapon(FName WeaponKey);
 	void ChangeWeaponPos(FName SocketName);
 
-	void Reload()
-	{
-		mCurrentBullet = mBulletMaxStack;
-		bOutOfBullet = false;
-	}
+	void Reload();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UAWeekReticleDefinition> mReticleDefinition;

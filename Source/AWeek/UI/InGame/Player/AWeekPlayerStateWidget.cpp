@@ -20,7 +20,6 @@ void UAWeekPlayerStateWidget::NativeConstruct()
 		FGameplayTag::RequestGameplayTag(FName("Event.HungerChanged")),
 		[this](FGameplayTag Channel, const FHungerChangedMessage& Msg)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%f"), Msg.Hunger / Msg.MaxHunger)
 			HungerBar->SetPercent(Msg.Hunger / Msg.MaxHunger);
 		}
 	);

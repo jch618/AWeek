@@ -105,13 +105,19 @@ protected:
 	bool bIsZooming = false;
 
 	UPROPERTY(EditAnywhere)
+	float mBaseWalkSpeed = 300.f;
+
+	UPROPERTY(EditAnywhere)
 	float mWalkSpeed = 300.f;
 
 	UPROPERTY(EditAnywhere)
-	float mFiringSpeed = 200.f;
+	float mBusySpeedDecRate = 0.5f;
 
 	UPROPERTY(EditAnywhere)
-	float mSprintSpeed = 500.f;
+	float mZoomSpeedDecRate = 0.8f;
+
+	UPROPERTY(EditAnywhere)
+	float mSprintSpeedIncRate = 1.5f;
 
 	UPROPERTY(EditAnywhere)
 	float mRunToStopTime = 0.75f;
@@ -201,8 +207,23 @@ public:
 	void SprintStart();
 	void SprintCompleted();
 	void ChangeWeapon();
+	void EmptyHand();
 	void StartReload();
 	void WeaponReload();
+
+	void SetDefaultWalkSpeed(float Speed)
+	{
+		mWalkSpeed = Speed;
+		GetCharacterMovement()->MaxWalkSpeed = mWalkSpeed;
+	}
+
+	float GetBaseWalkSpeed()
+	{
+		return mBaseWalkSpeed;
+	}
+	
+	void TakeSomeFood(); // pair with heal
+	void Heal();
 
 	UFUNCTION()
 	virtual void ClimbEnd();
@@ -216,6 +237,8 @@ public:
 
 	UFUNCTION()
 	void Die();
+
+	void GameOver();
 
 	virtual void VaultStart();
 	virtual void VaultEnd();

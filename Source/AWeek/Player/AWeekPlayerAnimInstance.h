@@ -158,4 +158,10 @@ protected:
 
 	UFUNCTION()
 	void AnimNotify_Reload();
+
+	UFUNCTION()
+	void AnimNotify_Heal();
+
+	UFUNCTION()
+	void AnimNotify_OnDie();
 };

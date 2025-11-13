@@ -16,17 +16,13 @@ AAWeekWeaponProjectile::AAWeekWeaponProjectile()
 	mBody->SetCollisionProfileName(TEXT("PlayerAttack"));
 
 	mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	mMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	mMesh->SetupAttachment(mBody);
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>
-		MeshAsset(TEXT("/Script/Engine.StaticMesh'/Game/ThirdParty/base_ballbat/source/BaseBallbat.BaseBallbat'"));
-	if (MeshAsset.Succeeded())
-		mMesh->SetStaticMesh(MeshAsset.Object);
-	mMesh->SetRelativeScale3D(FVector(0.5f));
 
 	mMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 	mMovement->SetUpdatedComponent(mBody);
 	mMovement->ProjectileGravityScale = 0.f;
-	mMovement->InitialSpeed = 150000.f;
+	mMovement->InitialSpeed = 1000.f;
 	mMovement->OnProjectileStop.AddDynamic(this, &AAWeekWeaponProjectile::ProjectileStop);
 
 }
@@ -35,7 +31,7 @@ AAWeekWeaponProjectile::AAWeekWeaponProjectile()
 void AAWeekWeaponProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	mMovement->Velocity = GetActorForwardVector() * InitialSpeed;
 }
 
 // Called every frame
@@ -55,7 +51,7 @@ void AAWeekWeaponProjectile::Tick(float DeltaTime)
 void AAWeekWeaponProjectile::ProjectileStop(const FHitResult& Hit)
 {
 	// When hit actor implements DamageAble Interface
-	UE_LOG(LogTemp, Warning, TEXT("Hit"));
+	UE_LOG(LogTemp, Warning, TEXT("Projectile Hit at %s"), *Hit.GetActor()->GetName());
 	if (Hit.GetActor()->GetClass()->ImplementsInterface(UDamageAble::StaticClass()))
 	{
 		FDamageInfo DamageInfo;

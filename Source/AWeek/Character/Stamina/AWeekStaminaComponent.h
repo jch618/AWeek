@@ -58,7 +58,7 @@ protected:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-protected:
+public:
 	void ChangeStamina(float Amount)
 	{
 		mStamina = FMath::Min(mStamina + Amount, mMaxStamina);

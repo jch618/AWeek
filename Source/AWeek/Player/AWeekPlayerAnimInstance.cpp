@@ -131,3 +131,14 @@ void UAWeekPlayerAnimInstance::AnimNotify_Reload()
 {
 	mOwner->WeaponReload();
 }
+
+void UAWeekPlayerAnimInstance::AnimNotify_Heal()
+{
+	mOwner->Heal();
+}
+
+void UAWeekPlayerAnimInstance::AnimNotify_OnDie()
+{
+	mOwner->GameOver();
+	Montage_Pause();
+}

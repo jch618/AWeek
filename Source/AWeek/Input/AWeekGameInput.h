@@ -37,4 +37,6 @@ public:
 	TObjectPtr<UInputAction>			mSelectHotBarSlot;
 	TObjectPtr<UInputAction>			mUseItemPrimary;
 	TObjectPtr<UInputAction>			mUseItemSecondary;
+	TObjectPtr<UInputAction>			mUseItem;
+	TObjectPtr<UInputAction>			mTest;
 };

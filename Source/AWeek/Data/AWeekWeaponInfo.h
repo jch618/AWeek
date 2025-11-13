@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../Player/Weapon/AWeekWeaponProjectile.h"
 #include "AWeek/UI/Weapon/AWeekReticleDefinition.h"
 #include "AWeekWeaponInfo.generated.h"
 
@@ -82,7 +83,7 @@ public:
 	float Damage;
 
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<AActor> Projectile;
+	TSubclassOf<AAWeekWeaponProjectile> Projectile;
 
 	UPROPERTY(EditAnywhere)
 	int32 BulletMaxStack;
@@ -92,6 +93,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float FireRate;
+
+	UPROPERTY(EditAnywhere)
+	float WeaponWeight;
 
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* FireEffect;

@@ -18,17 +18,17 @@ public:
 	AAWeekWeaponProjectile();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UBoxComponent>	mBody;
+	TObjectPtr<UBoxComponent> mBody;
 
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent>	mMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> mMesh;
 
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UProjectileMovementComponent>	mMovement;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InitialSpeed;
 
-	UPROPERTY(EditAnywhere)
-	float Duration = 1.f;
+	TObjectPtr<UProjectileMovementComponent> mMovement;
+
+	float Duration = 10.f;
 
 	class AController* mOwnerController;
 

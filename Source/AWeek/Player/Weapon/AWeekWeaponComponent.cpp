@@ -2,6 +2,7 @@
 
 
 #include "AWeekWeaponComponent.h"
+#include "../../Components/AWeekInventoryComponent.h"
 #include "../../AWeekAssetManager.h"
 #include "AWeekWeaponProjectile.h"
 
@@ -81,12 +82,18 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 	mWeaponKey = WeaponKey;
 	mWeaponType = WeaponInfo->WeaponType;
 	mDamage = WeaponInfo->Damage;
+	mProjectile = WeaponInfo->Projectile;
 	mCurrentBullet = WeaponInfo->BulletMaxStack;
 	mBulletMaxStack = WeaponInfo->BulletMaxStack;
 	mBulletUsagePerSingle = WeaponInfo->BulletUsagePerSingle;
 	mFireRate = WeaponInfo->FireRate;
 	mFireEffect = WeaponInfo->FireEffect;
 	mReticleDefinition = WeaponInfo->ReticleDefinition;
+
+	float BaseWalkSpeed = mOwner->GetBaseWalkSpeed();
+
+	mOwner->SetDefaultWalkSpeed(BaseWalkSpeed *= (1.0f - WeaponInfo->WeaponWeight / 100.0f));
+
 
 	if (mWeaponMeshComp)
 	{
@@ -126,6 +133,21 @@ void UAWeekWeaponComponent::ChangeWeaponPos(FName SocketName)
 			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 			SocketName
 		);
+	}
+}
+
+void UAWeekWeaponComponent::Reload()
+{
+	int32 BulletUsage = mBulletMaxStack - mCurrentBullet;
+	if (mWeaponKey == FName("Rifle") && mOwner->GetPlayerInventoryComponent()->TryRemoveAmountOfItem(FName("test_004"), BulletUsage))
+	{
+		mCurrentBullet = mBulletMaxStack;
+		bOutOfBullet = false;
+	}
+	else if (mWeaponKey == FName("Pistol") && mOwner->GetPlayerInventoryComponent()->TryRemoveAmountOfItem(FName("test_005"), BulletUsage))
+	{
+		mCurrentBullet = mBulletMaxStack;
+		bOutOfBullet = false;
 	}
 }
 
@@ -244,8 +266,8 @@ void UAWeekWeaponComponent::Fire()
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	// �߻�ü ����
 	AAWeekWeaponProjectile* Bullet = GetWorld()->SpawnActor<AAWeekWeaponProjectile>(
+		mProjectile,
 		MuzzleLocation,
 		MuzzleRotation,
 		Param

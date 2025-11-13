@@ -7,6 +7,15 @@
 #include "../../System/GameEventMessageSubsystem.h"
 #include "AWeekHungerComponent.generated.h"
 
+UENUM()
+enum class EHungerState
+{
+	Healthy,
+	Hungry,
+	Starving,
+	Fainting
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AWEEK_API UAWeekHungerComponent : public UActorComponent
 {
@@ -17,6 +26,8 @@ public:
 	UAWeekHungerComponent();
 
 protected:
+	EHungerState HungerState = EHungerState::Healthy;
+
 	UPROPERTY(VisibleAnywhere)
 	float Hunger = 100;
 
@@ -28,7 +39,7 @@ protected:
 	float StaminaAffected = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float UsageRate = 600; // 600초뒤에 모든 허기 소모
+	float UsageRate = 60; // 600초뒤에 모든 허기 소모
 
 	FGameEventMessageListenerHandle StaminaChangedHandle;
 
@@ -41,10 +52,11 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-protected:
+public:
 	void ChangeHunger(float Amount)
 	{
 		Hunger = FMath::Min(Hunger + Amount, MaxHunger);
+
 		FHungerChangedMessage Msg;
 		Msg.Hunger = Hunger;
 		Msg.MaxHunger = MaxHunger;
@@ -54,5 +66,29 @@ protected:
 			Msg
 		);
 	}
-		
+
+public:
+	bool IsOnHungerState(EHungerState CheckState)
+	{
+		EHungerState CurrentState;
+		if (Hunger > 50)
+		{
+			CurrentState = EHungerState::Healthy;
+		}
+		else if (Hunger <= 50 && Hunger > 30)
+		{
+			CurrentState = EHungerState::Hungry;
+	
+		}
+		else if (Hunger <= 30 && Hunger > 0)
+		{
+			CurrentState = EHungerState::Starving;
+		}
+		else if (FMath::IsNearlyZero(Hunger))
+		{
+			CurrentState = EHungerState::Fainting;
+		}
+
+		return CheckState == CurrentState;
+	}
 };

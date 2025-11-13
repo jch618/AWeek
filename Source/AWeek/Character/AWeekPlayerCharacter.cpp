@@ -132,13 +132,18 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 
 	if (bSprint && mPakour->bCanPakour)
 	{
-		if (mStamina->UseStamina(EStaminaUseType::Sprint) == false || GetVelocity().Size() < 50)
+		if (mHunger->IsOnHungerState(EHungerState::Starving) ||
+			mStamina->UseStamina(EStaminaUseType::Sprint) == false ||
+			GetVelocity().Size() < 50)
 		{
 			SprintCompleted();
 		}
 		else
 		{
-			mPakour->TriggerPakour(EPakourType::Vault);
+			if (!mHunger->IsOnHungerState(EHungerState::Hungry))
+			{
+				mPakour->TriggerPakour(EPakourType::Vault);
+			}
 			mSprintTime += DeltaTime;
 		}
 	}
@@ -245,6 +250,12 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInput->BindAction(InputCDO->mChangeWeapon, ETriggerEvent::Started,
 			this, &AAWeekPlayerCharacter::ChangeWeapon);
 
+		EnhancedInput->BindAction(InputCDO->mUseItem, ETriggerEvent::Started,
+			this, &AAWeekPlayerCharacter::TakeSomeFood);
+
+		EnhancedInput->BindAction(InputCDO->mTest, ETriggerEvent::Started,
+			this, &AAWeekPlayerCharacter::Die);
+
 		EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::OnMouseWheel);
 
@@ -344,7 +355,7 @@ void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 {
 	if (mAnimInst->IsAnyMontagePlaying())
 		return;
-	if (mAnimInst->GetCurrentOverride() == FName("Rifle"))
+	if (mAnimInst->GetCurrentOverride() == FName("Rifle") || mAnimInst->GetCurrentOverride() == FName("Pistol"))
 		return;
 	SetCombatBool(true);
 	mAnimInst->PlayMontageByName(TEXT("Attack"));
@@ -379,9 +390,10 @@ void AAWeekPlayerCharacter::SprintStart()
 		GetVelocity().Size() < 50 || 
 		mStamina->GetStamina() < mSprintMinimumStamina ||
 		!mPakour->bCanPakour ||
-		bIsCombat)
+		bIsCombat ||
+		mHunger->IsOnHungerState(EHungerState::Starving))
 		return;
-	GetCharacterMovement()->MaxWalkSpeed = mSprintSpeed;
+	GetCharacterMovement()->MaxWalkSpeed *= mSprintSpeedIncRate;
 	bSprint = true;
 }
 
@@ -429,6 +441,12 @@ void AAWeekPlayerCharacter::ChangeWeapon()
 	}
 }
 
+void AAWeekPlayerCharacter::EmptyHand()
+{
+	mWeapon->ChangeWeapon(TEXT("Default"));
+	mAnimInst->ChangeAnimOverride(TEXT("Default"));
+}
+
 void AAWeekPlayerCharacter::StartReload()
 {
 	if (mAnimInst->IsAnyMontagePlaying())
@@ -441,6 +459,18 @@ void AAWeekPlayerCharacter::WeaponReload()
 {
 	if (mWeapon)
 		mWeapon->Reload();
+}
+
+void AAWeekPlayerCharacter::TakeSomeFood()
+{
+	mAnimInst->PlayMontageByName(TEXT("Drink"));
+	GetCharacterMovement()->MaxWalkSpeed *= mBusySpeedDecRate;
+}
+
+void AAWeekPlayerCharacter::Heal()
+{
+	mHunger->ChangeHunger(30.f);
+	GetCharacterMovement()->MaxWalkSpeed = mWalkSpeed;
 }
 
 void AAWeekPlayerCharacter::VaultStart()
@@ -558,6 +588,15 @@ void AAWeekPlayerCharacter::AttackImpact()
 void AAWeekPlayerCharacter::Die()
 {
 	mAnimInst->PlayMontageByName(TEXT("Die"));
+}
+
+void AAWeekPlayerCharacter::GameOver()
+{
+	APlayerController* PC = GetController<APlayerController>();
+	if (PC)
+	{
+		DisableInput(PC);
+	}
 }
 
 void AAWeekPlayerCharacter::FootStepEffect(FName SocketName)

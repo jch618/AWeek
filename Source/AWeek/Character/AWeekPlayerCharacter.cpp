@@ -784,6 +784,7 @@ void AAWeekPlayerCharacter::WheelDownPreviewObject()
 void AAWeekPlayerCharacter::AddHealth(float Delta)
 {
 	UE_LOG(LogTemp, Log, TEXT("%s"), *FString(__FUNCTION__));
+	
 }
 
 void AAWeekPlayerCharacter::AddStamina(float Delta)
@@ -804,20 +805,25 @@ void AAWeekPlayerCharacter::OnMouseWheel(const FInputActionValue& Value)
     
 	if (WheelAxis > 0.0f)
 	{
-		PlayerInventoryComponent->SelectNextItemInHotBar();
+		PlayerInventoryComponent->SelectPreviousItemInHotBar();
 	}
 	else if (WheelAxis < 0.0f)
 	{
-		PlayerInventoryComponent->SelectPreviousItemInHotBar();
+		PlayerInventoryComponent->SelectNextItemInHotBar();
 	}
+	PlayerInventoryComponent->SelectCurrentItemInHotBar();
 }
 
 void AAWeekPlayerCharacter::OnLeftClick()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	PlayerInventoryComponent->UseSelectedItemPrimary(this);
 }
 
 void AAWeekPlayerCharacter::OnRightClick()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	PlayerInventoryComponent->UseSelectedItemSecondary(this);
 }
 
 void AAWeekPlayerCharacter::SetAnimInstance(FName AnimInstanceName)

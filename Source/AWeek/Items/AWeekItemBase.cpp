@@ -11,7 +11,6 @@ UAWeekItemBase::UAWeekItemBase() : Quantity(0), bIsCopy(false), bIsPickup(false)
 void UAWeekItemBase::InitializeFromItemData(const FAWeekItemData& InItemData, int32 InQuantity)
 {
 	ItemData = InItemData;
-	UE_LOG(LogTemp, Warning, TEXT("%s: ID: %s, Weight: %f"), *FString(__FUNCTION__), *ItemData.ID.ToString(), ItemData.NumericData.Weight);
 
 	ItemData.NumericData.bIsStackable = ItemData.NumericData.MaxStackSize > 1;
 	Quantity = FMath::Max(1, InQuantity);
@@ -38,7 +37,7 @@ UAWeekItemBase* UAWeekItemBase::CreateFromData(const FAWeekItemData& InItemData,
 
 UAWeekItemBase* UAWeekItemBase::CreateFromRowHandle(const FDataTableRowHandle& RowHandle, int32 InQuantity, UObject* Outer)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	const FAWeekItemData* ItemData = RowHandle.GetRow<FAWeekItemData>(RowHandle.RowName.ToString());
 	if (!ItemData)
 	{
@@ -46,8 +45,6 @@ UAWeekItemBase* UAWeekItemBase::CreateFromRowHandle(const FDataTableRowHandle& R
 			*FString(__FUNCTION__), *RowHandle.RowName.ToString());
 		return nullptr;
 	}
-	UE_LOG(LogTemp, Error, TEXT("%s: Success to get item data from row: %s"),
-		*FString(__FUNCTION__), *RowHandle.RowName.ToString());
 	return CreateFromData(*ItemData, InQuantity, Outer);
 }
 
@@ -64,16 +61,21 @@ UAWeekItemBase* UAWeekItemBase::CreateItemCopy() const
 	return ItemCopy;
 }
 
-void UAWeekItemBase::SetQuantity(const int32 NewQuantity)
+void UAWeekItemBase::SetQuantity(const int32 InQuantity)
 {
-	if (NewQuantity != Quantity)
+	if (InQuantity != Quantity)
 	{
-		Quantity = FMath::Clamp(NewQuantity, 0,
+		Quantity = FMath::Clamp(InQuantity, 0,
 			ItemData.NumericData.bIsStackable ? ItemData.NumericData.MaxStackSize : 1);
 	}
 }
 
-void UAWeekItemBase::Use(AAWeekPlayerCharacter* Character)
+bool UAWeekItemBase::UsePrimary(TObjectPtr<AAWeekPlayerCharacter> Character)
 {
+	return false;
+}
 
+bool UAWeekItemBase::UseSecondary(TObjectPtr<AAWeekPlayerCharacter> Character)
+{
+	return false;
 }

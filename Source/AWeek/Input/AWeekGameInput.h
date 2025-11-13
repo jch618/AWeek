@@ -32,4 +32,8 @@ public:
 	TObjectPtr<UInputAction>			mCancelBuilding;
 	TObjectPtr<UInputAction>			mPreviewRotateL;
 	TObjectPtr<UInputAction>			mPreviewRotateR;
+	TObjectPtr<UInputAction>			mCycleHotBar;
+	TObjectPtr<UInputAction>			mSelectHotBarSlot;
+	TObjectPtr<UInputAction>			mUseItemPrimary;
+	TObjectPtr<UInputAction>			mUseItemSecondary;
 };

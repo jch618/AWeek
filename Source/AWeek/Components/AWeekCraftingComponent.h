@@ -8,6 +8,7 @@
 
 struct FAWeekItemEntry;
 struct FAWeekCachedCraftingRecipe;
+class UAWeekPlayerInventoryComponent;
 class AAWeekPlayerCharacter;
 struct FAWeekItemCraftingRecipe;
 class UAWeekInventoryComponent;
@@ -64,7 +65,7 @@ protected:
 	TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter;
 
 	UPROPERTY(VisibleAnywhere, Category = "Crafting")
-	TObjectPtr<UAWeekInventoryComponent> InventoryComponent;
+	TObjectPtr<UAWeekPlayerInventoryComponent> PlayerInventoryComponent;
 	//================================================================
 	//	FUNCTIONS
 	//================================================================

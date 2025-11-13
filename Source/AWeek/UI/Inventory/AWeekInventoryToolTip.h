@@ -38,9 +38,6 @@ protected:
 	TObjectPtr<UTextBlock> UsageText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ArmorRating;
-
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemDescription;
 
 	UPROPERTY(meta = (BindWidget))

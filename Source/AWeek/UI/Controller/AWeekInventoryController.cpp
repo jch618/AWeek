@@ -8,6 +8,7 @@
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/UI/AWeekGameUIManager.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
+#include "AWeek/Components/AWeekPlayerInventoryComponent.h"
 #include "AWeek/Player/AWeekPlayerController.h"
 
 void UAWeekInventoryController::InitializeInventoryController(const TObjectPtr<UAWeekGameUIManager> InUIManager, TSubclassOf<UAWeekHeldItemVisual> InHeldItemVisualClass)
@@ -51,17 +52,26 @@ void UAWeekInventoryController::HandleItemSlotLeftClick(int32 ClickedItemSlotInd
 		const FAWeekInventorySlotData& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
 		if (ClickedItemSlot.bIsEmpty)
 		{
-
 			OwningInventory->PlaceItemAt(HeldItem->ReleaseHeldItem(), ClickedItemSlotIndex);
 			HeldItem->ClearHeldItem();
 			HeldItem = nullptr;
 		}
 		else
 		{
-			// if target slot item is same as clicked item, merge item quantity as possible and hold remaining quantity of item 
+			UAWeekPlayerInventoryComponent* PlayerInventory = UIManager->GetPlayerCharacter()->GetPlayerInventoryComponent();
+			// if target slot item ID is same as clicked item ID, merge item quantity as possible and hold remaining quantity of item 
 			if (ClickedItemSlot.Item->GetID() == HeldItem->GetItem()->GetID())
 			{
 				MergeItem(ClickedItemSlotIndex, OwningInventory);
+			}
+			// if clicked item slot is trash can slot
+			else if (OwningInventory == PlayerInventory && PlayerInventory
+				&& ClickedItemSlotIndex == PlayerInventory->GetTrashCanSlotIndex())
+			{
+				PlayerInventory->ClearTrashCanSlot();
+				PlayerInventory->SetTrashCanSlot(HeldItem->ReleaseHeldItem());
+				HeldItem->ClearHeldItem();
+				HeldItem = nullptr;
 			}
 			// put held item to target slot and hold target slot item
 			else
@@ -109,6 +119,7 @@ void UAWeekInventoryController::HandleItemSlotRightClick(int32 ClickedItemSlotIn
 	}
 }
 
+/* Merge held item to item slot */
 void UAWeekInventoryController::MergeItem(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s: Merge Item"), *FString(__FUNCTION__));
@@ -128,9 +139,9 @@ void UAWeekInventoryController::CreateHeldItem(TObjectPtr<UAWeekItemBase> InHeld
 	if (HeldItemVisualClass)
 	{
 		UAWeekHeldItemVisual* HeldItemVisual = Cast<UAWeekHeldItemVisual>(
-			CreateWidget(UIManager->GetPlayerContoller(),
+			CreateWidget(UIManager->GetPlayerController(),
 			HeldItemVisualClass));
-		HeldItem = NewObject<UAWeekHeldItem>(UIManager->GetPlayerContoller());
+		HeldItem = NewObject<UAWeekHeldItem>(UIManager->GetPlayerController());
 
 		if (HeldItemVisual)
 		{
@@ -151,10 +162,9 @@ void UAWeekInventoryController::CreateHeldItem(TObjectPtr<UAWeekItemBase> InHeld
 
 void UAWeekInventoryController::HandleItemSlotShiftLeftClick(const FAWeekInventorySlotData& ClickedItemSlot) const
 {
-
 	if (!ClickedItemSlot.bIsEmpty && UIManager->GetPlayerCharacter()->GetChestInventoryComponent())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: execute"), *FString(__FUNCTION__));
+		// UE_LOG(LogTemp, Warning, TEXT("%s: execute"), *FString(__FUNCTION__));
 		UAWeekInventoryComponent* SourceInventory = ClickedItemSlot.OwningInventory;
 		UAWeekInventoryComponent* TargetInventory = nullptr;
 		if (SourceInventory == UIManager->GetPlayerCharacter()->GetPlayerInventoryComponent())
@@ -178,5 +188,21 @@ void UAWeekInventoryController::HandleItemSlotShiftLeftClick(const FAWeekInvento
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s: Chest is not open"), *FString(__FUNCTION__));
+	}
+}
+
+void UAWeekInventoryController::HandleItemSlotControlLeftClick(int32 ClickedItemSlotIndex, const TObjectPtr<UAWeekInventoryComponent> OwningInventory)
+{
+	const FAWeekInventorySlotData& ClickedItemSlotData = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
+	TObjectPtr<UAWeekPlayerInventoryComponent> PlayerInventory = UIManager->GetPlayerCharacter()->GetPlayerInventoryComponent();
+	if (!PlayerInventory)
+	{
+		return;
+	}
+	if (!ClickedItemSlotData.bIsEmpty)
+	{
+		UAWeekItemBase* Item = OwningInventory->ReleaseItemAt(ClickedItemSlotIndex);
+		PlayerInventory->ClearTrashCanSlot();
+		PlayerInventory->SetTrashCanSlot(Item);
 	}
 }

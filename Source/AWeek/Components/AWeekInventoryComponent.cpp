@@ -6,10 +6,9 @@
 #include "GeometryCollection/GeometryCollectionParticlesData.h"
 
 // Sets default values for this component's properties
-UAWeekInventoryComponent::UAWeekInventoryComponent() : bIsLinkedToInventoryPanel(false)
+UAWeekInventoryComponent::UAWeekInventoryComponent()
+	: InventoryTotalWeight(0), InventorySlotsCapacity(18), InventoryWeightCapacity(30.0f), bIsLinkedToInventoryPanel(false)
 {
-	InventoryWeightCapacity = 20.0f;
-	InventorySlotsCapacity = 9;
 }
 
 void UAWeekInventoryComponent::BeginPlay()
@@ -306,19 +305,19 @@ bool UAWeekInventoryComponent::CanAddItem(const FName ItemID, const int32 ItemSi
 	// {
 	// 	return false;
 	// }
+	int32 QuantityToDistribute = Quantity;
 	for (const FAWeekInventorySlotData& SlotData : InventoryContents)
 	{
 		if (SlotData.bIsEmpty)
 		{
 			return true;
 		}
-		if (SlotData.Item->GetID() == ItemID &&
-			(SlotData.Item->GetNumericData().MaxStackSize - SlotData.Item->GetQuantity() >= Quantity))
+		if (SlotData.Item->GetID() == ItemID)
 		{
-			return true;
+			QuantityToDistribute -= SlotData.Item->GetNumericData().MaxStackSize - SlotData.Item->GetQuantity();
 		}
 	}
-	return false;
+	return QuantityToDistribute <= 0;
 }
 
 FAWeekItemAddResult UAWeekInventoryComponent::HandleAddItem(UAWeekItemBase* InputItem)
@@ -389,12 +388,10 @@ void UAWeekInventoryComponent::AddNewItem(UAWeekItemBase* Item, const int32 Amou
 	TargetIndex = (TargetIndex == -1 ? GetFirstEmptySlotIndex() : TargetIndex);
 	if (IsValidItemSlotIndex(TargetIndex))
 	{
-		//InventoryContents[FirstEmptyIndex] = NewItem;
 		InventoryContents[TargetIndex].Item = NewItem;
 		InventoryContents[TargetIndex].bIsEmpty = false;
 		InventoryContents[TargetIndex].OwningInventory = this;
-
-		// InventoryTotalWeight += NewItem->GetItemStackWeight();
+		
 		UpdateInventoryTotalWeight(NewItem->GetItemStackWeight());
 		
 		OnInventoryUpdated.Broadcast();

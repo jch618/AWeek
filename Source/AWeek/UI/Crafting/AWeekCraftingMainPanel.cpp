@@ -36,7 +36,7 @@ void UAWeekCraftingMainPanel::InitializeCraftingMainPanel(const TObjectPtr<UAWee
 
 	CraftingDetailPanel->OnCraftButtonLeftClicked.AddUObject(this, &UAWeekCraftingMainPanel::OnCraftButtonLeftClicked);
 
-	PlayerInventoryPanel->LinkToInventory(InInventoryComponent, Cast<AAWeekPlayerCharacter>(InInventoryComponent->GetOwner()));
+	PlayerInventoryPanel->LinkToInventory(InInventoryComponent);
 }
 
 void UAWeekCraftingMainPanel::OnRecipeSelected(int32 RecipeIndex, bool bIsCraftable)

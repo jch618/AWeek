@@ -2,6 +2,8 @@
 
 
 #include "AWeek/UI/Inventory/AWeekInventoryHubWidget.h"
+
+#include "AWeekPlayerInventoryPanel.h"
 #include "AWeek/UI/Inventory/AWeekInventoryPanel.h"
 #include "AWeek/UI/Crafting/AWeekCraftingDetailPanel.h"
 #include "AWeek/UI/Crafting/AWeekCraftingListPanel.h"
@@ -26,98 +28,38 @@ void UAWeekInventoryHubWidget::NativeConstruct()
 
 }
 
-void UAWeekInventoryHubWidget::NativeDestruct()
+void UAWeekInventoryHubWidget::InitializeInventoryHub(TObjectPtr<UAWeekCraftingController> InCraftingController,
+	const TObjectPtr<UAWeekPlayerInventoryComponent> InPlayerInventoryComponent)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s:"), *FString(__FUNCTION__));
-	// if (CraftingDetailPanel)
-	// {
-	// 	CraftingDetailPanel->OnCraftButtonLeftClicked.RemoveAll(this);
-	// }
- //    
-	// if (CraftingController && CraftingController->GetCraftingComponent())
-	// {
-	// 	CraftingController->GetCraftingComponent()->OnCraftingFinished.RemoveAll(this);
-	// 	CraftingController->GetCraftingComponent()->OnCraftingFinished.RemoveAll(CraftingListPanel);
-	// 	CraftingController->GetCraftingComponent()->OnCraftingFinished.RemoveAll(CraftingDetailPanel);
-	// }
-	Super::NativeDestruct();
-
-}
-
-void UAWeekInventoryHubWidget::InitializeInventoryHub(TObjectPtr<UAWeekCraftingController> InCraftingController, const TObjectPtr<UAWeekInventoryComponent> InInventoryComponent)
-{
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	
 	if (InCraftingController)
 	{
 		CraftingController = InCraftingController;
 		InitializeCraftingPanel();
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: CraftingController is null!"), *FString(__FUNCTION__));
-	}
 
 	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwningPlayerPawn());
-	if (InInventoryComponent)
+	if (InPlayerInventoryComponent)
 	{
 		InitializeInventoryPanel();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: InventoryComponent is null!"), *FString(__FUNCTION__));
 	}
 	
 	// Initialize buttons
 	if (ChestPanelButton)
 	{
-		ChestPanelButton->OnClicked().AddUObject(this, &UAWeekInventoryHubWidget::SwitchToChestPanel);
-		// ChestPanelButton->OnClicked().AddLambda([this]()
-		// {
-		// 	SwitchToPanel(EAWeekInventoryHubPanel::Chest, FAWeekPanelContext());
-		// });
+		ChestPanelButton->OnClicked().AddLambda([this]()
+		{
+			SwitchToPanel(EAWeekInventoryHubPanel::Chest, FAWeekPanelContext());
+		});
 	}
 	if (CraftingListPanel)
 	{
-		CraftingPanelButton->OnClicked().AddUObject(this, &UAWeekInventoryHubWidget::SwitchToCraftingListPanel);
-		// CraftingPanelButton->OnClicked().AddLambda([this]()
-		// {
-		// 	SwitchToPanel(EAWeekInventoryHubPanel::Crafting, FAWeekPanelContext());
-		// });
+		CraftingPanelButton->OnClicked().AddLambda([this]()
+		{
+			SwitchToPanel(EAWeekInventoryHubPanel::Crafting, FAWeekPanelContext());
+		});
 	}	
-}
-
-void UAWeekInventoryHubWidget::OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventoryComponent)
-{
-	if (ChestInventoryPanel)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-		ChestInventoryPanel->LinkToInventory(ChestInventoryComponent);
-		SwitchToChestPanel();
-		bIsChestOpen = true;
-	}
-	RefreshInventoryHub();
-}
-
-void UAWeekInventoryHubWidget::CloseChestInventory()
-{
-	if (ChestInventoryPanel)
-	{
-		ChestInventoryPanel->UnlinkFromInventory();
-		bIsChestOpen = false;
-		ChestPanelButton->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	RefreshInventoryHub();
-	
-}
-
-void UAWeekInventoryHubWidget::OpenCraftingPanel()
-{
-	if (CraftingListPanel)
-	{
-		SwitchToCraftingListPanel();
-		CraftingListPanel->RefreshCraftingList();
-	}
-	RefreshInventoryHub();
-	
 }
 
 void UAWeekInventoryHubWidget::OnRecipeSelected(int32 RecipeIndex, bool bIsCraftable)
@@ -149,29 +91,9 @@ void UAWeekInventoryHubWidget::OnCraftButtonLeftClicked(int32 RecipeIndex) const
 	}
 }
 
-void UAWeekInventoryHubWidget::SwitchToChestPanel() const
-{
-	HideCraftingDetailPanel();
-	if (ChestInventoryPanel)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-		PanelSwitcher->SetActiveWidget(ChestInventoryPanel);
-	}
-}
-
-void UAWeekInventoryHubWidget::SwitchToCraftingListPanel() const
-{
-	if (CraftingListPanel)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-		PanelSwitcher->SetActiveWidget(CraftingListPanel);
-	}
-}
 
 void UAWeekInventoryHubWidget::SwitchToPanel(EAWeekInventoryHubPanel TargetPanel, const FAWeekPanelContext& PanelContext)
 {
-	HideCraftingDetailPanel();
-
 	if (CurrentPanel == TargetPanel)
 	{
 		return;
@@ -189,35 +111,6 @@ void UAWeekInventoryHubWidget::SwitchToPanel(EAWeekInventoryHubPanel TargetPanel
 	{
 		ActivatePanel(TargetPanel, PanelContext);
 	}
-	// switch (TargetPanel)
-	// {
-	// case EAWeekInventoryHubPanel::Weapon:
-	// 	if (CraftingListPanel)
-	// 	{
-	// 		SwitchToCraftingListPanel();
-	// 		CraftingListPanel->RefreshCraftingList();
-	// 	}
-	// 	RefreshInventoryHub();
-	// 	break;
-	// case EAWeekInventoryHubPanel::Chest:
-	// 	if (ChestInventoryPanel)
-	// 	{
-	// 		ChestInventoryPanel->LinkToInventory(PanelContext.ChestInventoryComponent);
-	// 		PanelSwitcher->SetActiveWidget(ChestInventoryPanel);
-	// 		bIsChestOpen = true;
-	// 	}
-	// 	RefreshInventoryHub();
-	// 	break;
-	// case EAWeekInventoryHubPanel::Crafting:
-	// 	ShowCraftingDetailPanel();
-	// 	PanelSwitcher->SetActiveWidget(ChestInventoryPanel);
-	// 	break;
-	// case EAWeekInventoryHubPanel::PlayerState:
-	// 	break;
-	// default:
-	// 	break;
-	// 	
-	// }
 }
 
 void UAWeekInventoryHubWidget::CloseCurrentPanel()
@@ -231,7 +124,7 @@ void UAWeekInventoryHubWidget::CloseCurrentPanel()
 
 void UAWeekInventoryHubWidget::RefreshInventoryHub()
 {
-	if (bIsChestOpen)
+	if (ChestInventoryPanel->IsLinkedToInventory())
 	{
 		ChestPanelButton->SetVisibility(ESlateVisibility::Visible);
 	}
@@ -241,7 +134,7 @@ void UAWeekInventoryHubWidget::RefreshInventoryHub()
 	}
 }
 
-void UAWeekInventoryHubWidget::ActivatePanel(EAWeekInventoryHubPanel Panel, const FAWeekPanelContext& Context) const
+void UAWeekInventoryHubWidget::ActivatePanel(EAWeekInventoryHubPanel Panel, const FAWeekPanelContext& Context)
 {
 	switch (Panel)
 	{
@@ -257,15 +150,16 @@ void UAWeekInventoryHubWidget::ActivatePanel(EAWeekInventoryHubPanel Panel, cons
 		PanelSwitcher->SetActiveWidget(ChestInventoryPanel);
 		break;
 	case EAWeekInventoryHubPanel::Crafting:
-		ShowCraftingDetailPanel();
-		PanelSwitcher->SetActiveWidget(ChestInventoryPanel);
+		CraftingListPanel->RefreshCraftingList();
+		PanelSwitcher->SetActiveWidget(CraftingListPanel);
 		break;
 	case EAWeekInventoryHubPanel::PlayerState:
 		break;
 	}
+	UpdatePanelButtons();
 }
 
-void UAWeekInventoryHubWidget::DeactivatePanel(EAWeekInventoryHubPanel Panel) const
+void UAWeekInventoryHubWidget::DeactivatePanel(EAWeekInventoryHubPanel Panel)
 {
 	switch (Panel)
 	{
@@ -274,10 +168,6 @@ void UAWeekInventoryHubWidget::DeactivatePanel(EAWeekInventoryHubPanel Panel) co
 	case EAWeekInventoryHubPanel::Weapon:
 		break;
 	case EAWeekInventoryHubPanel::Chest:
-		if (ChestInventoryPanel)
-		{
-			ChestInventoryPanel->UnlinkFromInventory();
-		}
 		break;
 	case EAWeekInventoryHubPanel::Crafting:
 		HideCraftingDetailPanel();
@@ -285,19 +175,33 @@ void UAWeekInventoryHubWidget::DeactivatePanel(EAWeekInventoryHubPanel Panel) co
 	case EAWeekInventoryHubPanel::PlayerState:
 		break;
 	}
+	UpdatePanelButtons();
 }
 
 void UAWeekInventoryHubWidget::UpdatePanelButtons()
 {
 	if (ChestPanelButton)
 	{
-		ChestPanelButton->SetVisibility(bIsChestOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+		ChestPanelButton->SetVisibility(IsChestOpen() ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
 	
 	if (CraftingPanelButton)
 	{
 		CraftingPanelButton->SetIsSelected(CurrentPanel == EAWeekInventoryHubPanel::Crafting);
 	}	
+}
+
+bool UAWeekInventoryHubWidget::IsChestOpen() const
+{
+	return ChestInventoryPanel->IsLinkedToInventory();
+}
+
+void UAWeekInventoryHubWidget::Close()
+{
+	if (ChestInventoryPanel && ChestInventoryPanel->IsLinkedToInventory())
+	{
+		ChestInventoryPanel->UnlinkFromInventory();
+	}
 }
 
 void UAWeekInventoryHubWidget::ShowCraftingDetailPanel() const
@@ -312,7 +216,7 @@ void UAWeekInventoryHubWidget::HideCraftingDetailPanel() const
 
 void UAWeekInventoryHubWidget::InitializeInventoryPanel() const
 {
-	PlayerInventoryPanel->LinkToInventory(PlayerCharacter->GetPlayerInventoryComponent(), PlayerCharacter);
+	PlayerInventoryPanel->LinkToInventory(PlayerCharacter->GetPlayerInventoryComponent());
 }
 
 void UAWeekInventoryHubWidget::InitializeCraftingPanel()

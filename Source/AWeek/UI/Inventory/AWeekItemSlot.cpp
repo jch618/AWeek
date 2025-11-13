@@ -11,6 +11,8 @@
 
 void UAWeekItemSlot::InitializeItemSlot(const FAWeekItemData& ItemData, const int Quantity)
 {
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	
 	if (ToolTipClass)
 	{
 		UAWeekInventoryToolTip* ToolTip = CreateWidget<UAWeekInventoryToolTip>(this, ToolTipClass);
@@ -25,31 +27,35 @@ void UAWeekItemSlot::InitializeItemSlot(const FAWeekItemData& ItemData, const in
 		}
 	}
 
-	switch (ItemData.ItemQuality)
-	{
-	case EAWeekItemQuality::Shoddy:
-		ItemBorder->SetBrushColor(FLinearColor::Gray);
-		break;
-	case EAWeekItemQuality::Common:
-		ItemBorder->SetBrushColor(FLinearColor::White);
-		break;
-	case EAWeekItemQuality::Quality:
-		ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.51f, 0.169f));
-		break;
-	case EAWeekItemQuality::Masterwork:
-		ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.4f, 0.75f));
-		break;
-	case EAWeekItemQuality::Grandmaster:
-		ItemBorder->SetBrushColor(FLinearColor(1.0f, 0.45f, 0.0f)); // orange
-		break;
-	default:
-		break;
-	}
+	// switch (ItemData.ItemQuality)
+	// {
+	// case EAWeekItemQuality::Poor:
+	// 	ItemBorder->SetBrushColor(FLinearColor::Gray);
+	// 	break;
+	// case EAWeekItemQuality::Common:
+	// 	ItemBorder->SetBrushColor(FLinearColor::White);
+	// 	break;
+	// case EAWeekItemQuality::Rare:
+	// 	ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.51f, 0.169f));
+	// 	break;
+	// case EAWeekItemQuality::Epic:
+	// 	ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.4f, 0.75f));
+	// 	break;
+	// case EAWeekItemQuality::Grandmaster:
+	// 	ItemBorder->SetBrushColor(FLinearColor(1.0f, 0.45f, 0.0f)); // orange
+	// 	break;
+	// default:
+	// 	break;
+	// }
 
+	//
+	// UE_LOG(LogTemp, Warning, TEXT("Update Item Icon"));
+	ItemIcon->SetVisibility(ESlateVisibility::Visible);
 	ItemIcon->SetBrushFromTexture(ItemData.AssetData.Icon);
 
 	if (ItemData.NumericData.bIsStackable)
 	{
+		ItemQuantityText->SetVisibility(ESlateVisibility::Visible);
 		ItemQuantityText->SetText(FText::AsNumber(Quantity));
 	}
 	else
@@ -60,6 +66,7 @@ void UAWeekItemSlot::InitializeItemSlot(const FAWeekItemData& ItemData, const in
 
 void UAWeekItemSlot::InitializeItemSlot(const TObjectPtr<UAWeekItemBase> Item)
 {
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (IsValid(Item))
 	{
 		InitializeItemSlot(Item->GetItemData(), Item->GetQuantity());
@@ -68,7 +75,19 @@ void UAWeekItemSlot::InitializeItemSlot(const TObjectPtr<UAWeekItemBase> Item)
 	{
 		ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		ItemIcon->SetVisibility(ESlateVisibility::Collapsed);
-		ItemBorder->SetBrushColor(FLinearColor(0.1f, 0.1f, 0.1f));
+		ItemBorder->SetBrushColor(DefaultBorderColor);
+	}
+}
+
+void UAWeekItemSlot::SetHighlight(bool IsHighlighted)
+{
+	if (IsHighlighted)
+	{
+		ItemBorder->SetBrushColor(HighlightedBorderColor);
+	}
+	else
+	{
+		ItemBorder->SetBrushColor(DefaultBorderColor);
 	}
 }
 

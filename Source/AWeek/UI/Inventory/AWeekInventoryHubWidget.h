@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AWeek/Components/AWeekPlayerInventoryComponent.h"
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "AWeekInventoryHubWidget.generated.h"
 
+class UAWeekPlayerInventoryPanel;
 enum class EAWeekInventoryHubPanel : uint8;
 class UCommonButtonBase;
 class UAWeekCraftingController;
@@ -56,7 +58,8 @@ public:
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
-	void InitializeInventoryHub(TObjectPtr<UAWeekCraftingController> InCraftingController, const TObjectPtr<UAWeekInventoryComponent> InInventoryComponent);
+	void InitializeInventoryHub(TObjectPtr<UAWeekCraftingController> InCraftingController, TObjectPtr<UAWeekPlayerInventoryComponent>
+	                            InPlayerInventoryComponent);
 
 	/* Control panel */
 	UFUNCTION(BlueprintCallable, Category = "Inventory Hub")
@@ -67,14 +70,12 @@ public:
 
 	FORCEINLINE EAWeekInventoryHubPanel GetCurrentPanel() const { return CurrentPanel; }
 	FORCEINLINE bool IsPanelOpen(EAWeekInventoryHubPanel Panel) const { return CurrentPanel == Panel; }
-	
-	void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventoryComponent);
+	FORCEINLINE bool IsChestOpen() const;
 	void CloseChestInventory();
-	void OpenCraftingPanel();
+	void Close();
 
 	void ShowCraftingDetailPanel() const;
 	void HideCraftingDetailPanel() const;
-	FORCEINLINE bool IsChestOpen() const { return bIsChestOpen;}
 	
 protected:
 	//================================================================
@@ -82,18 +83,20 @@ protected:
 	//================================================================
 	// virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
+	
 private:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
-	UPROPERTY(EditDefaultsOnly, Category = "Widget Classes")
-	TSubclassOf<UAWeekInventoryPanel> InventoryPanelClass;
-
+	// UPROPERTY(EditDefaultsOnly, Category = "Widget Classes")
+	// TSubclassOf<UAWeekPlayerInventoryPanel> PlayerInventoryPanelClass;
+	//
+	// UPROPERTY(EditDefaultsOnly, Category = "Widget Classes")
+	// TSubclassOf<UAWeekPlayerInventoryPanel> InventoryPanelClass;
 
 	/* Widgets */
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UAWeekInventoryPanel> PlayerInventoryPanel;
+	TObjectPtr<UAWeekPlayerInventoryPanel> PlayerInventoryPanel;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonActivatableWidgetSwitcher> PanelSwitcher;
@@ -130,8 +133,6 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UAWeekCraftingController> CraftingController;
-
-	bool bIsChestOpen;
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
@@ -147,17 +148,11 @@ private:
 	void OnCraftButtonLeftClicked(int32 RecipeIndex) const;
 
 	UFUNCTION()
-	void SwitchToChestPanel() const;
-
-	UFUNCTION()
-	void SwitchToCraftingListPanel() const;
-
-	UFUNCTION()
 	void RefreshInventoryHub();
 
 	/* Panel control */
-	void ActivatePanel(EAWeekInventoryHubPanel Panel, const FAWeekPanelContext& Context) const;
-	void DeactivatePanel(EAWeekInventoryHubPanel Panel) const;
+	void ActivatePanel(EAWeekInventoryHubPanel Panel, const FAWeekPanelContext& Context);
+	void DeactivatePanel(EAWeekInventoryHubPanel Panel);
 
 	void UpdatePanelButtons();
 	

@@ -1,8 +1,6 @@
-// game
 #include "AWeek/UI/Inventory/AWeekInventoryItemSlot.h"
 #include "AWeek/UI/Inventory/AWeekInventoryToolTip.h"
 #include "AWeek/UI/Inventory/AWeekHeldItemVisual.h"
-#include "AWeek/UI/Inventory/AWeekItemDragDropOperation.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/Player/AWeekPlayerController.h"
@@ -22,10 +20,14 @@ void UAWeekInventoryItemSlot::InitializeInventoryItemSlot(const TObjectPtr<UAWee
 {
 	Super::InitializeItemSlot(Item);
 
-	UAWeekInventoryController* InventoryController = GetGameInstance()->GetSubsystem<UAWeekGameUIManager>()->GetInventoryController();
-	OnLeftClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotLeftClick);
-	OnRightClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotRightClick);
-	OnShiftLeftClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotShiftLeftClick);
+	if (!OnLeftClick.IsBound())
+	{
+		UAWeekInventoryController* InventoryController = GetGameInstance()->GetSubsystem<UAWeekGameUIManager>()->GetInventoryController();
+		OnLeftClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotLeftClick);
+		OnRightClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotRightClick);
+		OnShiftLeftClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotShiftLeftClick);
+		OnControlLeftClick.BindUObject(InventoryController, &UAWeekInventoryController::HandleItemSlotControlLeftClick);
+	}
 }
 
 FReply UAWeekInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -36,18 +38,19 @@ FReply UAWeekInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeome
 	{
 		if (InMouseEvent.IsShiftDown())
 		{
-			// UE_LOG(LogTemp, Warning, TEXT("%s: ItemSlotIndex = %d"), *FString(__FUNCTION__), ItemSlotIndex);
 			const FAWeekInventorySlotData& ClickedItemSlot = OwningInventory->GetItemSlotAt(ItemSlotIndex);
-			// UE_LOG(LogTemp, Warning, TEXT("%s: ClickedItemIndex: %d"), *FString(__FUNCTION__), ClickedItemSlot.ItemSlotIndex);
 			OnShiftLeftClick.ExecuteIfBound(ClickedItemSlot);
+			return FReply::Handled();
+		}
+		if (InMouseEvent.IsControlDown())
+		{
+			OnControlLeftClick.ExecuteIfBound(ItemSlotIndex, OwningInventory.Get());
 			return FReply::Handled();
 		}
 		OnLeftClick.ExecuteIfBound(ItemSlotIndex, OwningInventory.Get());
 		return FReply::Handled();
-
-		//return Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
 	}
-	else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
 	{
 		OnRightClick.ExecuteIfBound(ItemSlotIndex, OwningInventory.Get());
 		return FReply::Handled();

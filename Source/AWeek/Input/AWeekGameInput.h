@@ -28,6 +28,7 @@ public:
 	TObjectPtr<UInputAction>			mInteract;
 	TObjectPtr<UInputAction>			mChangeWeapon;
 	TObjectPtr<UInputAction>			mMainWidget;
+	TObjectPtr<UInputAction>			mBuildingWidget;
 	TObjectPtr<UInputAction>			mPlaceBuilding;
 	TObjectPtr<UInputAction>			mCancelBuilding;
 	TObjectPtr<UInputAction>			mPreviewRotateL;

@@ -238,6 +238,8 @@ public:
 	
 	void ToggleInventoryHub();
 	void ToggleMainWidget();
+	void ToggleBuildingWidget();
+	
 	// void DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop);
 	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> InChestInventoryComponent);
 	//void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);

@@ -24,6 +24,7 @@ class UAWeekItemBase;
 struct FAWeekInventorySlotData;
 class AAWeekPlayerCharacter;
 class UAWeekCraftingController;
+class UBuildingSelectWidget;
 
 /**
  * 
@@ -63,6 +64,7 @@ public:
 	void ToggleInventoryHub(EAWeekInventoryHubPanel DisplayPanel);
 	// void ToggleInventoryMainPanel();
 	void ToggleMainWidget();
+	void ToggleBuildingWidget();
 	// void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 	//
 	// void ToggleCraftingMainPanel(TObjectPtr<UAWeekCraftingComponent> CraftingComponent, const TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
@@ -107,6 +109,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UMainUIWidget> MainUIWidget;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
+	TSubclassOf<UBuildingSelectWidget> BuildingSelectWidgetClass;
+	UPROPERTY()
+	TObjectPtr<UBuildingSelectWidget> BuildingSelectWidget;
+
 	UPROPERTY()
 	TObjectPtr<UAWeekInventoryHubWidget> InventoryHubWidget;
 
@@ -140,6 +147,9 @@ protected:
 	void CloseInventoryHub();
 
 	void ShowMainWidget();
+	void ShowBuildingWidget();
+	void HideBuildingWidget();
+	
 	void HideMainWidget();
 	void ShowCraftingMainPanel();
 

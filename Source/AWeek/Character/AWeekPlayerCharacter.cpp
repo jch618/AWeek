@@ -230,6 +230,9 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInput->BindAction(InputCDO->mMainWidget, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::ToggleMainWidget);
 
+		EnhancedInput->BindAction(InputCDO->mBuildingWidget, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::ToggleBuildingWidget);
+
 		EnhancedInput->BindAction(InputCDO->mPreviewRotateL, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::WheelDownPreviewObject);
 		EnhancedInput->BindAction(InputCDO->mPreviewRotateR, ETriggerEvent::Triggered,
@@ -717,6 +720,12 @@ void AAWeekPlayerCharacter::ToggleMainWidget()
 {
 	UIManager->ToggleMainWidget();
 }
+
+void AAWeekPlayerCharacter::ToggleBuildingWidget()
+{
+	UIManager->ToggleBuildingWidget();
+}
+
 
 void AAWeekPlayerCharacter::WheelDownPreviewObject()
 {

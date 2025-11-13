@@ -20,6 +20,7 @@
 #include "AWeek/UI/Building/PreviewObjectWidget.h"
 #include "AWeek/UI/Controller/AWeekCraftingController.h"
 #include "AWeek/UI/Controller/AWeekInventoryController.h"
+#include "AWeek/UI/Building/BuildingSelectWidget.h"
 
 UAWeekGameUIManager::UAWeekGameUIManager()
 {
@@ -44,6 +45,7 @@ void UAWeekGameUIManager::InitializeUIManager(const TObjectPtr<AAWeekPlayerChara
 			InteractionWidgetClass = UIDataAsset->InteractionWidgetClass;
 			HeldItemVisualClass = UIDataAsset->HeldItemVisualClass;
 			MainUIWidgetClass = UIDataAsset->MainWidgetClass;
+			BuildingSelectWidgetClass = UIDataAsset->BuildingSelectWidgetClass;
             
 			UE_LOG(LogTemp, Log, TEXT("UI DataAsset loaded from: %s"), *UIDataAssetPath.ToString());
 		}
@@ -153,6 +155,33 @@ void UAWeekGameUIManager::ShowMainWidget()
 	}
 }
 
+void UAWeekGameUIManager::ShowBuildingWidget()
+{
+	UE_LOG(LogTemp, Log, TEXT("Show Building UI Widget"));
+	if (BuildingSelectWidgetClass)
+	{
+		
+		BuildingSelectWidget = Cast<UBuildingSelectWidget, UCommonActivatableWidget>(
+		UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
+			FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), BuildingSelectWidgetClass));
+
+		/*UE_LOG(LogTemp, Log, TEXT("MainUIWidgetClass=%s IsChildOf Activatable? %s"),
+	*GetNameSafe(*MainUIWidgetClass),
+	(MainUIWidgetClass && MainUIWidgetClass->IsChildOf(UCommonActivatableWidget::StaticClass())) ? TEXT("YES") : TEXT("NO"));*/
+	}
+}
+
+void UAWeekGameUIManager::HideBuildingWidget()
+{
+	if (BuildingSelectWidget)
+	{
+		UE_LOG(LogTemp, Log, TEXT("BuildingWidget HIDE"));
+		BuildingSelectWidget->DeactivateWidget();
+		InventoryController->ReturnHeldItemToInventory();
+	}
+}
+
+
 void UAWeekGameUIManager::HideMainWidget()
 {
 	if (MainUIWidget)
@@ -186,6 +215,28 @@ void UAWeekGameUIManager::ToggleMainWidget()
 		PlayerController->SetShowMouseCursor(false);
 	}
 }
+
+void UAWeekGameUIManager::ToggleBuildingWidget()
+{
+	UE_LOG(LogTemp, Log, TEXT("Toggle Building Widget Test!!"));
+	if (!IsValid(BuildingSelectWidget)|| !BuildingSelectWidget->IsActivated())
+	{
+		ShowBuildingWidget();
+		PlayerController->SetShowMouseCursor(false);
+		if (UWorld* World = GetWorld())
+		{
+			if (UGridPlacedSubsystem* Grid = World->GetSubsystem<UGridPlacedSubsystem>())
+			{
+				Grid->StopPlacement();
+			}
+		}
+	}else
+	{
+		HideBuildingWidget();
+		//PlayerController->SetShowMouseCursor(false);
+	}
+}
+
 
 void UAWeekGameUIManager::PreviewObjectRotateL()
 {

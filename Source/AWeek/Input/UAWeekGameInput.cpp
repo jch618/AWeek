@@ -42,6 +42,10 @@ UAWeekGameInput::UAWeekGameInput()
 	mMainWidget = MainWidgetAction.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>
+		BuildingWidgetAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_BuildingWidget.IA_BuildingWidget'"));
+	mBuildingWidget = BuildingWidgetAction.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>
 		ChangeWeaponAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_Test_ChangeWeapon.IA_Test_ChangeWeapon'"));
 	mChangeWeapon = ChangeWeaponAction.Object;
 
@@ -59,6 +63,6 @@ UAWeekGameInput::UAWeekGameInput()
 		CancelBuildingAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_CancelBuilding.IA_CancelBuilding'"));
 
 	mCancelBuilding = CancelBuildingAction.Object;
-
+	
 	
 }

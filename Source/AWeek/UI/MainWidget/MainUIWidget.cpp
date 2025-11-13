@@ -22,7 +22,7 @@ void UMainUIWidget::NativeConstruct()
 
 void UMainUIWidget::NativeOnDeactivated()
 {
-	UE_LOG(LogTemp, Log, TEXT("MainUIWidget deactivated test"));
+	
 
 	if (PanelSwitcher)
 	{

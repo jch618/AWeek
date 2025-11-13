@@ -2,6 +2,7 @@
 #include"BaseEnemyAIController.h"
 #include"../AWeekCharacterAnimInstance.h"
 
+
 ABaseEnemy::ABaseEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,11 +21,22 @@ void ABaseEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	m_AnimInstance = Cast<UAWeekCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-
+	if (ABaseEnemy* DefaultEnemy = Cast<ABaseEnemy>(GetClass()->GetDefaultObject()))
+	{
+		StatDataAsset = DefaultEnemy->StatDataAsset;
+	}
 	if (!StatDataAsset)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StatDataAsset is null"));
-		return;
+		StatDataAsset = Cast<UEnemyStatDataAsset>(
+			StaticLoadObject(UEnemyStatDataAsset::StaticClass(), nullptr,
+				TEXT("/Game/Enemies/Data/DA_EnemyStat.DA_EnemyStat"))
+		);
+
+		if (!StatDataAsset)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[%s] Failed to load default StatDataAsset"), *GetName());
+			return;
+		}
 	}
 	m_Stat = StatDataAsset->DayData;
 
@@ -38,7 +50,6 @@ void ABaseEnemy::BeginPlay()
 			this->OnDayChanged(Msg);
 		}
 	);
-
 }
 
 void ABaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -98,3 +109,10 @@ float ABaseEnemy::GetMontagePlayRate_Code() const
 	return m_Stat.AnimPlayRate;
 }
 
+void ABaseEnemy::OnLoadFromPool_Implementation()
+{
+}
+
+void ABaseEnemy::OnStoreToPool_Implementation()
+{
+}

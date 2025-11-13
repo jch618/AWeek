@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "DamageHitInfo.h"
 #include "DamageInfo.generated.h"
 
 UENUM(BlueprintType)
@@ -50,6 +51,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage System")
     TObjectPtr<AActor> DamageSource = nullptr; //Damage Instigator
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage System")
+    FDamageHitInfo HitInfo;
 
 };
 

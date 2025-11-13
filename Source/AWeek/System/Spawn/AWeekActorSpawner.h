@@ -63,8 +63,7 @@ public:
     void ClearTestSpawnedActors();
 #endif
 
-private:
+protected:
     FVector GetRandomLocationInVolumes() const;
     const ASpawnVolumeActor* ChooseRandomAllowVolume() const;
-    //bool IsInDenyVolumes(const FVector& Location) const;
 };

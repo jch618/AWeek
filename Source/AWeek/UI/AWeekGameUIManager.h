@@ -6,6 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "AWeekGameUIManager.generated.h"
 
+class UAWeekPlayerHotBar;
 class UAWeekInventoryHubWidget;
 class UAWeekInventoryController;
 class UAWeekCraftingComponent;
@@ -24,6 +25,7 @@ class UAWeekItemBase;
 struct FAWeekInventorySlotData;
 class AAWeekPlayerCharacter;
 class UAWeekCraftingController;
+class UBuildingSelectWidget;
 
 /**
  * 
@@ -42,30 +44,19 @@ UCLASS()
 class AWEEK_API UAWeekGameUIManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-
-	// =====================================================
-	// INVENTORY SYSTEM
-	// =====================================================
-
-	//================================================================
-	//	PROPERTIES & VARIABLES
-	//================================================================
-
-	//================================================================
-	//	FUNCTIONS
-	//================================================================
-
+	
 public:
 	UAWeekGameUIManager();
 	
 	void InitializeUIManager(TObjectPtr<AAWeekPlayerCharacter> InPlayerCharacter);
 
 	void ToggleInventoryHub(EAWeekInventoryHubPanel DisplayPanel);
-	// void ToggleInventoryMainPanel();
 	void ToggleMainWidget();
+	void ToggleBuildingWidget();
 	// void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
 	//
 	// void ToggleCraftingMainPanel(TObjectPtr<UAWeekCraftingComponent> CraftingComponent, const TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
+
 
 	void PreviewObjectRotateL();
 	void PreviewObjectRotateR();
@@ -73,31 +64,26 @@ public:
 	void ShowInteractionWidget();
 	void HideInteractionWidget() const;
 	void UpdateInteractionWidget(const FAWeekInteractableData* InteractableData);
-
-	void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory) const;
+	
 	void CloseChestInventory();
-
-	// void HideCraftingMainPanel();
 	
 	FORCEINLINE UAWeekInventoryController* GetInventoryController() const { return InventoryController; }
 	FORCEINLINE AAWeekPlayerCharacter* GetPlayerCharacter() const { return PlayerCharacter; }
-	FORCEINLINE AAWeekPlayerController* GetPlayerContoller() const { return PlayerController; }
+	FORCEINLINE AAWeekPlayerController* GetPlayerController() const { return PlayerController; }
+	
 protected:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
-	TSubclassOf<UAWeekInventoryMainPanel> InventoryMainPanelClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
 	TSubclassOf<UAWeekInteractionWidget> InteractionWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
-	TSubclassOf<UAWeekCraftingMainPanel> CraftingMainPanelClass;
+	TSubclassOf<UAWeekInventoryHubWidget> InventoryHubWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
-	TSubclassOf<UAWeekInventoryHubWidget> InventoryHubWidgetClass;
+	TSubclassOf<UAWeekPlayerHotBar> PlayerHotBarClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
 	TSubclassOf<UAWeekHeldItemVisual> HeldItemVisualClass;
@@ -107,19 +93,23 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UMainUIWidget> MainUIWidget;
 
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI Classes")
+	TSubclassOf<UBuildingSelectWidget> BuildingSelectWidgetClass;
+	UPROPERTY()
+	TObjectPtr<UBuildingSelectWidget> BuildingSelectWidget;
+
+
 	UPROPERTY()
 	TObjectPtr<UAWeekInventoryHubWidget> InventoryHubWidget;
+
+	UPROPERTY()
+	TObjectPtr<UAWeekPlayerHotBar> PlayerHotBarWidget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UPreviewObjectWidget> PreviewObjectWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TObjectPtr<UPreviewObjectWidget> PreviewObjectWidget;
-	
-	UPROPERTY()
-	TObjectPtr<UAWeekInventoryMainPanel> InventoryMainPanelWidget;
-
-	UPROPERTY()
-	TObjectPtr<UAWeekCraftingMainPanel> CraftingMainPanelWidget;;
 	
 	UPROPERTY()
 	TObjectPtr<UAWeekInteractionWidget> InteractionWidget;
@@ -140,11 +130,11 @@ protected:
 	void CloseInventoryHub();
 
 	void ShowMainWidget();
+	void ShowBuildingWidget();
+	void HideBuildingWidget();
+	
 	void HideMainWidget();
-	void ShowCraftingMainPanel();
-
-	void ShowCraftingMainPanel(TObjectPtr<UAWeekCraftingComponent> CraftingComponent, const TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
-
+	
 private:
 	FORCEINLINE bool IsInventoryHubOpen() const;
 	UPROPERTY(EditAnywhere, Category = "UI Settings")

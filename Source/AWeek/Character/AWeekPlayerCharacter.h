@@ -21,6 +21,7 @@
 #include "AWeekPlayerCharacter.generated.h"
 
 
+class UAWeekPlayerInventoryComponent;
 enum class EAWeekInventoryHubPanel : uint8;
 class UAWeekLootComponent;
 class AAWeekPlayerController;
@@ -132,7 +133,7 @@ protected:
 
 
 	// =====================================================
-	// INVENTORY SYSTEM
+	// INVENTORY
 	// ====================================================
 	UPROPERTY()
 	TObjectPtr<UAWeekGameUIManager> UIManager;
@@ -145,7 +146,7 @@ protected:
 	TScriptInterface<IAWeekInteractionInterface> TargetInteractable;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
-	TObjectPtr<UAWeekInventoryComponent> PlayerInventoryComponent;
+	TObjectPtr<UAWeekPlayerInventoryComponent> PlayerInventoryComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
 	TObjectPtr<UAWeekInventoryComponent> ChestInventoryComponent;
@@ -231,13 +232,15 @@ public:
 	// INVENTORY SYSTEM
 	// =====================================================
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); }
-	FORCEINLINE UAWeekInventoryComponent* GetPlayerInventoryComponent() const { return PlayerInventoryComponent; }
+	FORCEINLINE UAWeekPlayerInventoryComponent* GetPlayerInventoryComponent() const { return PlayerInventoryComponent; }
 	FORCEINLINE UAWeekCraftingComponent* GetCraftingComponent() const { return CraftingComponent; }
 
 	void UpdateInteractionWidget() const;
 	
 	void ToggleInventoryHub();
 	void ToggleMainWidget();
+	void ToggleBuildingWidget();
+	
 	// void DropItemFromItemSlot(const FAWeekInventorySlotData& ItemSlot, const int32 QuantityToDrop);
 	void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> InChestInventoryComponent);
 	//void OpenChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
@@ -251,6 +254,21 @@ public:
 	}
 	FORCEINLINE UAWeekInventoryComponent* GetChestInventoryComponent() const { return ChestInventoryComponent;}
 
+	void AddHealth(float Delta);
+	void AddStamina(float Delta);
+	void AddHunger(float Delta);
+
+	/* Hot bar control */
+	void OnMouseWheel(const FInputActionValue& Value);
+
+	void OnLeftClick();
+	void OnRightClick();
+
+	/* temporary test */
+	void SetAnimInstance(FName AnimInstanceName);
+	
+	FORCEINLINE UAWeekWeaponComponent* GetWeaponComponent() const { return mWeapon; }
+	
 	void WheelUpPreviewObject();
 	void WheelDownPreviewObject();
 

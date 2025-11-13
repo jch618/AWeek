@@ -12,12 +12,12 @@
 
 class UAWeekInteractionWidget;
 class UAWeekInventoryHubWidget;
-class UAWeekInventoryMainPanel;
-class UAWeekCraftingMainPanel;
+class UAWeekPlayerHotBar;
 class UAWeekHeldItemVisual;
 class UAWeekInventoryController;
 class UAWeekCraftingController;
 class UMainUIWidget;
+class UBuildingSelectWidget;
 
 UCLASS(BlueprintType)
 class AWEEK_API UAWeekUIDataAsset : public UDataAsset
@@ -29,10 +29,13 @@ public:
 	TSubclassOf<UAWeekInventoryHubWidget> InventoryHubWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
-	TSubclassOf<UAWeekInventoryMainPanel> InventoryMainPanelClass;
+	TSubclassOf<UAWeekPlayerHotBar> PlayerHotBarClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
-	TSubclassOf<UAWeekCraftingMainPanel> CraftingMainPanelClass;
+	// UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
+	// TSubclassOf<UAWeekInventoryMainPanel> InventoryMainPanelClass;
+	//
+	// UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
+	// TSubclassOf<UAWeekCraftingMainPanel> CraftingMainPanelClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
 	TSubclassOf<UAWeekInteractionWidget> InteractionWidgetClass;
@@ -42,4 +45,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
 	TSubclassOf<UMainUIWidget> MainWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
+	TSubclassOf<UBuildingSelectWidget> BuildingSelectWidgetClass;
 };

@@ -27,7 +27,8 @@ class AWEEK_API UAWeekItemSlot : public UAWeekActivatableWidget
 public:
 	void InitializeItemSlot(const FAWeekItemData& ItemData, const int Quantity);
 	void InitializeItemSlot(TObjectPtr<UAWeekItemBase> Item);
-	
+
+	void SetHighlight(bool IsHighlighted);
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Item Slot", meta = (BindWidget))
 	TObjectPtr<UBorder> ItemBorder;
@@ -40,4 +41,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Item Slot", meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantityText;
+
+	UPROPERTY(EditAnywhere, Category = "Item Slot", meta = (BindWidget))
+	FLinearColor DefaultBorderColor = FLinearColor::Gray;
+	
+	UPROPERTY(EditAnywhere, Category = "Item Slot", meta = (BindWidget))
+	FLinearColor HighlightedBorderColor = FLinearColor::Yellow;
 };

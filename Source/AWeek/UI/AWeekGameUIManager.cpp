@@ -2,15 +2,11 @@
 
 
 #include "AWeek/UI/AWeekGameUIManager.h"
-#include "AWeek/UI/Inventory/AWeekInventoryMainPanel.h"
-#include "AWeek/UI/Crafting/AWeekCraftingMainPanel.h"
 #include "AWeek/UI/Interaction/AWeekInteractionWidget.h"
 #include "AWeek/UI/Inventory/AWeekInventoryHubWidget.h"
-#include "AWeek/UI/Inventory/AWeekHeldItemVisual.h"
 #include "AWeek/UI/Inventory/AWeekHeldItem.h"
 #include "AWeek/UI/MainWidget/MainUIWidget.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
-#include "AWeek/Items/AWeekItemBase.h"
 #include "CommonUIExtensions.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
 #include "AWeek/Player/AWeekPlayerController.h"
@@ -20,6 +16,8 @@
 #include "AWeek/UI/Building/PreviewObjectWidget.h"
 #include "AWeek/UI/Controller/AWeekCraftingController.h"
 #include "AWeek/UI/Controller/AWeekInventoryController.h"
+#include "AWeek/UI/Building/BuildingSelectWidget.h"
+#include "Inventory/AWeekPlayerHotBar.h"
 
 UAWeekGameUIManager::UAWeekGameUIManager()
 {
@@ -39,11 +37,11 @@ void UAWeekGameUIManager::InitializeUIManager(const TObjectPtr<AAWeekPlayerChara
 		if (UIDataAsset)
 		{
 			InventoryHubWidgetClass = UIDataAsset->InventoryHubWidgetClass;
-			InventoryMainPanelClass = UIDataAsset->InventoryMainPanelClass;
-			CraftingMainPanelClass = UIDataAsset->CraftingMainPanelClass;
+			PlayerHotBarClass = UIDataAsset->PlayerHotBarClass;
 			InteractionWidgetClass = UIDataAsset->InteractionWidgetClass;
 			HeldItemVisualClass = UIDataAsset->HeldItemVisualClass;
 			MainUIWidgetClass = UIDataAsset->MainWidgetClass;
+			BuildingSelectWidgetClass = UIDataAsset->BuildingSelectWidgetClass;
             
 			UE_LOG(LogTemp, Log, TEXT("UI DataAsset loaded from: %s"), *UIDataAssetPath.ToString());
 		}
@@ -62,6 +60,20 @@ void UAWeekGameUIManager::InitializeUIManager(const TObjectPtr<AAWeekPlayerChara
 	CraftingController->InitializeCraftingController(this,
 		PlayerCharacter->GetCraftingComponent(),
 		PlayerCharacter->GetPlayerInventoryComponent());
+
+	// Create Hotbar widget
+	if (PlayerHotBarClass)
+	{
+		PlayerHotBarWidget = Cast<UAWeekPlayerHotBar>(
+			UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
+				FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), PlayerHotBarClass));
+		
+		PlayerHotBarWidget->InitializeHotBar(PlayerCharacter->GetPlayerInventoryComponent());
+		PlayerCharacter->GetPlayerInventoryComponent()->OnInventoryUpdated.AddUObject(PlayerHotBarWidget,
+			&UAWeekPlayerHotBar::RefreshHotBar);
+		PlayerCharacter->GetPlayerInventoryComponent()->OnHotbarSelectionChanged.AddUObject(
+			PlayerHotBarWidget, &UAWeekPlayerHotBar::OnHotBarSelectionChanged);
+	}
 	
 	if (InventoryHubWidgetClass)
 	{
@@ -94,7 +106,7 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 		UE_LOG(LogTemp, Warning, TEXT("%s: InventoryHubWidgetClass is null!"), *FString(__FUNCTION__));
 		return;
 	}
-	InventoryHubWidget = Cast<UAWeekInventoryHubWidget, UCommonActivatableWidget>(
+	InventoryHubWidget = Cast<UAWeekInventoryHubWidget>(
 		UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
 			FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventoryHubWidgetClass));
 	
@@ -103,23 +115,26 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 	case EAWeekInventoryHubPanel::Weapon:
 		break;
 	case EAWeekInventoryHubPanel::Chest:
-		// InventoryHubWidget->SwitchToPanel(
-		// 	EAWeekInventoryHubPanel::Chest,
-		// 	FAWeekPanelContext::ForChest(PlayerCharacter->GetChestInventoryComponent())
-		// 	);
-		OpenChestInventory(PlayerCharacter->GetChestInventoryComponent());
+		InventoryHubWidget->SwitchToPanel(
+			EAWeekInventoryHubPanel::Chest,
+			FAWeekPanelContext::ForChest(PlayerCharacter->GetChestInventoryComponent())
+			);
 		break;
 	case EAWeekInventoryHubPanel::Crafting:
 		CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
-		InventoryHubWidget->OpenCraftingPanel();
-		// InventoryHubWidget->SwitchToPanel(
-		// 	EAWeekInventoryHubPanel::Chest,
-		// 	FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
-		// 	);
+		InventoryHubWidget->SwitchToPanel(
+			EAWeekInventoryHubPanel::Crafting,
+			FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
+			);
 		break;
 	case EAWeekInventoryHubPanel::PlayerState:
 		break;
 	default:
+		CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
+		InventoryHubWidget->SwitchToPanel(
+			EAWeekInventoryHubPanel::Crafting,
+			FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
+			);
 		break;
 	}
 }
@@ -152,6 +167,33 @@ void UAWeekGameUIManager::ShowMainWidget()
 	(MainUIWidgetClass && MainUIWidgetClass->IsChildOf(UCommonActivatableWidget::StaticClass())) ? TEXT("YES") : TEXT("NO"));
 	}
 }
+
+void UAWeekGameUIManager::ShowBuildingWidget()
+{
+	UE_LOG(LogTemp, Log, TEXT("Show Building UI Widget"));
+	if (BuildingSelectWidgetClass)
+	{
+		
+		BuildingSelectWidget = Cast<UBuildingSelectWidget, UCommonActivatableWidget>(
+		UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
+			FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), BuildingSelectWidgetClass));
+
+		/*UE_LOG(LogTemp, Log, TEXT("MainUIWidgetClass=%s IsChildOf Activatable? %s"),
+	*GetNameSafe(*MainUIWidgetClass),
+	(MainUIWidgetClass && MainUIWidgetClass->IsChildOf(UCommonActivatableWidget::StaticClass())) ? TEXT("YES") : TEXT("NO"));*/
+	}
+}
+
+void UAWeekGameUIManager::HideBuildingWidget()
+{
+	if (BuildingSelectWidget)
+	{
+		UE_LOG(LogTemp, Log, TEXT("BuildingWidget HIDE"));
+		BuildingSelectWidget->DeactivateWidget();
+		InventoryController->ReturnHeldItemToInventory();
+	}
+}
+
 
 void UAWeekGameUIManager::HideMainWidget()
 {
@@ -186,6 +228,28 @@ void UAWeekGameUIManager::ToggleMainWidget()
 		PlayerController->SetShowMouseCursor(false);
 	}
 }
+
+void UAWeekGameUIManager::ToggleBuildingWidget()
+{
+	UE_LOG(LogTemp, Log, TEXT("Toggle Building Widget Test!!"));
+	if (!IsValid(BuildingSelectWidget)|| !BuildingSelectWidget->IsActivated())
+	{
+		ShowBuildingWidget();
+		PlayerController->SetShowMouseCursor(false);
+		if (UWorld* World = GetWorld())
+		{
+			if (UGridPlacedSubsystem* Grid = World->GetSubsystem<UGridPlacedSubsystem>())
+			{
+				Grid->StopPlacement();
+			}
+		}
+	}else
+	{
+		HideBuildingWidget();
+		//PlayerController->SetShowMouseCursor(false);
+	}
+}
+
 
 void UAWeekGameUIManager::PreviewObjectRotateL()
 {
@@ -231,11 +295,6 @@ void UAWeekGameUIManager::UpdateInteractionWidget(const FAWeekInteractableData* 
 		InteractionWidget->UpdateWidget(InteractableData);
 	}
 }
-//
-void UAWeekGameUIManager::OpenChestInventory(const TObjectPtr<UAWeekInventoryComponent> ChestInventory) const
-{
-	InventoryHubWidget->OpenChestInventory(ChestInventory);
-}
 
 void UAWeekGameUIManager::CloseChestInventory()
 {
@@ -247,5 +306,6 @@ void UAWeekGameUIManager::CloseChestInventory()
 			InventoryController->ReturnHeldItemToInventory();
 		}
 	}
-	InventoryHubWidget->CloseChestInventory();
+	// InventoryHubWidget->CloseCurrentPanel();
+	InventoryHubWidget->Close();
 }

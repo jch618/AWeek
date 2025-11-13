@@ -24,16 +24,18 @@ class AWEEK_API UAWeekInventoryPanel : public UAWeekActivatableWidget
 	GENERATED_BODY()
 
 public:
-	FOnShiftClick OnShiftClick;
-	bool bIsLinkedToInventory;
-
 	UAWeekInventoryPanel();
-	FORCEINLINE UAWeekInventoryComponent* GetInventory() { return InventoryComponent; }
+	
+	FORCEINLINE UAWeekInventoryComponent* GetInventory() const { return InventoryComponent; }
+
 	UFUNCTION()
 	void RefreshInventory();
-	void LinkToInventory(TObjectPtr<UAWeekInventoryComponent> InInventoryComponent, TObjectPtr<AAWeekPlayerCharacter> InCharacter = nullptr);
+	
+	void LinkToInventory(TObjectPtr<UAWeekInventoryComponent> InInventoryComponent);
 	void UnlinkFromInventory();
 
+	FORCEINLINE bool IsLinkedToInventory() const { return bIsLinkedToInventory; }
+	
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> InventoryTitle;
@@ -58,14 +60,19 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	int32 NumCols;
-	
-	void HandleShiftClickOnSlot(const FAWeekInventorySlotData& ClickedItemSlot);
 
-	void SetInfoText() const;
 	virtual void NativeOnInitialized() override;
-	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	
+	void UpdateInfoText() const;
+
+	virtual void RefreshInventoryPanel();
+	virtual void InitializeGridPanel();
+	virtual void OnInventoryLinked();
+	virtual void RefreshAdditionalUI() {}
 
 private:
 	UFUNCTION()
-	void OnEncumeredStatusChanged(bool bIsEncumbered) const;
+	void OnEncumberedStatusChanged(bool bIsEncumbered) const;
+
+	bool bIsLinkedToInventory;
 };

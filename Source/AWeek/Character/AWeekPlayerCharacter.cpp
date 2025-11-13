@@ -16,6 +16,7 @@
 #include "AWeek/Interfaces/AWeekInteractionInterface.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeek/Components/AWeekLootComponent.h"
+#include "AWeek/Components/AWeekPlayerInventoryComponent.h"
 #include "AWeek/World/AWeekPickupItem.h"
 #include "AWeek/Player/AWeekPlayerController.h"
 #include "AWeek/UI/Controller/AWeekInventoryController.h"
@@ -62,7 +63,7 @@ AAWeekPlayerCharacter::AAWeekPlayerCharacter()
 
 	mPakour = CreateDefaultSubobject<UAWeekPakourComponent>(TEXT("Pakour"));
 
-	PlayerInventoryComponent = CreateDefaultSubobject<UAWeekInventoryComponent>(TEXT("PlayerInventory"));
+	PlayerInventoryComponent = CreateDefaultSubobject<UAWeekPlayerInventoryComponent>(TEXT("PlayerInventory"));
 	CraftingComponent = CreateDefaultSubobject<UAWeekCraftingComponent>(TEXT("CraftingComponent"));
 	
 	InteractionCheckFrequency = 0.1f;
@@ -80,7 +81,7 @@ void AAWeekPlayerCharacter::BeginPlay()
 
 	PlayerController = Cast<AAWeekPlayerController>(GetController());
 
-	// Initialize UI Manager
+	/* Initialize UI Manager */
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		UIManager = GameInstance->GetSubsystem<UAWeekGameUIManager>();
@@ -89,7 +90,7 @@ void AAWeekPlayerCharacter::BeginPlay()
 
 	PlayerInventoryComponent->OnEncumberedStatusChanged.AddUObject(this, &AAWeekPlayerCharacter::OnEncumbered);
 	
-	// Initialize crafting component
+	/* Initialize crafting component */
 	CraftingComponent->InitializeCraftingComponent();
 	
 	if (IsValid(PlayerController))
@@ -230,6 +231,9 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInput->BindAction(InputCDO->mMainWidget, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::ToggleMainWidget);
 
+		EnhancedInput->BindAction(InputCDO->mBuildingWidget, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::ToggleBuildingWidget);
+
 		EnhancedInput->BindAction(InputCDO->mPreviewRotateL, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::WheelDownPreviewObject);
 		EnhancedInput->BindAction(InputCDO->mPreviewRotateR, ETriggerEvent::Triggered,
@@ -240,6 +244,15 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 		EnhancedInput->BindAction(InputCDO->mChangeWeapon, ETriggerEvent::Started,
 			this, &AAWeekPlayerCharacter::ChangeWeapon);
+
+		EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::OnMouseWheel);
+
+		EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Started,
+		this, &AAWeekPlayerCharacter::OnLeftClick);
+
+		EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Started,
+		this, &AAWeekPlayerCharacter::OnRightClick);
 	}
 }
 
@@ -718,9 +731,59 @@ void AAWeekPlayerCharacter::ToggleMainWidget()
 	UIManager->ToggleMainWidget();
 }
 
+void AAWeekPlayerCharacter::ToggleBuildingWidget()
+{
+	UIManager->ToggleBuildingWidget();
+}
+
+
 void AAWeekPlayerCharacter::WheelDownPreviewObject()
 {
 	UIManager->PreviewObjectRotateL();	
+}
+
+void AAWeekPlayerCharacter::AddHealth(float Delta)
+{
+	UE_LOG(LogTemp, Log, TEXT("%s"), *FString(__FUNCTION__));
+}
+
+void AAWeekPlayerCharacter::AddStamina(float Delta)
+{
+	UE_LOG(LogTemp, Log, TEXT("%s"), *FString(__FUNCTION__));
+}
+
+void AAWeekPlayerCharacter::AddHunger(float Delta)
+{
+	UE_LOG(LogTemp, Log, TEXT("%s"), *FString(__FUNCTION__));
+}
+
+void AAWeekPlayerCharacter::OnMouseWheel(const FInputActionValue& Value)
+{
+	const float WheelAxis = Value.Get<float>();
+    
+	if (!PlayerInventoryComponent) return;
+    
+	if (WheelAxis > 0.0f)
+	{
+		PlayerInventoryComponent->SelectNextItemInHotBar();
+	}
+	else if (WheelAxis < 0.0f)
+	{
+		PlayerInventoryComponent->SelectPreviousItemInHotBar();
+	}
+}
+
+void AAWeekPlayerCharacter::OnLeftClick()
+{
+}
+
+void AAWeekPlayerCharacter::OnRightClick()
+{
+}
+
+void AAWeekPlayerCharacter::SetAnimInstance(FName AnimInstanceName)
+{
+	mAnimInst->ChangeAnimOverride(AnimInstanceName);
 }
 
 void AAWeekPlayerCharacter::WheelUpPreviewObject()

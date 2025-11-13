@@ -42,6 +42,10 @@ UAWeekGameInput::UAWeekGameInput()
 	mMainWidget = MainWidgetAction.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>
+		BuildingWidgetAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_BuildingWidget.IA_BuildingWidget'"));
+	mBuildingWidget = BuildingWidgetAction.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>
 		ChangeWeaponAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_Test_ChangeWeapon.IA_Test_ChangeWeapon'"));
 	mChangeWeapon = ChangeWeaponAction.Object;
 
@@ -61,4 +65,23 @@ UAWeekGameInput::UAWeekGameInput()
 	mCancelBuilding = CancelBuildingAction.Object;
 
 	
+	static ConstructorHelpers::FObjectFinder<UInputAction>
+			CycleHotBar(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_CycleHotBar.IA_CycleHotBar'"));
+
+	mCycleHotBar = CycleHotBar.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>
+			SelectHotBarSlot(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_SelectHotBarSlot.IA_SelectHotBarSlot'"));
+
+	mCycleHotBar = CycleHotBar.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>
+			UseItemPrimary(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_UseItemPrimary.IA_UseItemPrimary'"));
+
+	mUseItemPrimary = UseItemPrimary.Object;
+
+	static ConstructorHelpers::FObjectFinder<UInputAction>
+		UseItemSecondary(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_UseItemSecondary.IA_UseItemSecondary'"));
+
+	mUseItemPrimary = UseItemPrimary.Object;
 }

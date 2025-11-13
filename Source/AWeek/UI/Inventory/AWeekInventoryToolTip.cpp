@@ -22,32 +22,23 @@ void UAWeekInventoryToolTip::InitializeToolTip(const FAWeekItemData& ItemData, c
 {
 	switch (ItemData.ItemType)
 	{
-	case EAWeekItemType::Armor:
-		break;
-
 	case EAWeekItemType::Weapon:
-		break;
-
-	case EAWeekItemType::Shield:
-		break;
-
-	case EAWeekItemType::Spell:
 		break;
 
 	case EAWeekItemType::Consumable:
 		ItemType->SetText(FText::FromString("Consumable"));
 		DamageValue->SetVisibility(ESlateVisibility::Collapsed);
-		ArmorRating->SetVisibility(ESlateVisibility::Collapsed);
 		//SellValue->SetVisibility(ESlateVisibility::Collapsed);
 		break;
-
-	case EAWeekItemType::Quest:
-		break;
-
-	case EAWeekItemType::Mundane:
-		ItemType->SetText(FText::FromString("Mundane Item"));
+		
+	case EAWeekItemType::Ammo:
+		ItemType->SetText(FText::FromString("Ammo"));
 		DamageValue->SetVisibility(ESlateVisibility::Collapsed);
-		ArmorRating->SetVisibility(ESlateVisibility::Collapsed);
+		//SellValue->SetVisibility(ESlateVisibility::Collapsed);
+		break;
+		
+	case EAWeekItemType::Generic:
+		ItemType->SetText(FText::FromString("Generic Item"));
 		UsageText->SetVisibility(ESlateVisibility::Collapsed);
 		//SellValue->SetVisibility(ESlateVisibility::Collapsed);
 		break;
@@ -57,8 +48,8 @@ void UAWeekInventoryToolTip::InitializeToolTip(const FAWeekItemData& ItemData, c
 	}
 
 	ItemName->SetText(ItemData.TextData.Name);
-	DamageValue->SetText(FText::AsNumber(ItemData.ItemStatistics.DamageValue));
-	ArmorRating->SetText(FText::AsNumber(ItemData.ItemStatistics.ArmorRating));
+	DamageValue->SetVisibility(ESlateVisibility::Collapsed);
+	// DamageValue->SetText(FText::AsNumber(ItemData.WeaponData.Damage));
 	UsageText->SetText(ItemData.TextData.UsageText);
 	ItemDescription->SetText(ItemData.TextData.Description);
 	//SellValue->SetText(FText::AsNumber(ItemData.ItemStatistics.SellValue));

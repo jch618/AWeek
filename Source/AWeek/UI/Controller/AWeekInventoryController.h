@@ -34,9 +34,10 @@ public:
 	void ReturnHeldItemToInventory();
 
 	// inventory slot delegates
-	void HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
-	void HandleItemSlotRightClick(int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
+	void HandleItemSlotLeftClick(int32 ClickedItemSlotIndex, const TObjectPtr<UAWeekInventoryComponent> OwningInventory);
+	void HandleItemSlotRightClick(int32 ClickedItemSlotIndex, const TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 	void HandleItemSlotShiftLeftClick(const FAWeekInventorySlotData& ClickedItemSlot) const;
+	void HandleItemSlotControlLeftClick(int32 ClickedItemSlotIndex, const TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 	
 	//================================================================
 	//	PROPERTIES & VARIABLES

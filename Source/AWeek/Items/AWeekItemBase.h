@@ -30,16 +30,17 @@ public:
 	FORCEINLINE FName GetID() const { return ItemData.ID; }
 	FORCEINLINE int GetQuantity() const { return Quantity; }
 	FORCEINLINE EAWeekItemType GetItemType() const { return ItemData.ItemType; }
-	FORCEINLINE EAWeekItemQuality GetItemQuality() const { return ItemData.ItemQuality; }
+	// FORCEINLINE EAWeekItemQuality GetItemQuality() const { return ItemData.ItemQuality; }
 	FORCEINLINE const FAWeekItemTextData& GetTextData() const { return ItemData.TextData; }
 	FORCEINLINE const FAWeekItemAssetData& GetAssetData() const { return ItemData.AssetData; }
 	FORCEINLINE const FAWeekItemNumericData& GetNumericData() const { return ItemData.NumericData; }
-	FORCEINLINE const FAWeekItemStatistics& GetStatistics() const { return ItemData.ItemStatistics; }
+	// FORCEINLINE const FAWeekItemStatistics& GetStatistics() const { return ItemData.ItemStatistics; }
 	FORCEINLINE const FAWeekItemData& GetItemData() const { return ItemData; }
 
 	FORCEINLINE bool IsCopy() const { return bIsCopy; }
 	FORCEINLINE bool IsPickup() const { return bIsPickup; }
-	void InitializeFromItemData(const FAWeekItemData& ItemData, int32 InQuantity);
+
+	virtual void InitializeFromItemData(const FAWeekItemData& InItemData, int32 InQuantity);
 	
 	UFUNCTION(Category = "Item")
 	UAWeekItemBase* CreateItemCopy() const;
@@ -54,10 +55,10 @@ public:
 	FORCEINLINE bool IsFullItemStack() const { return Quantity == ItemData.NumericData.MaxStackSize; }
 
 	UFUNCTION(Category = "Item")
-	void SetQuantity(const int32 NewQuantity);
+	void SetQuantity(const int32 InQuantity);
 
-	UFUNCTION(Category = "Item")
-	virtual void Use(AAWeekPlayerCharacter* Character);
+	virtual bool UsePrimary(TObjectPtr<AAWeekPlayerCharacter> Character);
+	virtual bool UseSecondary(TObjectPtr<AAWeekPlayerCharacter> Character);
 
 	void ResetItemFlags();
 
@@ -69,11 +70,13 @@ protected:
 	//	PROPERTIES & VARIABLES
 	//================================================================
 	UPROPERTY(VisibleAnywhere, Category = "Item")
+	FAWeekItemData ItemData;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 	int32 Quantity;
 
 	bool bIsCopy;
 	bool bIsPickup;
-	
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
@@ -86,8 +89,7 @@ private:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
-	UPROPERTY(VisibleAnywhere, Category = "Item")
-	FAWeekItemData ItemData;
+
 	
 	//================================================================
 	//	FUNCTIONS

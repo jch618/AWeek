@@ -4,44 +4,23 @@
 #include "Engine/DataTable.h"
 #include "AWeekItemDataStructs.generated.h"
 
-UENUM()
-enum class EAWeekItemQuality : uint8
-{
-	Shoddy UMETA(DisplayName = "Shoddy"),
-	Common UMETA(DisplayName = "Common"),
-	Quality UMETA(DisplayName = "Quality"),
-	Masterwork UMETA(DisplayName = "Masterwork"),
-	Grandmaster UMETA(DisplayName = "Grandmaster")
-};
+// UENUM()
+// enum class EAWeekItemQuality : uint8
+// {
+// 	Poor UMETA(DisplayName = "Poor"),
+// 	Common UMETA(DisplayName = "Common"),
+// 	Rare UMETA(DisplayName = "Rare"),
+// 	Epic UMETA(DisplayName = "Epic"),
+// 	Grandmaster UMETA(DisplayName = "Grandmaster")
+// };
 
 UENUM()
 enum class EAWeekItemType : uint8
 {
-	Armor UMETA(DisplayName = "Armor"),
 	Weapon UMETA(DisplayName = "Weapon"),
-	Shield UMETA(DisplayName = "Shield"),
-	Spell UMETA(DisplayName = "Spell"),
 	Consumable UMETA(DisplayName = "Consumable"),
-	Quest UMETA(DisplayName = "Quest"),
-	Mundane UMETA(DisplayName = "Mundane")
-};
-
-USTRUCT()
-struct FAWeekItemStatistics
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-	float ArmorRating;
-
-	UPROPERTY(EditAnywhere)
-	float DamageValue;
-
-	UPROPERTY(EditAnywhere)
-	float RestorationAmount;
-
-	UPROPERTY(EditAnywhere)
-	float SellValue;
+	Ammo UMETA(DisplayName = "Ammo"),
+	Generic UMETA(DisplayName = "Generic")
 };
 
 USTRUCT()
@@ -90,6 +69,21 @@ struct FAWeekItemNumericData
 };
 
 USTRUCT()
+struct FAWeekConsumableData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+	int32 HealthDelta;
+
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+	int32 StaminaDelta;
+
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+	int32 HungerDelta;
+};
+
+USTRUCT()
 struct FAWeekItemData : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -100,11 +94,8 @@ struct FAWeekItemData : public FTableRowBase
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	EAWeekItemType ItemType;
 
-	UPROPERTY(EditAnywhere, Category = "Item Data")
-	EAWeekItemQuality ItemQuality;
-
-	UPROPERTY(EditAnywhere, Category = "Item Data")
-	FAWeekItemStatistics ItemStatistics;
+	// UPROPERTY(EditAnywhere, Category = "Item Data")
+	// EAWeekItemQuality ItemQuality;
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	FAWeekItemTextData TextData;
@@ -114,6 +105,12 @@ struct FAWeekItemData : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	FAWeekItemAssetData AssetData;
+
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+	FAWeekConsumableData ConsumableData;
+
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+	FName WeaponID;
 };
 
 USTRUCT()

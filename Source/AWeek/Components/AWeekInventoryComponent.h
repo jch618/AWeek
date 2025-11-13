@@ -103,7 +103,7 @@ public:
 	FOnInventoryUpdated OnInventoryUpdated;
 	FOnEncumberedStatusChanged OnEncumberedStatusChanged;
 
-
+	
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
@@ -111,16 +111,19 @@ public:
 
 	FORCEINLINE bool IsValidItemSlotIndex(const int32 ItemSlotIndex) const { return InventoryContents.IsValidIndex(ItemSlotIndex); }
 
-	FORCEINLINE bool CanAddItemWeight(const int32 NewWeight) const { return InventoryTotalWeight + NewWeight <= InventoryWeightCapacity; }
+	// FORCEINLINE bool CanAddItemWeight(const int32 NewWeight) const { return InventoryTotalWeight + NewWeight <= InventoryWeightCapacity; }
 	bool CanAddItem(const FName ItemID, const int32 ItemSingleWeight, const int32 Quantity) const;
+	
 	UFUNCTION(Category = "Inventory")
 	FAWeekItemAddResult HandleAddItem(UAWeekItemBase* InputItem);
 	
 	/* Find Item Functions */
 	UFUNCTION(Category = "Inventory")
 	UAWeekItemBase* FindMatchingItem(UAWeekItemBase* ItemIn) const;
+	
 	UFUNCTION(Category = "Inventory")
 	int32 FindNextItemByID(FName ItemID) const;
+	
 	FAWeekInventorySlotData* FindNextPartialStack(UAWeekItemBase* ItemIn);
 
 
@@ -143,12 +146,16 @@ public:
 
 	UFUNCTION(Category = "Inventory")
 	FORCEINLINE float GetInventoryTotalWeight() const { return InventoryTotalWeight; }
+	
 	UFUNCTION(Category = "Inventory")
 	FORCEINLINE float GetWeightCapacity() const { return InventoryWeightCapacity; }
+	
 	UFUNCTION(Category = "Inventory")
 	FORCEINLINE int32 GetSlotsCapacity() const { return InventorySlotsCapacity; }
+	
 	UFUNCTION(Category = "Inventory")
 	FORCEINLINE TArray<FAWeekInventorySlotData>& GetInventoryContents() { return InventoryContents; }
+	
 	FORCEINLINE const TArray<FAWeekInventorySlotData>& GetInventoryContents() const { return InventoryContents; }
 	FORCEINLINE const FAWeekInventorySlotData& GetItemSlotAt(int32 Index) const { return InventoryContents[Index]; }
 	FORCEINLINE bool IsLinkedToInventoryPanel() const { return bIsLinkedToInventoryPanel; }
@@ -179,13 +186,14 @@ protected:
 	//================================================================
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
 	float InventoryTotalWeight;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
 	int32 InventorySlotsCapacity;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
 	float InventoryWeightCapacity;
 
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
-	//TArray<TObjectPtr<UAWeekItemBase>> InventoryContents;
 	TArray<FAWeekInventorySlotData> InventoryContents;
 
 	bool bIsLinkedToInventoryPanel;

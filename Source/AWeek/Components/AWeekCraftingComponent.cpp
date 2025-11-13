@@ -2,6 +2,7 @@
 #include "AWeek/Components/AWeekCraftingComponent.h"
 
 #include "AWeekInventoryComponent.h"
+#include "AWeekPlayerInventoryComponent.h"
 #include "IMediaCache.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
 #include "AWeek/Data/AWeekItemCraftingRecipe.h"
@@ -18,7 +19,7 @@ void UAWeekCraftingComponent::InitializeCraftingComponent()
 	CacheCraftingRecipes();
 	
 	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwner());
-	InventoryComponent = PlayerCharacter->GetPlayerInventoryComponent();
+	PlayerInventoryComponent = PlayerCharacter->GetPlayerInventoryComponent();
 
 	OnCraftingFinished.AddUObject(this, &UAWeekCraftingComponent::UpdateInventoryCounts);
 }
@@ -48,7 +49,7 @@ bool UAWeekCraftingComponent::TryCraftRecipe(int32 RecipeIndex)
 	if (CachedCraftingRecipes.IsValidIndex(RecipeIndex))
 	{
 		const FAWeekCachedCraftingRecipe& Recipe = CachedCraftingRecipes[RecipeIndex];
-		if (!InventoryComponent->CanAddItem(Recipe.CraftedItemEntry.ItemData.ID,
+		if (!PlayerInventoryComponent->CanAddItem(Recipe.CraftedItemEntry.ItemData.ID,
 			Recipe.CraftedItemEntry.ItemData.NumericData.Weight,
 			Recipe.CraftedItemEntry.Quantity))
 		{
@@ -59,7 +60,7 @@ bool UAWeekCraftingComponent::TryCraftRecipe(int32 RecipeIndex)
 		if (TryConsumeIngredients(Recipe.IngredientItemEntries))
 		{
 			UAWeekItemBase* CraftedItem = CreateCraftedItem(Recipe.CraftedItemEntry);
-			InventoryComponent->HandleAddItem(CraftedItem);
+			PlayerInventoryComponent->HandleAddItem(CraftedItem);
 			OnCraftingFinished.Broadcast();
 			return true;
 		}
@@ -71,7 +72,7 @@ bool UAWeekCraftingComponent::TryConsumeIngredients(const TArray<FAWeekItemEntry
 {
 	for (const FAWeekItemEntry& IngredientItemEntry : IngredientItemEntries)
 	{
-		if (InventoryComponent->TryRemoveAmountOfItem(IngredientItemEntry.ItemData.ID, IngredientItemEntry.Quantity))
+		if (PlayerInventoryComponent->TryRemoveAmountOfItem(IngredientItemEntry.ItemData.ID, IngredientItemEntry.Quantity))
 		{
 			// if (InventoryItemCounts.Contains(IngredientItemEntry.ItemData.ID))
 			// {
@@ -97,7 +98,7 @@ UAWeekItemBase* UAWeekCraftingComponent::CreateCraftedItem(const FAWeekItemEntry
 
 void UAWeekCraftingComponent::CacheCraftingRecipes()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (IsValid(CraftingRecipesTable))
 	{
 		// Access all the rows in the data table
@@ -108,7 +109,7 @@ void UAWeekCraftingComponent::CacheCraftingRecipes()
 		{
 			if (Recipe)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("%s: Cache recipe"), *FString(__FUNCTION__));
+				// UE_LOG(LogTemp, Warning, TEXT("%s: Cache recipe"), *FString(__FUNCTION__));
 				FAWeekCachedCraftingRecipe CachedCraftingRecipe;
 				
 				const FAWeekItemData* CraftedItemData = Recipe->CraftedItem.GetRow<FAWeekItemData>(Recipe->CraftedItem.RowName.ToString());
@@ -176,9 +177,9 @@ bool UAWeekCraftingComponent::CanCraft(int32 RecipeIndex)
 
 void UAWeekCraftingComponent::UpdateInventoryCounts()
 {
-	if (InventoryComponent)
+	if (PlayerInventoryComponent)
 	{
-		InventoryItemCounts = InventoryComponent->GetInventoryItemCounts();
+		InventoryItemCounts = PlayerInventoryComponent->GetInventoryItemCounts();
 	}
 }
 

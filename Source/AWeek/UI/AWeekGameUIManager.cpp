@@ -2,15 +2,11 @@
 
 
 #include "AWeek/UI/AWeekGameUIManager.h"
-#include "AWeek/UI/Inventory/AWeekInventoryMainPanel.h"
-#include "AWeek/UI/Crafting/AWeekCraftingMainPanel.h"
 #include "AWeek/UI/Interaction/AWeekInteractionWidget.h"
 #include "AWeek/UI/Inventory/AWeekInventoryHubWidget.h"
-#include "AWeek/UI/Inventory/AWeekHeldItemVisual.h"
 #include "AWeek/UI/Inventory/AWeekHeldItem.h"
 #include "AWeek/UI/MainWidget/MainUIWidget.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
-#include "AWeek/Items/AWeekItemBase.h"
 #include "CommonUIExtensions.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
 #include "AWeek/Player/AWeekPlayerController.h"
@@ -21,6 +17,7 @@
 #include "AWeek/UI/Controller/AWeekCraftingController.h"
 #include "AWeek/UI/Controller/AWeekInventoryController.h"
 #include "AWeek/UI/Building/BuildingSelectWidget.h"
+#include "Inventory/AWeekPlayerHotBar.h"
 
 UAWeekGameUIManager::UAWeekGameUIManager()
 {
@@ -40,8 +37,7 @@ void UAWeekGameUIManager::InitializeUIManager(const TObjectPtr<AAWeekPlayerChara
 		if (UIDataAsset)
 		{
 			InventoryHubWidgetClass = UIDataAsset->InventoryHubWidgetClass;
-			InventoryMainPanelClass = UIDataAsset->InventoryMainPanelClass;
-			CraftingMainPanelClass = UIDataAsset->CraftingMainPanelClass;
+			PlayerHotBarClass = UIDataAsset->PlayerHotBarClass;
 			InteractionWidgetClass = UIDataAsset->InteractionWidgetClass;
 			HeldItemVisualClass = UIDataAsset->HeldItemVisualClass;
 			MainUIWidgetClass = UIDataAsset->MainWidgetClass;
@@ -64,6 +60,20 @@ void UAWeekGameUIManager::InitializeUIManager(const TObjectPtr<AAWeekPlayerChara
 	CraftingController->InitializeCraftingController(this,
 		PlayerCharacter->GetCraftingComponent(),
 		PlayerCharacter->GetPlayerInventoryComponent());
+
+	// Create Hotbar widget
+	if (PlayerHotBarClass)
+	{
+		PlayerHotBarWidget = Cast<UAWeekPlayerHotBar>(
+			UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
+				FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), PlayerHotBarClass));
+		
+		PlayerHotBarWidget->InitializeHotBar(PlayerCharacter->GetPlayerInventoryComponent());
+		PlayerCharacter->GetPlayerInventoryComponent()->OnInventoryUpdated.AddUObject(PlayerHotBarWidget,
+			&UAWeekPlayerHotBar::RefreshHotBar);
+		PlayerCharacter->GetPlayerInventoryComponent()->OnHotbarSelectionChanged.AddUObject(
+			PlayerHotBarWidget, &UAWeekPlayerHotBar::OnHotBarSelectionChanged);
+	}
 	
 	if (InventoryHubWidgetClass)
 	{
@@ -96,7 +106,7 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 		UE_LOG(LogTemp, Warning, TEXT("%s: InventoryHubWidgetClass is null!"), *FString(__FUNCTION__));
 		return;
 	}
-	InventoryHubWidget = Cast<UAWeekInventoryHubWidget, UCommonActivatableWidget>(
+	InventoryHubWidget = Cast<UAWeekInventoryHubWidget>(
 		UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
 			FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventoryHubWidgetClass));
 	
@@ -105,23 +115,26 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 	case EAWeekInventoryHubPanel::Weapon:
 		break;
 	case EAWeekInventoryHubPanel::Chest:
-		// InventoryHubWidget->SwitchToPanel(
-		// 	EAWeekInventoryHubPanel::Chest,
-		// 	FAWeekPanelContext::ForChest(PlayerCharacter->GetChestInventoryComponent())
-		// 	);
-		OpenChestInventory(PlayerCharacter->GetChestInventoryComponent());
+		InventoryHubWidget->SwitchToPanel(
+			EAWeekInventoryHubPanel::Chest,
+			FAWeekPanelContext::ForChest(PlayerCharacter->GetChestInventoryComponent())
+			);
 		break;
 	case EAWeekInventoryHubPanel::Crafting:
 		CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
-		InventoryHubWidget->OpenCraftingPanel();
-		// InventoryHubWidget->SwitchToPanel(
-		// 	EAWeekInventoryHubPanel::Chest,
-		// 	FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
-		// 	);
+		InventoryHubWidget->SwitchToPanel(
+			EAWeekInventoryHubPanel::Crafting,
+			FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
+			);
 		break;
 	case EAWeekInventoryHubPanel::PlayerState:
 		break;
 	default:
+		CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
+		InventoryHubWidget->SwitchToPanel(
+			EAWeekInventoryHubPanel::Crafting,
+			FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
+			);
 		break;
 	}
 }
@@ -282,11 +295,6 @@ void UAWeekGameUIManager::UpdateInteractionWidget(const FAWeekInteractableData* 
 		InteractionWidget->UpdateWidget(InteractableData);
 	}
 }
-//
-void UAWeekGameUIManager::OpenChestInventory(const TObjectPtr<UAWeekInventoryComponent> ChestInventory) const
-{
-	InventoryHubWidget->OpenChestInventory(ChestInventory);
-}
 
 void UAWeekGameUIManager::CloseChestInventory()
 {
@@ -298,5 +306,6 @@ void UAWeekGameUIManager::CloseChestInventory()
 			InventoryController->ReturnHeldItemToInventory();
 		}
 	}
-	InventoryHubWidget->CloseChestInventory();
+	// InventoryHubWidget->CloseCurrentPanel();
+	InventoryHubWidget->Close();
 }

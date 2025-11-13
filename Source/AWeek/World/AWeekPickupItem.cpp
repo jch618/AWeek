@@ -2,6 +2,7 @@
 #include "AWeek/World/AWeekPickupItem.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
+#include "AWeek/Components/AWeekPlayerInventoryComponent.h"
 #include "AWeek/Components/AWeekInventoryComponent.h"
 
 AAWeekPickupItem::AAWeekPickupItem()
@@ -28,12 +29,10 @@ void AAWeekPickupItem::Tick(float DeltaTime)
 
 void AAWeekPickupItem::InitializePickupItem(const int32 InQuantity)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (!ItemRowHandle.IsNull())
 	{
 		Item = UAWeekItemBase::CreateFromRowHandle(ItemRowHandle, InQuantity, GetWorld());
-		UE_LOG(LogTemp, Warning, TEXT("%s: ID: %s, Weight: %f"), *FString(__FUNCTION__), *Item->GetID().ToString(), Item->GetNumericData().Weight);
-		
 		PickupMesh->SetStaticMesh(Item->GetAssetData().Mesh);
 
 		UpdateInteractableData();
@@ -90,9 +89,9 @@ void AAWeekPickupItem::TakePickup(const TObjectPtr<AAWeekPlayerCharacter> Taker)
 	{
 		if (Item)
 		{
-			if (TObjectPtr<UAWeekInventoryComponent> PlayerInventory = Taker->GetPlayerInventoryComponent())
+			if (TObjectPtr<UAWeekPlayerInventoryComponent> PlayerInventory = Taker->GetPlayerInventoryComponent())
 			{
-				UE_LOG(LogTemp, Warning, TEXT("%s: ID: %s, Weight: %f"), *FString(__FUNCTION__), *Item->GetID().ToString(), Item->GetNumericData().Weight);
+				// UE_LOG(LogTemp, Warning, TEXT("%s: ID: %s, Weight: %f"), *FString(__FUNCTION__), *Item->GetID().ToString(), Item->GetNumericData().Weight);
 				const FAWeekItemAddResult AddResult = PlayerInventory->HandleAddItem(Item);
 
 				switch (AddResult.OperationResult)

@@ -18,9 +18,18 @@ class UAWeekInventoryToolTip;
 struct FAWeekInventorySlotData;
 class UAWeekInventoryComponent;
 
-DECLARE_DELEGATE_OneParam(FOnShiftLeftClick, const FAWeekInventorySlotData& ClickedItemSlot);
 DECLARE_DELEGATE_TwoParams(FOnLeftClick, int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 DECLARE_DELEGATE_TwoParams(FOnRightClick, int32 ClickedItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OwningInventory);
+DECLARE_DELEGATE_OneParam(FOnShiftLeftClick, const FAWeekInventorySlotData& ClickedItemSlot);
+DECLARE_DELEGATE_TwoParams(FOnControlLeftClick, int32 ClickedItemSlotIndex, const TObjectPtr<UAWeekInventoryComponent> OwningInventory);
+
+UENUM()
+enum class EAWeekItemSlotType : uint8
+{
+	HotBar,
+	Inventory,
+	TrashCan
+};
 
 UCLASS()
 class AWEEK_API UAWeekInventoryItemSlot : public UAWeekItemSlot
@@ -31,6 +40,7 @@ public:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
+	FOnControlLeftClick OnControlLeftClick;
 	FOnShiftLeftClick OnShiftLeftClick;
 	FOnLeftClick OnLeftClick;
 	FOnRightClick OnRightClick;

@@ -65,24 +65,17 @@ UAWeekGameInput::UAWeekGameInput()
 
 	
 	static ConstructorHelpers::FObjectFinder<UInputAction>
-			CycleHotBar(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_CycleHotBar.IA_CycleHotBar'"));
-
+		CycleHotBar(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_CycleHotBar.IA_CycleHotBar'"));
 	mCycleHotBar = CycleHotBar.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>
-			SelectHotBarSlot(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_SelectHotBarSlot.IA_SelectHotBarSlot'"));
-
-	mCycleHotBar = CycleHotBar.Object;
-
-	static ConstructorHelpers::FObjectFinder<UInputAction>
-			UseItemPrimary(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_UseItemPrimary.IA_UseItemPrimary'"));
-
-	mUseItemPrimary = UseItemPrimary.Object;
+		SelectHotBarSlot(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_SelectHotBarSlot.IA_SelectHotBarSlot'"));
+	mSelectHotBarSlot = SelectHotBarSlot.Object;
 
 	static ConstructorHelpers::FObjectFinder<UInputAction>
-		UseItemSecondary(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_UseItemSecondary.IA_UseItemSecondary'"));
-
+		UseItemPrimary(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_UseItemPrimary.IA_UseItemPrimary'"));
 	mUseItemPrimary = UseItemPrimary.Object;
+	
 	static ConstructorHelpers::FObjectFinder<UInputAction>
 		UseItemAction(TEXT("/Script/EnhancedInput.InputAction'/Game/Player/Input/Actions/IA_UseItem.IA_UseItem'"));
 	mUseItem = UseItemAction.Object;

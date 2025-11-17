@@ -45,13 +45,12 @@ void UAWeekPlayerHotBar::RefreshHotBar()
 void UAWeekPlayerHotBar::OnHotBarSelectionChanged(int32 OldIndex, int32 NewIndex)
 {
 	// UE_LOG(LogTemp, Warning, TEXT("%s, OldIndex:%d, NewIndex:%d"),
-		// *FString(__FUNCTION__), OldIndex, NewIndex);
+	// 	*FString(__FUNCTION__), OldIndex, NewIndex);
 	UAWeekItemSlot* OldItemSlot = Cast<UAWeekItemSlot>(HotBarGridPanel->GetChildAt(OldIndex));
 	UAWeekItemSlot* NewItemSlot = Cast<UAWeekItemSlot>(HotBarGridPanel->GetChildAt(NewIndex));
 	
 	if (OldItemSlot && NewItemSlot)
 	{
-		// UE_LOG(LogTemp, Warning, TEXT("highligiht"));
 		OldItemSlot->SetHighlight(false);
 		NewItemSlot->SetHighlight(true);
 	}

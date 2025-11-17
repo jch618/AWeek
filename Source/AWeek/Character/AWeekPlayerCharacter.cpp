@@ -89,6 +89,7 @@ void AAWeekPlayerCharacter::BeginPlay()
 	}
 
 	PlayerInventoryComponent->OnEncumberedStatusChanged.AddUObject(this, &AAWeekPlayerCharacter::OnEncumbered);
+	PlayerInventoryComponent->SelectItemInHotBar(0);
 	
 	/* Initialize crafting component */
 	CraftingComponent->InitializeCraftingComponent();
@@ -259,11 +260,14 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Triggered,
 			this, &AAWeekPlayerCharacter::OnMouseWheel);
 
-		EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Started,
-		this, &AAWeekPlayerCharacter::OnLeftClick);
+		EnhancedInput->BindAction(InputCDO->mSelectHotBarSlot, ETriggerEvent::Triggered,
+			this, &AAWeekPlayerCharacter::OnHotBarKeyPressed);
 
-		EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Started,
-		this, &AAWeekPlayerCharacter::OnRightClick);
+		// EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Started,
+		// this, &AAWeekPlayerCharacter::OnLeftClick);
+		//
+		// EnhancedInput->BindAction(InputCDO->mCycleHotBar, ETriggerEvent::Started,
+		// this, &AAWeekPlayerCharacter::OnRightClick);
 	}
 }
 
@@ -814,16 +818,15 @@ void AAWeekPlayerCharacter::OnMouseWheel(const FInputActionValue& Value)
 	PlayerInventoryComponent->SelectCurrentItemInHotBar();
 }
 
-void AAWeekPlayerCharacter::OnLeftClick()
+void AAWeekPlayerCharacter::OnHotBarKeyPressed(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	PlayerInventoryComponent->UseSelectedItemPrimary(this);
-}
-
-void AAWeekPlayerCharacter::OnRightClick()
-{
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	PlayerInventoryComponent->UseSelectedItemSecondary(this);
+	const float KeyValue = Value.Get<float>();
+	const int32 SlotIndex = FMath::RoundToInt(KeyValue) - 1; // 1-9 → 0-8
+    
+	if (PlayerInventoryComponent)
+	{
+		PlayerInventoryComponent->SelectItemInHotBar(SlotIndex);
+	}
 }
 
 void AAWeekPlayerCharacter::SetAnimInstance(FName AnimInstanceName)

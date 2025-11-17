@@ -18,12 +18,4 @@ public:
 	virtual bool UseSecondary(TObjectPtr<AAWeekPlayerCharacter> Character) override;
 
 private:
-	// UPROPERTY(VisibleAnywhere, Category = "Item")
-	// int32 HealthDelta;
-	//
-	// UPROPERTY(VisibleAnywhere, Category = "Item")
-	// int32 StaminaDelta;
-	//
-	// UPROPERTY(VisibleAnywhere, Category = "Item")
-	// int32 HungerDelta;
 };

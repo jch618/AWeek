@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "AWeekChest.generated.h"
 
+struct FAWeekItemEntry;
 class AAWeekPlayerCharacter;
 struct FAWeekInventorySlotData;
 class UAWeekInventoryComponent;
@@ -21,6 +22,8 @@ class AWEEK_API AAWeekChest : public AActor, public IAWeekInteractionInterface
 public:
 	AAWeekChest();
 
+	void InitializeChest();
+	
 	FORCEINLINE UAWeekInventoryComponent* GetInventoryComponent() const { return InventoryComponent;}
 	void BeginFocus() override;
 	void EndFocus() override;
@@ -47,6 +50,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Chest | Initialization")
 	float ChestExitRadius;
 
+	UPROPERTY(EditAnywhere, Category = "Loot")
+	FDataTableRowHandle LootTableRowHandle;
+
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
@@ -58,6 +64,7 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 
+	TArray<FAWeekItemEntry> GenerateRandomLoot();
 private:
 
 

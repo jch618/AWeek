@@ -174,7 +174,6 @@ public:
 	FORCEINLINE void ClearInventoryContents() { InventoryContents.Empty(); }
 	int32 AddItemQuantityAt(int32 ItemSlotIndex, int32 DesiredAddAmount);
 	void PlaceItemAt(TObjectPtr<UAWeekItemBase> InputItem, int32 TargetIndex);
-
 	void TransferItem(const FAWeekInventorySlotData& FromItemSlot, TObjectPtr<UAWeekInventoryComponent> TargetInventory);
 
 	// crafting
@@ -202,14 +201,14 @@ protected:
 	//================================================================
 	virtual void BeginPlay() override;
 
-	void ClearItemSlot(FAWeekInventorySlotData& ItemSlotToRemove);
+	virtual void ClearItemSlot(FAWeekInventorySlotData& ItemSlotToRemove);
 
 	FAWeekItemAddResult HandleNonStackableItems(UAWeekItemBase* InputItem);
 	int32 HandleStackableItems(UAWeekItemBase* ItemIn, int32 RequestedAddAmount);
 	int32 CalculateWeightAddAmount(UAWeekItemBase* ItemIn, int32 RequestedAddAmount);
 	int32 CalculateNumberForFullStack(UAWeekItemBase* StackableItem, int32 InitialRequestedAddAmount);
 
-	void AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex = -1);
+	virtual void AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex = -1);
 private:
 	void SetItemQuantity(FAWeekInventorySlotData& ItemSlot, const int32 Quantity);
 	int32 FindItemIndex(const UAWeekItemBase* ItemIn) const;

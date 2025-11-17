@@ -71,7 +71,6 @@ int32 UAWeekInventoryComponent::CalculateWeightAddAmount(UAWeekItemBase* InItem,
 	{
 		return RequestedAddAmount;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("%s: WeightAddAmount: %d"), *FString(__FUNCTION__), WeightMaxAddAmount);
 	return WeightMaxAddAmount;
 }
 
@@ -84,7 +83,6 @@ int32 UAWeekInventoryComponent::CalculateNumberForFullStack(UAWeekItemBase* Stac
 
 void UAWeekInventoryComponent::ClearItemSlot(FAWeekInventorySlotData& ItemSlot)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Clear Item Slot"));
 	ItemSlot.Item = nullptr;
 	ItemSlot.bIsEmpty = true;
 	OnInventoryUpdated.Broadcast();
@@ -111,11 +109,6 @@ int32 UAWeekInventoryComponent::RemoveAmountOfItem(int32 TargetItemSlotIndex, in
 	if (InventoryContents.IsValidIndex(TargetItemSlotIndex))
 	{
 		return RemoveAmountOfItem(InventoryContents[TargetItemSlotIndex], DesiredAmountToRemove);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: TargetItemSlotIndex = %d, ContentsSize: %d"),
-			*FString(__FUNCTION__), TargetItemSlotIndex, InventoryContents.Num());
 	}
 	return 0;
 }
@@ -249,11 +242,11 @@ int32 UAWeekInventoryComponent::HandleStackableItems(UAWeekItemBase* InItem, int
 				// this block wil be reached if distributing an item across multiple stacks
 				// and the weight limit is hit during that process
 				OnInventoryUpdated.Broadcast();
-				UE_LOG(LogTemp, Warning, TEXT("%s: 2"), *FString(__FUNCTION__));
+				// UE_LOG(LogTemp, Warning, TEXT("%s: 2"), *FString(__FUNCTION__));
 				
 				return RequestedAddAmount - AmountToDistribute;
 			}
-				UE_LOG(LogTemp, Warning, TEXT("%s: 3"), *FString(__FUNCTION__));
+				// UE_LOG(LogTemp, Warning, TEXT("%s: 3"), *FString(__FUNCTION__));
 			
 			return 0;
 		}
@@ -262,7 +255,7 @@ int32 UAWeekInventoryComponent::HandleStackableItems(UAWeekItemBase* InItem, int
 		{
 			// all of the input item was distributed across existing stacks
 			OnInventoryUpdated.Broadcast();
-				UE_LOG(LogTemp, Warning, TEXT("%s: 4"), *FString(__FUNCTION__));
+				// UE_LOG(LogTemp, Warning, TEXT("%s: 4"), *FString(__FUNCTION__));
 			
 			return RequestedAddAmount;
 		}
@@ -331,8 +324,6 @@ FAWeekItemAddResult UAWeekInventoryComponent::HandleAddItem(UAWeekItemBase* Inpu
 		{
 			return HandleNonStackableItems(InputItem);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("%s: Weight: %f"), *FString(__FUNCTION__), InputItem->GetNumericData().Weight);
-		
 
 		// handle stackable
 		const int32 StackableAmountAdded = HandleStackableItems(InputItem, InitialRequestedAddAmount);
@@ -383,8 +374,7 @@ void UAWeekInventoryComponent::AddNewItem(UAWeekItemBase* Item, const int32 Amou
 	}
 
 	NewItem->SetQuantity(AmountToAdd);
-
-	UE_LOG(LogTemp, Warning, TEXT("add item to inventory"));
+	
 	TargetIndex = (TargetIndex == -1 ? GetFirstEmptySlotIndex() : TargetIndex);
 	if (IsValidItemSlotIndex(TargetIndex))
 	{
@@ -465,7 +455,6 @@ TMap<FName, int32> UAWeekInventoryComponent::GetInventoryItemCounts() const
 
 void UAWeekInventoryComponent::SetItemQuantity(FAWeekInventorySlotData& ItemSlot, const int32 Quantity)
 {
-	UE_LOG(LogTemp, Warning, TEXT("SetItemQuantity: Quantity = %d"), Quantity);
 	ItemSlot.Item->SetQuantity(Quantity);
 	if (Quantity <= 0)
 	{

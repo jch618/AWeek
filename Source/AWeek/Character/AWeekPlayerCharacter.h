@@ -283,9 +283,7 @@ public:
 
 	/* Hot bar control */
 	void OnMouseWheel(const FInputActionValue& Value);
-
-	void OnLeftClick();
-	void OnRightClick();
+	void OnHotBarKeyPressed(const FInputActionValue& Value);
 
 	/* temporary test */
 	void SetAnimInstance(FName AnimInstanceName);

@@ -76,6 +76,7 @@ void UAWeekInventoryPanel::UnlinkFromInventory()
 void UAWeekInventoryPanel::InitializeGridPanel()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	InventoryGridPanel->ClearChildren();
 	for (int32 i = 0; i < InventoryComponent->GetSlotsCapacity(); i++)
 	{
 		UAWeekInventoryItemSlot* ItemSlot = CreateWidget<UAWeekInventoryItemSlot>(this, InventorySlotClass);
@@ -112,7 +113,7 @@ void UAWeekInventoryPanel::UpdateInfoText() const
 
 void UAWeekInventoryPanel::RefreshInventoryPanel()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (InventoryComponent)
 	{
 		for (int32 i = 0; i < InventoryGridPanel->GetChildrenCount(); i++)

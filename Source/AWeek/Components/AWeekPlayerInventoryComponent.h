@@ -29,9 +29,8 @@ public:
 	/* Hot Bar Function */
 	void UseSelectedItemPrimary(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter);
 	void UseSelectedItemSecondary(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter);
-
-	int32 PreviousIndex = HotBarCurrentIndex;
-	void SelectItemInHotBar(const int32 KeyboardNum);
+	
+	void SelectItemInHotBar(const int32 InHotBarIndex);
 	void SelectNextItemInHotBar();
 	void SelectPreviousItemInHotBar();
 	void SelectCurrentItemInHotBar();
@@ -43,6 +42,10 @@ public:
 	/* Trash Can Function */
 	void SetTrashCanSlot(const TObjectPtr<UAWeekItemBase> InItem);
 	void ClearTrashCanSlot();
+
+protected:
+	virtual void AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex = -1) override;
+	virtual void ClearItemSlot(FAWeekInventorySlotData& ItemSlotToRemove) override;
 private:
 	FORCEINLINE bool IsHotBarSlotIndex(const int32 Index) const { return Index >= HotBarStartIndex && Index < HotBarStartIndex + HotBarInventorySize; }
 

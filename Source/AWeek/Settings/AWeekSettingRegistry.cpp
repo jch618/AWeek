@@ -96,25 +96,60 @@ USettingItem* UAWeekSettingRegistry::RegisterAudioSetting()
 	Setting->SetDevName(TEXT("AudioCategory"));
 	Setting->SetDisplayName(LOCTEXT("NAME_AudioCategory","Audio"));
 
+	USettingItemCategory* VolumeSetting = NewObject<USettingItemCategory>();
+	VolumeSetting->SetDevName(TEXT("VolumeSetting"));
+	VolumeSetting->SetDisplayName(LOCTEXT("SETTING_Volume","Volume"));
+	Setting->AddSetting(VolumeSetting);
+	
 	USettingValueScalarItem* OverallSetting = NewObject<USettingValueScalarItem>();
-	OverallSetting->SetDevName(TEXT("OverallSetting"));
-	OverallSetting->SetDisplayName(LOCTEXT("NAME_OverallSetting","OverallSetting"));
+	OverallSetting->SetDevName(TEXT("OverallVolume"));
+	OverallSetting->SetDisplayName(LOCTEXT("SETTING_OverallVolume","Overall"));
 	OverallSetting->SetMinValue(0.0f);
 	OverallSetting->SetMaxValue(2.0f);
 	OverallSetting->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetOverallVolume());
 	OverallSetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetOverallVolume));
 	OverallSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetOverallVolume));
-	Setting->AddSetting(OverallSetting);
+	VolumeSetting->AddSetting(OverallSetting);
 
 	USettingValueScalarItem* MusicSetting = NewObject<USettingValueScalarItem>();
-	MusicSetting->SetDevName(TEXT("MusicSetting"));
-	MusicSetting->SetDisplayName(LOCTEXT("NAME_MusicSetting","MusicSetting"));
+	MusicSetting->SetDevName(TEXT("MusicVolume"));
+	MusicSetting->SetDisplayName(LOCTEXT("SETTING_MusicVolume","MusicSetting"));
 	MusicSetting->SetMinValue(0.0f);
 	MusicSetting->SetMaxValue(2.0f);
 	MusicSetting->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetMusicVolume());
 	MusicSetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetMusicVolume));
 	MusicSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetMusicVolume));
-	Setting->AddSetting(MusicSetting);
+	VolumeSetting->AddSetting(MusicSetting);
+
+	USettingValueScalarItem* SFXSetting = NewObject<USettingValueScalarItem>();
+	SFXSetting->SetDevName(TEXT("SFXVolume"));
+	SFXSetting->SetDisplayName(LOCTEXT("SETTING_SFXVolume","SFXSetting"));
+	SFXSetting->SetMinValue(0.0f);
+	SFXSetting->SetMaxValue(2.0f);
+	SFXSetting->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetSFXVolume());
+	SFXSetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetSFXVolume));
+	SFXSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetSFXVolume));
+	VolumeSetting->AddSetting(SFXSetting);
+
+	USettingValueScalarItem* UISetting = NewObject<USettingValueScalarItem>();
+	UISetting->SetDevName(TEXT("UIVolume"));
+	UISetting->SetDisplayName(LOCTEXT("SETTING_UIVolume","UI"));
+	UISetting->SetMinValue(0.0f);
+	UISetting->SetMaxValue(2.0f);
+	UISetting->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetUIVolume());
+	UISetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetUIVolume));
+	UISetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetUIVolume));
+	VolumeSetting->AddSetting(UISetting);
+
+	USettingValueScalarItem* AmbientSetting = NewObject<USettingValueScalarItem>();
+	AmbientSetting->SetDevName(TEXT("AmbientVolume"));
+	AmbientSetting->SetDisplayName(LOCTEXT("SETTING_AmbientVolume","Ambient"));
+	AmbientSetting->SetMinValue(0.0f);
+	AmbientSetting->SetMaxValue(2.0f);
+	AmbientSetting->SetDefaultValue(GetDefault<UAWeekGameUserSettings>()->GetAmbientVolume());
+	AmbientSetting->SetGetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, GetAmbientVolume));
+	AmbientSetting->SetSetter(GET_GAME_SETTINGS_PATH(OwningLocalPlayer, SetAmbientVolume));
+	VolumeSetting->AddSetting(AmbientSetting);
 	
 	return Setting;
 }
@@ -134,9 +169,7 @@ USettingItem* UAWeekSettingRegistry::RegisterKeyboardAndMouseSetting()
 
 		for (const TPair<FName, FKeyMappingRow>& RowPair : Profile->GetPlayerMappingRows())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("KeyBinding: %s"), *RowPair.Key.ToString());
-
-			if (RowPair.Value.HasAnyMappings() /* && !CreatedMappingNames.Contains(RowPair.Key)*/)
+			if (RowPair.Value.HasAnyMappings())
 			{
 				FPlayerMappableKeyQueryOptions Options = {};
 				Options.KeyToMatch = EKeys::A;

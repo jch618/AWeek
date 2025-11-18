@@ -8,12 +8,18 @@
 
 TSubclassOf<UUserWidget> USettingWidgetTypeData::GetListViewItemForSetting(const USettingItem* Setting) const
 {
-	if (TSubclassOf<USettingItem> SettingClass = Setting->GetClass())
+	UClass* Class = Setting->GetClass();
+	while (Class)
 	{
-		if(TSubclassOf<USettingListViewItem> ListViewItem = EntryWidgetForClass.FindRef(SettingClass))
+		if (TSubclassOf<USettingItem> SettingClass = Setting->GetClass())
 		{
-			return ListViewItem;
+			if (TSubclassOf<USettingListViewItem> ListViewItem = EntryWidgetForClass.FindRef(SettingClass))
+			{
+				return ListViewItem;
+			}
 		}
+		Class = Class->GetSuperClass();
 	}
+	
 	return nullptr;
 }

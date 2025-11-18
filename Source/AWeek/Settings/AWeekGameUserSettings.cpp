@@ -33,9 +33,9 @@ float UAWeekGameUserSettings::GetOverallVolume() const
 	return OverallVolume;
 }
 
-void UAWeekGameUserSettings::SetOverallVolume(float InOverallVolume)
+void UAWeekGameUserSettings::SetOverallVolume(float InVolume)
 {
-	OverallVolume = InOverallVolume;
+	OverallVolume = InVolume;
 	if (const UWorld* World = GEngine->GetCurrentPlayWorld())
 	{
 		UAWeekAudioSubsystem::Get(World)->SetSoundVolume(ESoundChannel::Overall, OverallVolume);
@@ -47,11 +47,53 @@ float UAWeekGameUserSettings::GetMusicVolume() const
 	return MusicVolume;
 }
 
-void UAWeekGameUserSettings::SetMusicVolume(float InMusicVolume)
+void UAWeekGameUserSettings::SetMusicVolume(float InVolume)
 {
-	MusicVolume = InMusicVolume;
+	MusicVolume = InVolume;
 	if (const UWorld* World = GEngine->GetCurrentPlayWorld())
 	{
 		UAWeekAudioSubsystem::Get(World)->SetSoundVolume(ESoundChannel::Music, MusicVolume);
+	}
+}
+
+float UAWeekGameUserSettings::GetSFXVolume() const
+{
+	return SFXVolume;
+}
+
+void UAWeekGameUserSettings::SetSFXVolume(float InVolume)
+{
+	SFXVolume = InVolume;
+	if (const UWorld* World = GEngine->GetCurrentPlayWorld())
+	{
+		UAWeekAudioSubsystem::Get(World)->SetSoundVolume(ESoundChannel::SFX, SFXVolume);
+	}
+}
+
+float UAWeekGameUserSettings::GetUIVolume() const
+{
+	return UIVolume;
+}
+
+void UAWeekGameUserSettings::SetUIVolume(float InVolume)
+{
+	UIVolume = InVolume;
+	if (const UWorld* World = GEngine->GetCurrentPlayWorld())
+	{
+		UAWeekAudioSubsystem::Get(World)->SetSoundVolume(ESoundChannel::UI, UIVolume);
+	}
+}
+
+float UAWeekGameUserSettings::GetAmbientVolume() const
+{
+	return AmbientVolume;
+}
+
+void UAWeekGameUserSettings::SetAmbientVolume(float InVolume)
+{
+	AmbientVolume = InVolume;
+	if (const UWorld* World = GEngine->GetCurrentPlayWorld())
+	{
+		UAWeekAudioSubsystem::Get(World)->SetSoundVolume(ESoundChannel::Ambient, AmbientVolume);
 	}
 }

@@ -51,7 +51,7 @@ void AAWeekWeaponProjectile::Tick(float DeltaTime)
 void AAWeekWeaponProjectile::ProjectileStop(const FHitResult& Hit)
 {
 	// When hit actor implements DamageAble Interface
-	UE_LOG(LogTemp, Warning, TEXT("Projectile Hit at %s"), *Hit.GetActor()->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("Projectile Hit at %s %f"), *Hit.GetActor()->GetName(), mDamage);
 	if (Hit.GetActor()->GetClass()->ImplementsInterface(UDamageAble::StaticClass()))
 	{
 		FDamageInfo DamageInfo;

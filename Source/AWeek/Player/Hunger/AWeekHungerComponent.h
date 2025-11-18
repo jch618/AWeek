@@ -39,7 +39,7 @@ protected:
 	float StaminaAffected = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float UsageRate = 60; // 600초뒤에 모든 허기 소모
+	float UsageRate = 120; // 600초뒤에 모든 허기 소모
 
 	FGameEventMessageListenerHandle StaminaChangedHandle;
 

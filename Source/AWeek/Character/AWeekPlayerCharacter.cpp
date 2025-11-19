@@ -307,13 +307,12 @@ void AAWeekPlayerCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-	UAWeekGameUserSettings* Settings = UAWeekGameUserSettings::Get();
-	if (Controller != nullptr && Settings)
+	if (Controller != nullptr)
 	{
 		
 		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X * Settings->GetMouseSensitivityX());
-		AddControllerPitchInput(LookAxisVector.Y * Settings->GetMouseSensitivityY());
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
 

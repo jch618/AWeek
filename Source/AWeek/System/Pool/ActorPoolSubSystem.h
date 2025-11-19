@@ -16,16 +16,17 @@ public:
     virtual void Deinitialize() override;
 
     UFUNCTION(BlueprintCallable, Category = "Pooling")
-    AActor* GetPooledActor(TSubclassOf<AActor> ActorClass,
-        FVector Location = FVector::ZeroVector,
-        FRotator Rotation = FRotator::ZeroRotator,
-        int32 NumToSpawnIfEmpty = 5);
+    AActor* GetPooledActor(TSubclassOf<AActor> ActorClass,FVector Location = FVector::ZeroVector,
+        FRotator Rotation = FRotator::ZeroRotator,int32 NumToSpawnIfEmpty = 5);
 
     UFUNCTION(BlueprintCallable, Category = "Pooling")
     void ReturnActorToPool(AActor* Actor);
 
 private:
     TMap<TSubclassOf<AActor>, TArray<AActor*>> ActorPools;
-
     void SpawnNewActors(TSubclassOf<AActor> ActorClass, int32 Count);
+
+private:
+    FName GetPoolFolderPath(TSubclassOf<AActor> ActorClass) const;
+    void ApplyPoolFolderPath(AActor* Actor, TSubclassOf<AActor> ActorClass);
 };

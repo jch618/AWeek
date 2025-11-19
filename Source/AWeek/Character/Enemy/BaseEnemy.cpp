@@ -111,8 +111,20 @@ float ABaseEnemy::GetMontagePlayRate_Code() const
 
 void ABaseEnemy::OnLoadFromPool_Implementation()
 {
+	const FString ClassName = GetClass()->GetName();
+
+	const FString EnemyFolder = FString::Printf(TEXT("Pool/%s"), *ClassName);
+	SetFolderPath(FName(*EnemyFolder));
+
+	// Controller FolderSetting
+	if (Controller)
+	{
+		const FString ControllerFolder = FString::Printf(TEXT("Pool/%s/Controller"), *ClassName);
+		Controller->SetFolderPath(FName(*ControllerFolder));
+	}
 }
 
 void ABaseEnemy::OnStoreToPool_Implementation()
 {
+
 }

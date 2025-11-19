@@ -81,14 +81,10 @@ void AEnemyActorSpawner::SpawnEnemiesFromPool()
 			}
 			SpawnLocation.Z += ZOffset;
 
-			FRotator SpawnRot = bSpawnActorRandomRotation
-				? FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f)
+			FRotator SpawnRot = bSpawnActorRandomRotation? FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f)
 				: FRotator::ZeroRotator;
 
-			AActor* SpawnedActor = ActorPoolSubsystem->GetPooledActor(
-				Info.ActorClass,
-				SpawnLocation,
-				SpawnRot);
+			AActor* SpawnedActor = ActorPoolSubsystem->GetPooledActor(Info.ActorClass,SpawnLocation,SpawnRot);
 
 			if (!SpawnedActor)
 			{

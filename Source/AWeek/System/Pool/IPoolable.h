@@ -20,7 +20,7 @@ public:
     //Read
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Pooling")
     void OnLoadFromPool();
-    //Store
+    //Write
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Pooling")
     void OnStoreToPool();
 };

@@ -288,7 +288,6 @@ USettingItem* UAWeekSettingRegistry::RegisterGraphicSetting()
 		Graphics->AddSetting(Shading);
 	}
 	
-
 	return Setting;
 }
 

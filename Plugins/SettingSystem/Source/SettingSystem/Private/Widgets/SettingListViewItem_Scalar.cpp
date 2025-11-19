@@ -21,6 +21,7 @@ void USettingListViewItem_Scalar::Init(USettingItem* InGameSetting)
 			Slider->SetValue(Value);
 			Slider->SetMinValue(ScalarSetting->GetMinValue());
 			Slider->SetMaxValue(ScalarSetting->GetMaxValue());
+			Slider->OnValueChanged.RemoveAll(this);
 			Slider->OnValueChanged.AddDynamic(this, &ThisClass::HandleSliderValueChanged);
 		}
 	}

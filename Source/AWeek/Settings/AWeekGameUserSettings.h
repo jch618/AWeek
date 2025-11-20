@@ -40,8 +40,27 @@ public:
 	UFUNCTION()
 	float GetMusicVolume() const;
 	UFUNCTION()
-	void SetMusicVolume(float InMusicVolume);
-	
+	void SetMusicVolume(float InVolume);
+
+	UFUNCTION()
+	float GetSFXVolume() const;
+	UFUNCTION()
+	void SetSFXVolume(float InVolume);
+
+	UFUNCTION()
+	float GetUIVolume() const;
+	UFUNCTION()
+	void SetUIVolume(float InVolume);
+
+	UFUNCTION()
+	float GetAmbientVolume() const;
+	UFUNCTION()
+	void SetAmbientVolume(float InVolume);
+
+	UFUNCTION()
+	float GetGamma() const;
+	UFUNCTION()
+	void SetGamma(float InGamma);
 private:
 	UPROPERTY(Config)
 	bool IsFullScreenMode = true;
@@ -57,4 +76,13 @@ private:
 
 	UPROPERTY(Config)
 	float MusicVolume = 1.0f;
+
+	UPROPERTY(Config)
+	float SFXVolume = 1.0f;
+
+	UPROPERTY(Config)
+	float UIVolume = 1.0f;
+
+	UPROPERTY(Config)
+	float AmbientVolume = 1.0f;
 };

@@ -22,6 +22,10 @@ void USettingListViewItem_Discrete::Init(USettingItem* InGameSetting)
 			Rotator->SetSelectedItem(DiscreteSetting->GetValueOptionIndex());
 		}
 		OnValueChanged(DiscreteSetting->GetValueOptionIndex());
+		Rotator->OnRotatedEvent.RemoveAll(this);
+		NextButton->OnClicked().RemoveAll(this);
+		PrevButton->OnClicked().RemoveAll(this);
+		
 		Rotator->OnRotatedEvent.AddUObject(this, &ThisClass::HandleRotatorValueChanged);
 		NextButton->OnClicked().AddUObject(this, &ThisClass::HandleNextButtonClicked);
 		PrevButton->OnClicked().AddUObject(this, &ThisClass::HandlePrevButtonClicked);
@@ -35,7 +39,7 @@ void USettingListViewItem_Discrete::NativeOnInitialized()
 
 void USettingListViewItem_Discrete::HandleSettingChangedApplied(USettingItem* ChangedSetting, ESettingChangedReason Reason)
 {
-	Super::HandleSettingChangedApplied(ChangedSetting, Reason);
+	Rotator->SetSelectedItem(DiscreteSetting->GetValueOptionIndex());
 }
 
 void USettingListViewItem_Discrete::HandleRotatorValueChanged(int32 Value, bool bUserInitiated)

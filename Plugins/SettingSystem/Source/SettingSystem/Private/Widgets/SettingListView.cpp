@@ -4,6 +4,7 @@
 #include "Widgets/SettingListView.h"
 
 #include "SettingItem.h"
+#include "SettingItemCategory.h"
 #include "Widgets/SettingListViewItem.h"
 #include "Widgets/SettingWidgetTypeData.h"
 
@@ -30,4 +31,14 @@ UUserWidget& USettingListView::OnGenerateEntryWidgetInternal(UObject* Item, TSub
 	}
 	
 	return EntryWidget;
+}
+
+bool USettingListView::OnIsSelectableOrNavigableInternal(UObject* FirstSelectedItem)
+{
+	if (USettingItemCategory* Setting = Cast<USettingItemCategory>(FirstSelectedItem))
+	{
+		return false;
+	}
+
+	return true;
 }

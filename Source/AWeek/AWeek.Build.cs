@@ -43,6 +43,7 @@ public class AWeek : ModuleRules
             "KismetCompiler",
             "PropertyEditor",
             "UnrealEd",
+            "RHI",
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "SettingSystem" });

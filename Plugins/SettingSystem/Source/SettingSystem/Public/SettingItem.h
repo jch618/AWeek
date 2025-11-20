@@ -10,6 +10,7 @@ UENUM()
 enum class ESettingChangedReason
 {
 	Change,
+	NeighbourChange,
 	Init,
 	Restore,
 }; 
@@ -28,6 +29,10 @@ public:
 	FOnSettingApplied OnSettingAppliedEvent;
 
 	virtual void Init();
+
+	void AddNeighbour(USettingItem* NeighbourSetting);
+	
+	virtual void HandleNeighbourChanged(USettingItem* Setting, ESettingChangedReason Reason);
 	
 	void NotifySettingChanged(const ESettingChangedReason Reason);
 	void Apply();

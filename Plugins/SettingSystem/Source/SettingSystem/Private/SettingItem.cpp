@@ -7,6 +7,19 @@ void USettingItem::Init()
 {
 }
 
+void USettingItem::AddNeighbour(USettingItem* NeighbourSetting)
+{
+	NeighbourSetting->OnSettingChangedEvent.AddUObject(this, &USettingItem::HandleNeighbourChanged);
+}
+
+void USettingItem::HandleNeighbourChanged(USettingItem* Setting, ESettingChangedReason Reason)
+{
+	if (Reason != ESettingChangedReason::NeighbourChange)
+	{
+		NotifySettingChanged(ESettingChangedReason::NeighbourChange);
+	}
+}
+
 void USettingItem::NotifySettingChanged(const ESettingChangedReason Reason)
 {
 	OnSettingChangedEvent.Broadcast(this, Reason);

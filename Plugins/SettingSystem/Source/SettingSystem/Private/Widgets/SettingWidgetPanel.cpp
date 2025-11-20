@@ -11,7 +11,10 @@ void USettingWidgetPanel::RefreshSetting(USettingItem* RootSetting)
 	TArray<UObject*> CurrentSettings;
 	if (RootSetting)
 	{
-		AppendSettingChild(RootSetting, CurrentSettings);
+		for (USettingItem* Child: RootSetting->GetSettings())
+		{
+			AppendSettingChild(Child, CurrentSettings);
+		}
 	}
 	ListView->SetListItems(CurrentSettings);
 }

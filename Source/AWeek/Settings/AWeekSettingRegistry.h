@@ -22,12 +22,16 @@ public:
 
 protected:
 	USettingItem* RegisterGameplaySetting();
+	USettingItem* RegisterGraphicSetting();
 	USettingItem* RegisterAudioSetting();
 	USettingItem* RegisterKeyboardAndMouseSetting();
 
 protected:
 	UPROPERTY()
 	TObjectPtr<USettingItem> GameplaySetting;
+	
+	UPROPERTY()
+	TObjectPtr<USettingItem> GraphicsSetting;
 	
 	UPROPERTY()
 	TObjectPtr<USettingItem> AudioSetting;

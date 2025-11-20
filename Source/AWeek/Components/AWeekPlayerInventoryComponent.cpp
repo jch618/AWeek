@@ -26,7 +26,7 @@ void UAWeekPlayerInventoryComponent::BeginPlay()
 void UAWeekPlayerInventoryComponent::UseSelectedItemPrimary(const TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter)
 {
 	const FAWeekInventorySlotData& SlotData = InventoryContents[HotBarCurrentIndex];
-	if (!SlotData.bIsEmpty)
+	if (!SlotData.IsEmpty())
 	{
 		SlotData.Item->UsePrimary(PlayerCharacter);
 	}
@@ -35,7 +35,7 @@ void UAWeekPlayerInventoryComponent::UseSelectedItemPrimary(const TObjectPtr<AAW
 void UAWeekPlayerInventoryComponent::UseSelectedItemSecondary(const TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter)
 {
 	const FAWeekInventorySlotData& SlotData = InventoryContents[HotBarCurrentIndex];
-	if (!SlotData.bIsEmpty)
+	if (!SlotData.IsEmpty())
 	{
 		SlotData.Item->UseSecondary(PlayerCharacter);
 	}
@@ -48,6 +48,7 @@ void UAWeekPlayerInventoryComponent::SelectItemInHotBar(const int32 InHotBarInde
 	{
 		HotBarPreviousIndex = HotBarCurrentIndex;
 		HotBarCurrentIndex = InHotBarIndex % HotBarInventorySize;
+		SelectCurrentItemInHotBar();
 		OnHotbarSelectionChanged.Broadcast(HotBarPreviousIndex, HotBarCurrentIndex);
 	}
 }
@@ -68,7 +69,7 @@ void UAWeekPlayerInventoryComponent::SelectPreviousItemInHotBar()
 
 void UAWeekPlayerInventoryComponent::SelectCurrentItemInHotBar()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	
 	if (AAWeekPlayerCharacter* PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwner()))
 	{
@@ -100,25 +101,22 @@ void UAWeekPlayerInventoryComponent::ClearTrashCanSlot()
 	}
 }
 
-// have to change -> place item at
-void UAWeekPlayerInventoryComponent::AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex)
+int UAWeekPlayerInventoryComponent::AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 InTargetIndex)
 {
-	Super::AddNewItem(Item, AmountToAdd, TargetIndex);
-
-	UE_LOG(LogTemp, Warning, TEXT("%s: IsHotBarSlotIndex=%d, TargetIndex=%d, HotBarCurrent=%d"), *FString(__FUNCTION__),
-		IsHotBarSlotIndex(TargetIndex), TargetIndex, HotBarCurrentIndex);
+	int32 TargetIndex = Super::AddNewItem(Item, AmountToAdd, InTargetIndex);
 	if (IsHotBarSlotIndex(TargetIndex) && TargetIndex == HotBarCurrentIndex)
 	{
 		SelectCurrentItemInHotBar();
 	}
+	return TargetIndex;
 }
 
 void UAWeekPlayerInventoryComponent::ClearItemSlot(FAWeekInventorySlotData& ItemSlotToRemove)
 {
 	Super::ClearItemSlot(ItemSlotToRemove);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	if (IsHotBarSlotIndex(ItemSlotToRemove.ItemSlotIndex) && ItemSlotToRemove.ItemSlotIndex == HotBarCurrentIndex)
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	if (IsHotBarSlotIndex(ItemSlotToRemove.SlotIndex) && ItemSlotToRemove.SlotIndex == HotBarCurrentIndex)
 	{
 		SelectCurrentItemInHotBar();
 	}

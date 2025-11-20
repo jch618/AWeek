@@ -62,15 +62,16 @@ void UAWeekHeldItem::UpdateHeldItem()
 		}
 		else
 		{
-			HeldItemData.HeldItemVisual->ItemIcon->SetBrushFromTexture(HeldItemData.Item->GetAssetData().Icon);
-
-			//HeldItemVisual->ItemBorder->SetBrushColor(ItemBorder->GetBrushColor());
-
-			HeldItemData.Item->GetNumericData().bIsStackable
-				? HeldItemData.HeldItemVisual->ItemQuantity->SetText(FText::AsNumber(HeldItemData.Item->GetQuantity()))
-				: HeldItemData.HeldItemVisual->ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
-
-			HeldItemData.HeldItemVisual->ItemQuantity->SetText(FText::AsNumber(HeldItemData.Item->GetQuantity()));
+			HeldItemData.HeldItemVisual->InitializeHeldItemVisual(HeldItemData.Item);
+			// HeldItemData.HeldItemVisual->ItemIcon->SetBrushFromTexture(HeldItemData.Item->GetAssetData().Icon);
+			//
+			// //HeldItemVisual->ItemBorder->SetBrushColor(ItemBorder->GetBrushColor());
+			//
+			// HeldItemData.Item->GetNumericData().bIsStackable
+			// 	? HeldItemData.HeldItemVisual->ItemQuantity->SetText(FText::AsNumber(HeldItemData.Item->GetQuantity()))
+			// 	: HeldItemData.HeldItemVisual->ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
+			//
+			// HeldItemData.HeldItemVisual->ItemQuantity->SetText(FText::AsNumber(HeldItemData.Item->GetQuantity()));
 		}
 	}
 }
@@ -101,7 +102,7 @@ void UAWeekHeldItem::ClearHeldItem()
 void UAWeekHeldItem::ReturnHeldItemToInventory()
 {
 	const FAWeekInventorySlotData& ItemSlot = HeldItemData.SourceInventory->GetItemSlotAt(HeldItemData.SourceSlotIndex);
-	if (ItemSlot.bIsEmpty)
+	if (ItemSlot.IsEmpty())
 	{
 		HeldItemData.SourceInventory->PlaceItemAt(HeldItemData.Item, HeldItemData.SourceSlotIndex);
 	}

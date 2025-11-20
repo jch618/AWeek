@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Item Slot", meta = (BindWidget))
 	TObjectPtr<UBorder> ItemBorder;
 
+	UPROPERTY(VisibleAnywhere, Category = "Item Slot", meta = (BindWidget))
+	TObjectPtr<UBorder> SelectionBorder;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Item Slot")
 	TSubclassOf<UAWeekInventoryToolTip> ToolTipClass;
 	

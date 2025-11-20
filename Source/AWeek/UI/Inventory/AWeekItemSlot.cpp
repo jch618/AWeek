@@ -26,27 +26,7 @@ void UAWeekItemSlot::InitializeItemSlot(const FAWeekItemData& ItemData, const in
 			UE_LOG(LogTemp, Warning, TEXT("%s: ToolTip is invalid"), *FString(__FUNCTION__));
 		}
 	}
-
-	// switch (ItemData.ItemQuality)
-	// {
-	// case EAWeekItemQuality::Poor:
-	// 	ItemBorder->SetBrushColor(FLinearColor::Gray);
-	// 	break;
-	// case EAWeekItemQuality::Common:
-	// 	ItemBorder->SetBrushColor(FLinearColor::White);
-	// 	break;
-	// case EAWeekItemQuality::Rare:
-	// 	ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.51f, 0.169f));
-	// 	break;
-	// case EAWeekItemQuality::Epic:
-	// 	ItemBorder->SetBrushColor(FLinearColor(0.0f, 0.4f, 0.75f));
-	// 	break;
-	// case EAWeekItemQuality::Grandmaster:
-	// 	ItemBorder->SetBrushColor(FLinearColor(1.0f, 0.45f, 0.0f)); // orange
-	// 	break;
-	// default:
-	// 	break;
-	// }
+	ItemBorder->SetBrushColor(UAWeekItemQualityHelper::GetQualityColor(ItemData.ItemQuality));
 
 	//
 	// UE_LOG(LogTemp, Warning, TEXT("Update Item Icon"));
@@ -66,6 +46,8 @@ void UAWeekItemSlot::InitializeItemSlot(const FAWeekItemData& ItemData, const in
 
 void UAWeekItemSlot::InitializeItemSlot(const TObjectPtr<UAWeekItemBase> Item)
 {
+	SelectionBorder->SetVisibility(ESlateVisibility::Collapsed);
+	
 	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (IsValid(Item))
 	{
@@ -83,11 +65,11 @@ void UAWeekItemSlot::SetHighlight(bool IsHighlighted)
 {
 	if (IsHighlighted)
 	{
-		ItemBorder->SetBrushColor(HighlightedBorderColor);
+		SelectionBorder->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
-		ItemBorder->SetBrushColor(DefaultBorderColor);
+		SelectionBorder->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 

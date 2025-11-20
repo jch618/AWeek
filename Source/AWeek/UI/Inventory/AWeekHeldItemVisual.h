@@ -9,6 +9,7 @@
 #include "AWeekHeldItemVisual.generated.h"
 
 
+class UAWeekItemBase;
 class UTextBlock;
 class UBorder;
 class UImage;
@@ -17,8 +18,10 @@ UCLASS()
 class AWEEK_API UAWeekHeldItemVisual : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
-
+	
 public:
+	void InitializeHeldItemVisual(const TObjectPtr<UAWeekItemBase> InItem) const;
+protected:
 	UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
 	TObjectPtr<UBorder> ItemBorder;
 

@@ -7,7 +7,7 @@
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "AWeekPlayerInventoryPanel.generated.h"
 
-
+class UAWeekInventoryItemSlot;
 class UAWeekPlayerInventoryComponent;
 /**
  * 
@@ -26,8 +26,14 @@ protected:
 
 	virtual void InitializeGridPanel() override;
 	virtual void RefreshInventoryPanel() override;
+	// virtual void BindInventoryDelegates() override;
+	// virtual void UnBindInventoryDelegates() override;
+	virtual void OnSlotUpdate(const FAWeekInventorySlotData& SlotData) override;
 	
 private:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> HotBarGridPanel;	
+	TObjectPtr<UUniformGridPanel> HotBarGridPanel;
+
+	UPROPERTY()
+	TArray<UAWeekInventoryItemSlot*> HotBarSlots;
 };

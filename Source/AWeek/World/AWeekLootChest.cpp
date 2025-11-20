@@ -29,14 +29,10 @@ void AAWeekLootChest::BeginPlay()
 void AAWeekLootChest::DestoryOnTimerExpired()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	if (InventoryComponent->IsLinkedToInventoryPanel())
+	if (IsValid(PlayerCharacter))
 	{
-		if (IsValid(PlayerCharacter))
-		{
-			PlayerCharacter->CloseChestInventory();
-			PlayerCharacter = nullptr;
-		}
-		InventoryComponent->ClearInventoryContents();
+		PlayerCharacter->CloseChestInventory();
+		PlayerCharacter = nullptr;
 	}
 	Destroy();
 }

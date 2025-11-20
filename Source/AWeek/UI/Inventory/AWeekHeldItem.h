@@ -38,6 +38,7 @@ class AWEEK_API UAWeekHeldItem : public UObject
 
 public:
 	UAWeekHeldItem();
+	void InitializeHeldItem(const FHeldItemData& NewHeldItemData);
 	
 	FORCEINLINE bool IsEmpty() const { return HeldItemData.Item == nullptr; }
 	FORCEINLINE const UAWeekInventoryComponent* GetSourceInventory() const { return HeldItemData.SourceInventory; }
@@ -45,10 +46,10 @@ public:
 	void SetHeldItemQuantity(int32 Quantity);
 	void SetItem(TObjectPtr<UAWeekItemBase> Item);
 	UAWeekItemBase* ReleaseHeldItem();
-	void InitializeHeldItem(const FHeldItemData& NewHeldItemData);
 	void UpdateHeldVisualPosition(FVector2D MousePos);
 	void ClearHeldItem();
 	void ReturnHeldItemToInventory();
+	
 protected:
 	float HeldItemVisualXOffset;
 	float HeldItemVisualYOffset;
@@ -56,4 +57,6 @@ protected:
 	FHeldItemData HeldItemData;
 
 	void UpdateHeldItem();
+private:
+	
 };

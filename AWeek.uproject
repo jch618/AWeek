@@ -18,7 +18,8 @@
 				"AIModule",
 				"SettingSystem",
 				"DeveloperSettings",
-				"GameFeatures"
+				"GameFeatures",
+				"EnhancedInput"
 			]
 		}
 	],

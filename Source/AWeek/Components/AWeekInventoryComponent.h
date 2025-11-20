@@ -4,10 +4,15 @@
 #include "Components/ActorComponent.h"
 #include "AWeekInventoryComponent.generated.h"
 
+struct FAWeekInventorySlotData;
+class UAWeekInventoryComponent;
+class UAWeekItemBase;
+
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSlotUpdated, const FAWeekInventorySlotData& SlotData)
 /* when weight capacity exceeds */ 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEncumberedStatusChanged, bool bIsEncumbered)
-class UAWeekItemBase;
+
 UENUM(BluePrintType)
 enum class EAWeekItemAddResult : uint8
 {
@@ -22,15 +27,14 @@ struct FAWeekInventorySlotData
 	GENERATED_BODY()
 
 	FAWeekInventorySlotData(int32 InItemSlotIndex, UAWeekInventoryComponent* InOwningInventory, UAWeekItemBase* InItem = nullptr) :
-		bIsEmpty(InItem == nullptr), ItemSlotIndex(InItemSlotIndex), OwningInventory(InOwningInventory), Item(InItem)
+		SlotIndex(InItemSlotIndex), OwningInventory(InOwningInventory), Item(InItem)
 	{ }
 	FAWeekInventorySlotData() :
-		bIsEmpty(true), ItemSlotIndex(-1), OwningInventory(nullptr), Item(nullptr)
+		SlotIndex(-1), OwningInventory(nullptr), Item(nullptr)
 	{ }
 
-	bool bIsEmpty;
-	
-	int32 ItemSlotIndex;
+	FORCEINLINE bool IsEmpty() const { return Item == nullptr; }
+	int32 SlotIndex;
 	
 	UPROPERTY()
 	UAWeekInventoryComponent* OwningInventory;
@@ -101,6 +105,7 @@ public:
 	//	PROPERTIES & VARIABLES
 	//================================================================
 	FOnInventoryUpdated OnInventoryUpdated;
+	FOnSlotUpdated OnSlotUpdated;
 	FOnEncumberedStatusChanged OnEncumberedStatusChanged;
 
 	
@@ -123,8 +128,8 @@ public:
 	
 	UFUNCTION(Category = "Inventory")
 	int32 FindNextItemByID(FName ItemID) const;
-	
-	FAWeekInventorySlotData* FindNextPartialStack(UAWeekItemBase* ItemIn);
+
+	int32 FindNextPartialStack(FName ItemID);
 
 
 	/* Remove Item Functions */
@@ -137,7 +142,7 @@ public:
 	void SplitExistingStack(FAWeekInventorySlotData& ItemSlot, const int32 AmountToSplit);
 
 	// void SwapItemSlotWith(const int32 ItemSlotIndex, const int32 OtherItemSlotIndex, TObjectPtr<UAWeekInventoryComponent> OtherInventory);
-	int32 GetFirstEmptySlotIndex();
+	int32 FindFirstEmptySlot();
 
 	/* Getters */
 	// -------------------------------------
@@ -158,7 +163,6 @@ public:
 	
 	FORCEINLINE const TArray<FAWeekInventorySlotData>& GetInventoryContents() const { return InventoryContents; }
 	FORCEINLINE const FAWeekInventorySlotData& GetItemSlotAt(int32 Index) const { return InventoryContents[Index]; }
-	FORCEINLINE bool IsLinkedToInventoryPanel() const { return bIsLinkedToInventoryPanel; }
 	FORCEINLINE bool IsEncumbered() const { return InventoryTotalWeight > InventoryWeightCapacity; }
 
 	// setters
@@ -167,11 +171,7 @@ public:
 	FORCEINLINE void SetSlotsCapacity(const int32 NewSlotsCapacity) { InventorySlotsCapacity = NewSlotsCapacity; }
 	UFUNCTION(Category = "Inventory")
 	FORCEINLINE void SetWeightCapacity(const float NewWeightCapacity) { InventoryWeightCapacity = NewWeightCapacity; }
-	FORCEINLINE void SetIsLinkedToInventoryPanel(bool bNewIsLinkedToInventoryPanel)
-	{
-		bIsLinkedToInventoryPanel = bNewIsLinkedToInventoryPanel;
-	}
-	FORCEINLINE void ClearInventoryContents() { InventoryContents.Empty(); }
+
 	int32 AddItemQuantityAt(int32 ItemSlotIndex, int32 DesiredAddAmount);
 	void PlaceItemAt(TObjectPtr<UAWeekItemBase> InputItem, int32 TargetIndex);
 	void TransferItem(const FAWeekInventorySlotData& FromItemSlot, TObjectPtr<UAWeekInventoryComponent> TargetInventory);
@@ -194,8 +194,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
 	TArray<FAWeekInventorySlotData> InventoryContents;
-
-	bool bIsLinkedToInventoryPanel;
+	
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
@@ -207,10 +206,9 @@ protected:
 	int32 HandleStackableItems(UAWeekItemBase* ItemIn, int32 RequestedAddAmount);
 	int32 CalculateWeightAddAmount(UAWeekItemBase* ItemIn, int32 RequestedAddAmount);
 	int32 CalculateNumberForFullStack(UAWeekItemBase* StackableItem, int32 InitialRequestedAddAmount);
-
-	virtual void AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex = -1);
+	
+	virtual int AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex = -1);
 private:
 	void SetItemQuantity(FAWeekInventorySlotData& ItemSlot, const int32 Quantity);
-	int32 FindItemIndex(const UAWeekItemBase* ItemIn) const;
 	void UpdateInventoryTotalWeight(int32 DeltaWeight);
 };

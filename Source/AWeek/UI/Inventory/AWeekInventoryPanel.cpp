@@ -39,12 +39,12 @@ void UAWeekInventoryPanel::LinkToInventory(const TObjectPtr<UAWeekInventoryCompo
 			*FString(__FUNCTION__),	*GetName(),	*InventoryComponent->GetName());
 		return;
 	}
-	
+	// if inventory is already connected with panel, unlink that 
+	if (InventoryComponent)
+	{
+		UnlinkFromInventory();
+	}
 	InventoryComponent = InInventoryComponent;
-	InventoryComponent->SetIsLinkedToInventoryPanel(true);
-	
-	InventoryComponent->OnInventoryUpdated.AddUObject(this, &UAWeekInventoryPanel::RefreshInventory);
-	InventoryComponent->OnEncumberedStatusChanged.AddUObject(this, &UAWeekInventoryPanel::OnEncumberedStatusChanged);
 
 	InitializeGridPanel();
 	
@@ -52,7 +52,9 @@ void UAWeekInventoryPanel::LinkToInventory(const TObjectPtr<UAWeekInventoryCompo
 	UpdateInfoText();
 	bIsLinkedToInventory = true;
 
-	OnInventoryLinked();
+	BindInventoryDelegates();
+
+	RefreshInventory();
 	
 	UE_LOG(LogTemp, Log, TEXT("%s: Input inventory %s successfully linked to %s."),
 		*FString(__FUNCTION__), *InInventoryComponent->GetName(), *GetName());
@@ -60,13 +62,13 @@ void UAWeekInventoryPanel::LinkToInventory(const TObjectPtr<UAWeekInventoryCompo
 
 void UAWeekInventoryPanel::UnlinkFromInventory()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (!InventoryComponent)
 	{
 		return;
 	}
-	InventoryComponent->SetIsLinkedToInventoryPanel(false);
-	InventoryComponent->OnInventoryUpdated.RemoveAll(this);
-	InventoryComponent->OnEncumberedStatusChanged.RemoveAll(this);
+	// InventoryComponent->OnInventoryUpdated.RemoveAll(this);
+	UnBindInventoryDelegates();
 
 	InventoryComponent = nullptr;
 	bIsLinkedToInventory = false;
@@ -75,20 +77,36 @@ void UAWeekInventoryPanel::UnlinkFromInventory()
 
 void UAWeekInventoryPanel::InitializeGridPanel()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	InventoryGridPanel->ClearChildren();
+	InventoryItemSlots.Empty();
 	for (int32 i = 0; i < InventoryComponent->GetSlotsCapacity(); i++)
 	{
 		UAWeekInventoryItemSlot* ItemSlot = CreateWidget<UAWeekInventoryItemSlot>(this, InventorySlotClass);
 		ItemSlot->SetItemSlotIndex(i);
 		ItemSlot->SetInventory(InventoryComponent);
+		InventoryItemSlots.Add(ItemSlot);
 		InventoryGridPanel->AddChildToUniformGrid(ItemSlot, i / NumCols, i % NumCols);
 	}
 }
 
-void UAWeekInventoryPanel::OnInventoryLinked()
+void UAWeekInventoryPanel::BindInventoryDelegates()
 {
-	RefreshInventory();
+	InventoryComponent->OnSlotUpdated.AddUObject(this, &UAWeekInventoryPanel::OnSlotUpdate);
+	InventoryComponent->OnEncumberedStatusChanged.AddUObject(this, &UAWeekInventoryPanel::OnEncumberedStatusChanged);
+}
+
+void UAWeekInventoryPanel::UnBindInventoryDelegates()
+{
+	InventoryComponent->OnSlotUpdated.RemoveAll(this);
+	InventoryComponent->OnEncumberedStatusChanged.RemoveAll(this);
+}
+
+void UAWeekInventoryPanel::OnSlotUpdate(const FAWeekInventorySlotData& SlotData)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s:Index=%d"), *FString(__FUNCTION__), SlotData.SlotIndex);
+	InventoryItemSlots[SlotData.SlotIndex]->InitializeInventoryItemSlot(SlotData.Item);
+	UpdateInfoText();
 }
 
 void UAWeekInventoryPanel::RefreshInventory()
@@ -116,18 +134,13 @@ void UAWeekInventoryPanel::RefreshInventoryPanel()
 	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (InventoryComponent)
 	{
-		for (int32 i = 0; i < InventoryGridPanel->GetChildrenCount(); i++)
+		for (int32 i = 0; i < InventoryItemSlots.Num(); i++)
 		{
-			if (UAWeekInventoryItemSlot* ItemSlot =
-				Cast<UAWeekInventoryItemSlot>(InventoryGridPanel->GetChildAt(i)))
-			{
-				ItemSlot->InitializeInventoryItemSlot(
-					InventoryComponent->GetItemSlotAt(ItemSlot->GetItemSlotIndex()).Item);
-			}
+			InventoryItemSlots[i]->InitializeInventoryItemSlot(
+				InventoryComponent->GetItemSlotAt(InventoryItemSlots[i]->GetItemSlotIndex()).Item);
 		}
 	}
 }
-
 
 void UAWeekInventoryPanel::OnEncumberedStatusChanged(bool bIsEncumbered) const
 {

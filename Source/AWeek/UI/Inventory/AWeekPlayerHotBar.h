@@ -6,6 +6,7 @@
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "AWeekPlayerHotBar.generated.h"
 
+struct FAWeekInventorySlotData;
 class UAWeekPlayerInventoryComponent;
 class UUniformGridPanel;
 class UAWeekItemSlot;
@@ -31,7 +32,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAWeekPlayerInventoryComponent> PlayerInventoryComponent;
-	
+
+	UFUNCTION()
+	void OnSlotUpdated(const FAWeekInventorySlotData& SlotData);
 private:
 	UPROPERTY()
 	TArray<TObjectPtr<UAWeekItemSlot>> HotBarSlots;

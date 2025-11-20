@@ -4,15 +4,15 @@
 #include "Engine/DataTable.h"
 #include "AWeekItemDataStructs.generated.h"
 
-// UENUM()
-// enum class EAWeekItemQuality : uint8
-// {
-// 	Poor UMETA(DisplayName = "Poor"),
-// 	Common UMETA(DisplayName = "Common"),
-// 	Rare UMETA(DisplayName = "Rare"),
-// 	Epic UMETA(DisplayName = "Epic"),
-// 	Grandmaster UMETA(DisplayName = "Grandmaster")
-// };
+UENUM()
+enum class EAWeekItemQuality : uint8
+{
+	Poor UMETA(DisplayName = "Poor"),
+	Basic UMETA(DisplayName = "Basic"),
+	Rare UMETA(DisplayName = "Rare"),
+	Epic UMETA(DisplayName = "Epic"),
+	Grandmaster UMETA(DisplayName = "Grandmaster")
+};
 
 UENUM()
 enum class EAWeekItemType : uint8
@@ -94,8 +94,8 @@ struct FAWeekItemData : public FTableRowBase
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	EAWeekItemType ItemType;
 
-	// UPROPERTY(EditAnywhere, Category = "Item Data")
-	// EAWeekItemQuality ItemQuality;
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+	EAWeekItemQuality ItemQuality;
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	FAWeekItemTextData TextData;
@@ -127,4 +127,23 @@ struct FAWeekItemEntry
 	FAWeekItemEntry() = default;
 	FAWeekItemEntry(const FAWeekItemData& InItemData, int32 InQuantity):
 		ItemData(InItemData), Quantity(InQuantity) { }
+};
+
+UCLASS()
+class AWEEK_API UAWeekItemQualityHelper : public UObject
+{
+	GENERATED_BODY()
+public:
+	static FLinearColor GetQualityColor(EAWeekItemQuality Quality)
+	{
+		static TMap<EAWeekItemQuality, FLinearColor> QualityColors = {
+			{ EAWeekItemQuality::Poor, FLinearColor::Gray },
+			{ EAWeekItemQuality::Basic, FLinearColor::White },
+			{ EAWeekItemQuality::Rare, FLinearColor(0.0f, 0.51f, 0.169f) },
+			{ EAWeekItemQuality::Epic, FLinearColor(0.3f, 0.2f, 0.75f) },
+			{ EAWeekItemQuality::Grandmaster, FLinearColor(1.0f, 0.45f, 0.0f) }
+		};
+        
+		return QualityColors.FindRef(Quality);
+	}
 };

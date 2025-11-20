@@ -38,13 +38,15 @@ public:
 	FORCEINLINE int32 GetHotBarInventorySize() const { return HotBarInventorySize; }
 	FORCEINLINE int32 GetTrashCanSlotIndex() const { return TrashCanSlotIndex; }
 	FORCEINLINE const FAWeekInventorySlotData& GetHotBarItemAt(const int32 HotBarIndex) const
-		{ return InventoryContents[HotBarStartIndex + HotBarIndex % HotBarInventorySize]; }  
+		{ return InventoryContents[HotBarStartIndex + HotBarIndex % HotBarInventorySize]; }
+	FORCEINLINE bool IsHotBarIndex(const int32 Index) const { return Index >= HotBarStartIndex && Index < HotBarStartIndex + HotBarInventorySize; }
+	FORCEINLINE int32 ToInventorySlotIndex(const int32 Index) const { return Index - HotBarInventorySize; }
 	/* Trash Can Function */
 	void SetTrashCanSlot(const TObjectPtr<UAWeekItemBase> InItem);
 	void ClearTrashCanSlot();
 
 protected:
-	virtual void AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex = -1) override;
+	virtual int AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 InTargetIndex = -1) override;
 	virtual void ClearItemSlot(FAWeekInventorySlotData& ItemSlotToRemove) override;
 private:
 	FORCEINLINE bool IsHotBarSlotIndex(const int32 Index) const { return Index >= HotBarStartIndex && Index < HotBarStartIndex + HotBarInventorySize; }

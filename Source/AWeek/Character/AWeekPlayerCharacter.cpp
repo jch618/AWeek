@@ -666,8 +666,6 @@ void AAWeekPlayerCharacter::PerformInteractionCheck()
 
 void AAWeekPlayerCharacter::FoundInteractable(TObjectPtr<AActor> NewInteractable)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Found Interactable"));
-
 	if (IsInteracting())
 	{
 		EndInteract();

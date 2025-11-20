@@ -88,15 +88,12 @@ void AAWeekChest::OnChestRadiusExit(UPrimitiveComponent* OverlappedComponent,
 									UPrimitiveComponent* OtherComp,
 									int32 OtherBodyIndex)
 {
-	if (InventoryComponent->IsLinkedToInventoryPanel())
+	if (OtherActor->IsA(AAWeekPlayerCharacter::StaticClass()))
 	{
-		if (OtherActor->IsA(AAWeekPlayerCharacter::StaticClass()))
+		if (IsValid(PlayerCharacter))
 		{
-			if (IsValid(PlayerCharacter))
-			{
-				PlayerCharacter->CloseChestInventory();
-				PlayerCharacter = nullptr;
-			}
+			PlayerCharacter->CloseChestInventory();
+			PlayerCharacter = nullptr;
 		}
 	}
 }

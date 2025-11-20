@@ -50,7 +50,7 @@ void UAWeekInventoryController::HandleItemSlotLeftClick(int32 ClickedItemSlotInd
 	if (IsHoldingItem())
 	{
 		const FAWeekInventorySlotData& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
-		if (ClickedItemSlot.bIsEmpty)
+		if (ClickedItemSlot.IsEmpty())
 		{
 			OwningInventory->PlaceItemAt(HeldItem->ReleaseHeldItem(), ClickedItemSlotIndex);
 			HeldItem->ClearHeldItem();
@@ -84,7 +84,7 @@ void UAWeekInventoryController::HandleItemSlotLeftClick(int32 ClickedItemSlotInd
 	}
 	else
 	{
-		if (!OwningInventory->GetItemSlotAt(ClickedItemSlotIndex).bIsEmpty)
+		if (!OwningInventory->GetItemSlotAt(ClickedItemSlotIndex).IsEmpty())
 		{
 			UAWeekItemBase* NewHeldItem = OwningInventory->ReleaseItemAt(ClickedItemSlotIndex);
 			CreateHeldItem(NewHeldItem, OwningInventory, ClickedItemSlotIndex);
@@ -97,7 +97,7 @@ void UAWeekInventoryController::HandleItemSlotRightClick(int32 ClickedItemSlotIn
 	const FAWeekInventorySlotData& ClickedItemSlot = OwningInventory->GetItemSlotAt(ClickedItemSlotIndex);
 	if (IsHoldingItem())
 	{
-		if (!ClickedItemSlot.bIsEmpty)
+		if (!ClickedItemSlot.IsEmpty())
 		{
 			if (HeldItem->GetItem()->GetID() == ClickedItemSlot.Item->GetID())
 			{
@@ -108,7 +108,7 @@ void UAWeekInventoryController::HandleItemSlotRightClick(int32 ClickedItemSlotIn
 	}
 	else
 	{
-		if (!ClickedItemSlot.bIsEmpty)
+		if (!ClickedItemSlot.IsEmpty())
 		{
 			// hold one item
 			UAWeekItemBase* NewHeldItem = ClickedItemSlot.Item->CreateItemCopy();
@@ -162,7 +162,7 @@ void UAWeekInventoryController::CreateHeldItem(TObjectPtr<UAWeekItemBase> InHeld
 
 void UAWeekInventoryController::HandleItemSlotShiftLeftClick(const FAWeekInventorySlotData& ClickedItemSlot) const
 {
-	if (!ClickedItemSlot.bIsEmpty && UIManager->GetPlayerCharacter()->GetChestInventoryComponent())
+	if (!ClickedItemSlot.IsEmpty() && UIManager->GetPlayerCharacter()->GetChestInventoryComponent())
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("%s: execute"), *FString(__FUNCTION__));
 		UAWeekInventoryComponent* SourceInventory = ClickedItemSlot.OwningInventory;
@@ -199,7 +199,7 @@ void UAWeekInventoryController::HandleItemSlotControlLeftClick(int32 ClickedItem
 	{
 		return;
 	}
-	if (!ClickedItemSlotData.bIsEmpty)
+	if (!ClickedItemSlotData.IsEmpty())
 	{
 		UAWeekItemBase* Item = OwningInventory->ReleaseItemAt(ClickedItemSlotIndex);
 		PlayerInventory->ClearTrashCanSlot();

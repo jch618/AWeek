@@ -69,8 +69,6 @@ void UAWeekGameUIManager::InitializeUIManager(const TObjectPtr<AAWeekPlayerChara
 				FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), PlayerHotBarClass));
 		
 		PlayerHotBarWidget->InitializeHotBar(PlayerCharacter->GetPlayerInventoryComponent());
-		PlayerCharacter->GetPlayerInventoryComponent()->OnInventoryUpdated.AddUObject(PlayerHotBarWidget,
-			&UAWeekPlayerHotBar::RefreshHotBar);
 		PlayerCharacter->GetPlayerInventoryComponent()->OnHotbarSelectionChanged.AddUObject(
 			PlayerHotBarWidget, &UAWeekPlayerHotBar::OnHotBarSelectionChanged);
 	}
@@ -306,6 +304,5 @@ void UAWeekGameUIManager::CloseChestInventory()
 			InventoryController->ReturnHeldItemToInventory();
 		}
 	}
-	// InventoryHubWidget->CloseCurrentPanel();
-	InventoryHubWidget->Close();
+	InventoryHubWidget->CloseChestInventory();
 }

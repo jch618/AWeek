@@ -72,7 +72,6 @@ public:
 	FORCEINLINE bool IsPanelOpen(EAWeekInventoryHubPanel Panel) const { return CurrentPanel == Panel; }
 	FORCEINLINE bool IsChestOpen() const;
 	void CloseChestInventory();
-	void Close();
 
 	void ShowCraftingDetailPanel() const;
 	void HideCraftingDetailPanel() const;
@@ -88,11 +87,6 @@ private:
 	//================================================================
 	//	PROPERTIES & VARIABLES
 	//================================================================
-	// UPROPERTY(EditDefaultsOnly, Category = "Widget Classes")
-	// TSubclassOf<UAWeekPlayerInventoryPanel> PlayerInventoryPanelClass;
-	//
-	// UPROPERTY(EditDefaultsOnly, Category = "Widget Classes")
-	// TSubclassOf<UAWeekPlayerInventoryPanel> InventoryPanelClass;
 
 	/* Widgets */
 	UPROPERTY(meta = (BindWidget))

@@ -30,7 +30,7 @@ public:
 	FORCEINLINE FName GetID() const { return ItemData.ID; }
 	FORCEINLINE int GetQuantity() const { return Quantity; }
 	FORCEINLINE EAWeekItemType GetItemType() const { return ItemData.ItemType; }
-	// FORCEINLINE EAWeekItemQuality GetItemQuality() const { return ItemData.ItemQuality; }
+	FORCEINLINE EAWeekItemQuality GetItemQuality() const { return ItemData.ItemQuality; }
 	FORCEINLINE const FAWeekItemTextData& GetTextData() const { return ItemData.TextData; }
 	FORCEINLINE const FAWeekItemAssetData& GetAssetData() const { return ItemData.AssetData; }
 	FORCEINLINE const FAWeekItemNumericData& GetNumericData() const { return ItemData.NumericData; }

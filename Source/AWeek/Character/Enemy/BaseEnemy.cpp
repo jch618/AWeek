@@ -5,6 +5,7 @@
 ABaseEnemy::ABaseEnemy()
 {
     PrimaryActorTick.bCanEverTick = true;
+    m_tryCleanUpCount = 0;
 }
 
 void ABaseEnemy::PossessedBy(AController* NewController)
@@ -113,6 +114,8 @@ float ABaseEnemy::GetMontagePlayRate_Code() const
 
 void ABaseEnemy::OnLoadFromPool_Implementation()
 {
+    m_tryCleanUpCount = 0;
+
     const FString ClassName = GetClass()->GetName();
 
     const FString EnemyFolder = FString::Printf(TEXT("Pool/%s"), *ClassName);

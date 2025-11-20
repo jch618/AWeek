@@ -29,6 +29,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseEnemy")
     UEnemyStatDataAsset* StatDataAsset;
 
+    UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "BaseEnemy")
+    int m_tryCleanUpCount= 0;
 public:
     ABaseEnemy();
 

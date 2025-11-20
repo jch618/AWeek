@@ -26,8 +26,15 @@ protected:
 	TObjectPtr<UProgressBar> HealthBar;
 	TObjectPtr<UProgressBar> HungerBar;
 
+	FGameEventMessageListenerHandle HPChangedHandle;
 	FGameEventMessageListenerHandle HungerChangedHandle;
 
 protected:
 	virtual void NativeConstruct() override;
+
+public:
+	void SetHPPercent(float CurrentHP, float MaxHP)
+	{
+		HealthBar->SetPercent(CurrentHP/MaxHP);
+	}
 };

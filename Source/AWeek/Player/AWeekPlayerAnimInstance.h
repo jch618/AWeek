@@ -41,6 +41,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool EnableAO = false;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bLeftFootTriggered = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bRightFootTriggered = false;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<class AAWeekPlayerCharacter> mOwner;
@@ -120,6 +126,7 @@ public:
 		mWeaponState = WeaponState;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	void PlayMontageByName(FName Name, float PlayRate = 1.0f)
 	{
 		UAnimMontage* Montage = FindAnimMontage(Name);
@@ -164,4 +171,10 @@ protected:
 
 	UFUNCTION()
 	void AnimNotify_OnDie();
+
+	UFUNCTION()
+	void AnimNotify_AN_FootPlant_Right();
+
+	UFUNCTION()
+	void AnimNotify_AN_FootPlant_Left();
 };

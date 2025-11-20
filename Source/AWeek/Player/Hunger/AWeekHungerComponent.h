@@ -39,7 +39,7 @@ protected:
 	float StaminaAffected = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float UsageRate = 120; // 600초뒤에 모든 허기 소모
+	float UsageRate = 30; // 600초뒤에 모든 허기 소모
 
 	FGameEventMessageListenerHandle StaminaChangedHandle;
 
@@ -70,7 +70,7 @@ public:
 public:
 	bool IsOnHungerState(EHungerState CheckState)
 	{
-		EHungerState CurrentState;
+		EHungerState CurrentState = EHungerState::Healthy;
 		if (Hunger > 50)
 		{
 			CurrentState = EHungerState::Healthy;
@@ -80,11 +80,11 @@ public:
 			CurrentState = EHungerState::Hungry;
 	
 		}
-		else if (Hunger <= 30 && Hunger > 0)
+		else if (Hunger <= 30 && Hunger > 5)
 		{
 			CurrentState = EHungerState::Starving;
 		}
-		else if (FMath::IsNearlyZero(Hunger))
+		else
 		{
 			CurrentState = EHungerState::Fainting;
 		}

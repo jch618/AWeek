@@ -28,6 +28,19 @@ struct FDayChangedMessage
 };
 
 USTRUCT(BlueprintType)
+struct FHPChangedHandle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	float HP;
+	UPROPERTY(BlueprintReadWrite)
+	float MaxHP;
+	UPROPERTY(BlueprintReadWrite)
+	float Amount;
+};
+
+USTRUCT(BlueprintType)
 struct FHungerChangedMessage
 {
 	GENERATED_BODY()

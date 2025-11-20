@@ -63,6 +63,29 @@ void UAWeekPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	FRotator ControlRot = Controller->GetControlRotation();
 	ControllerYaw = ControlRot.Yaw;
 	ControllerPitch = ControlRot.Pitch;
+
+	float LeftFoot = GetCurveValue(TEXT("Foot_L"));
+	float RightFoot = GetCurveValue(TEXT("Foot_R"));
+
+	if (LeftFoot > 0.9f && !bLeftFootTriggered)
+	{
+		mOwner->FootStepEffect(FName("foot_l_Socket"));
+		bLeftFootTriggered = true;
+	}
+	else if (LeftFoot < 0.1f)
+	{
+		bLeftFootTriggered = false;
+	}
+
+	if (RightFoot > 0.9f && !bRightFootTriggered)
+	{
+		mOwner->FootStepEffect(FName("foot_r_Socket"));
+		bRightFootTriggered = true;
+	}
+	else if (RightFoot < 0.1f)
+	{
+		bRightFootTriggered = false;
+	}
 }
 
 UAnimSequence* UAWeekPlayerAnimInstance::FindAnimSequence(const FName& Name)
@@ -97,7 +120,7 @@ UAnimMontage* UAWeekPlayerAnimInstance::FindAnimMontage(const FName& Name)
 
 	if (!Montage)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Montage %s is not found"), *Name.ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Montage %s is not found"), *Name.ToString());
 		return nullptr;
 	}
 
@@ -141,4 +164,14 @@ void UAWeekPlayerAnimInstance::AnimNotify_OnDie()
 {
 	mOwner->GameOver();
 	Montage_Pause();
+}
+
+void UAWeekPlayerAnimInstance::AnimNotify_AN_FootPlant_Right()
+{
+	mOwner->FootStepEffect(FName("foot_r_Socket"));
+}
+
+void UAWeekPlayerAnimInstance::AnimNotify_AN_FootPlant_Left()
+{
+	mOwner->FootStepEffect(FName("foot_l_Socket"));
 }

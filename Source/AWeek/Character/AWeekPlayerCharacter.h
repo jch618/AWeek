@@ -8,6 +8,8 @@
 #include "../Player/AWeekPlayerAnimInstance.h"
 #include "AWeek/Interfaces/AWeekInteractionInterface.h"
 
+#include "../UI/InGame/Player/AWeekPlayerStateWidget.h"
+#include "NiagaraFunctionLibrary.h"
 #include "../System/GameEventMessageSubsystem.h"
 #include "../System/DamageInfo.h"
 #include "../System/IDamageAble.h"
@@ -79,12 +81,16 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UAWeekWeaponComponent> mWeapon;
 
-	/*--------------WEAPON--------------*/
+	/*--------------HUNGER--------------*/
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UAWeekHungerComponent> mHunger;
 
-	/*--------------DAMAGE--------------*/
+	/*--------------HUD--------------*/
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAWeekPlayerStateWidget> mStateWidget;
+
+	/*--------------DAMAGE--------------*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UDamageSystemComponent> mDamageSystem;
 
 	/*--------------SOUNDS--------------*/
@@ -95,6 +101,9 @@ protected:
 	FGameEventMessageListenerHandle DayChangedHandle;
 
 	/*--------------VARIABLES--------------*/
+	UPROPERTY(VisibleAnywhere)
+	bool bGameOver = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsCombat = false;
 
@@ -229,13 +238,10 @@ public:
 	virtual void ClimbEnd();
 	void AttackImpact();
 
-	UFUNCTION()
-	void OnHit(EDamageResponse Response)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OUCH!"));
-	}
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHit(EDamageResponse Response);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent)
 	void Die();
 
 	void GameOver();
@@ -306,6 +312,8 @@ public:
 
 
 public:
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* FootStepVFX;
 	UFUNCTION(BlueprintCallable)
 	void FootStepEffect(FName SocketName);
 

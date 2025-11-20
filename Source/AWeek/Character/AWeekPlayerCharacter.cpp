@@ -7,6 +7,7 @@
 #include "Stamina/AWeekStaminaComponent.h"
 #include "../Player/Hunger/AWeekHungerComponent.h"
 #include "../Player/Weapon/AWeekWeaponComponent.h"
+#include "Perception/AISense_Hearing.h"
 
 #include "../System/DamageSystemComponent.h"
 #include "../Input/AWeekGameInput.h"
@@ -90,6 +91,8 @@ void AAWeekPlayerCharacter::BeginPlay()
 
 	PlayerInventoryComponent->OnEncumberedStatusChanged.AddUObject(this, &AAWeekPlayerCharacter::OnEncumbered);
 	PlayerInventoryComponent->SelectItemInHotBar(0);
+
+	mAnimInst = Cast<UAWeekPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	
 	/* Initialize crafting component */
 	CraftingComponent->InitializeCraftingComponent();
@@ -104,26 +107,11 @@ void AAWeekPlayerCharacter::BeginPlay()
 		Subsystem->AddMappingContext(InputCDO->mContext, 0);
 	}
 
-	mAnimInst = Cast<UAWeekPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	mWeapon->ChangeWeapon(TEXT("Default"));
 
 	mDamageSystem->OnDamageResponse.AddDynamic(this, &AAWeekPlayerCharacter::OnHit);
 	mDamageSystem->OnDeath.AddDynamic(this, &AAWeekPlayerCharacter::Die);
-
-	DayChangedHandle = UGameEventMessageSubsystem::Get(this).RegisterListener<FDayChangedMessage>(
-		FGameplayTag::RequestGameplayTag(FName("Event.DayChanged")),
-		[this](FGameplayTag Channel, const FDayChangedMessage& Msg)
-		{
-			if (Msg.bIsDay)
-			{
-				UE_LOG(LogTemp, Log, TEXT("Good Morning!"));
-			}
-			else
-			{
-				UE_LOG(LogTemp, Log, TEXT("Good Night!"));
-			}
-		}
-	);
+	
 }
 
 // Called every frame
@@ -148,6 +136,25 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 			mSprintTime += DeltaTime;
 		}
 	}
+
+	if (mHunger->IsOnHungerState(EHungerState::Healthy))
+	{
+		mDamageSystem->Execute_Heal(this, 5 * DeltaTime);
+	}
+	else if (mHunger->IsOnHungerState(EHungerState::Fainting))
+	{
+		FDamageInfo Info;
+		Info.Amount = 10 * DeltaTime;
+		mDamageSystem->Execute_TakeDamage(this, Info);
+	}
+
+	FHPChangedHandle Msg;
+	Msg.HP = mDamageSystem->Execute_GetCurrentHealth(this);
+	Msg.MaxHP = mDamageSystem->Execute_GetMaxHealth(this);
+	UGameEventMessageSubsystem::Get(this).BroadcastMessage(
+		FGameplayTag::RequestGameplayTag(FName("Event.HPChanged")),
+		Msg);
+
 
 	if (bIsCombat)
 	{
@@ -178,6 +185,7 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+
 	if (mAnimInst->GetPlayerMoveState() == EPlayerMoveState::Ledge)
 	{
 		if (!mStamina->UseStamina(EStaminaUseType::Ledge))
@@ -395,6 +403,7 @@ void AAWeekPlayerCharacter::SprintStart()
 		mStamina->GetStamina() < mSprintMinimumStamina ||
 		!mPakour->bCanPakour ||
 		bIsCombat ||
+		mAnimInst->IsAnyMontagePlaying() ||
 		mHunger->IsOnHungerState(EHungerState::Starving))
 		return;
 	GetCharacterMovement()->MaxWalkSpeed *= mSprintSpeedIncRate;
@@ -468,13 +477,13 @@ void AAWeekPlayerCharacter::WeaponReload()
 void AAWeekPlayerCharacter::TakeSomeFood()
 {
 	mAnimInst->PlayMontageByName(TEXT("Drink"));
-	GetCharacterMovement()->MaxWalkSpeed *= mBusySpeedDecRate;
+	//GetCharacterMovement()->MaxWalkSpeed *= mBusySpeedDecRate;
 }
 
 void AAWeekPlayerCharacter::Heal()
 {
 	mHunger->ChangeHunger(30.f);
-	GetCharacterMovement()->MaxWalkSpeed = mWalkSpeed;
+	//GetCharacterMovement()->MaxWalkSpeed = mWalkSpeed;
 }
 
 void AAWeekPlayerCharacter::VaultStart()
@@ -583,15 +592,14 @@ void AAWeekPlayerCharacter::AttackImpact()
 			{
 				FDamageInfo DamageInfo;
 				DamageInfo.Amount = mWeapon->GetWeaponDamage();
+				DamageInfo.HitInfo.ImpactPoint = Hit.ImpactPoint;
+				DamageInfo.HitInfo.ImpactNormal = Hit.ImpactNormal;
+				DamageInfo.HitInfo.BoneName = Hit.BoneName;
+				DamageInfo.HitInfo.HitComponent = Hit.GetComponent();
 				IDamageAble::Execute_TakeDamage(HitActor, DamageInfo);
 			}
 		}
 	}
-}
-
-void AAWeekPlayerCharacter::Die()
-{
-	mAnimInst->PlayMontageByName(TEXT("Die"));
 }
 
 void AAWeekPlayerCharacter::GameOver()
@@ -599,6 +607,7 @@ void AAWeekPlayerCharacter::GameOver()
 	APlayerController* PC = GetController<APlayerController>();
 	if (PC)
 	{
+		// MUST BE CHANGED !!
 		DisableInput(PC);
 	}
 }
@@ -606,7 +615,16 @@ void AAWeekPlayerCharacter::GameOver()
 void AAWeekPlayerCharacter::FootStepEffect(FName SocketName)
 {
 	FVector	Position = GetMesh()->GetSocketLocation(SocketName);
-	UNiagaraSystem* FootStepVFX = LoadObject<UNiagaraSystem>(GetWorld(), TEXT("/Script/Niagara.NiagaraSystem'/Game/ThirdParty/A_Surface_Footstep/Niagara_FX/ParticleSystems/PSN_General1_Surface.PSN_General1_Surface'"));
+
+	UAISense_Hearing::ReportNoiseEvent(
+		GetWorld(),          // World Context
+		Position,  // Noise Location
+		0.5f,                 // Loudness (0~1)
+		this,                // Instigator
+		0.f,                 // MaxAge (0 = default)
+		TEXT("PlayerFootstep")  // Tag (optional)
+	);
+
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FootStepVFX, Position);
 }
 

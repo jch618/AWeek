@@ -11,6 +11,7 @@
 
 class UGridTriggerBoxComponent;
 class UBoxComponent;
+class AGridPlacedActor;
 UCLASS(ClassGroup=(Custom), BlueprintType, Blueprintable)
 class AWEEK_API APreviewObject : public AActor
 {
@@ -30,7 +31,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-
+	
 	
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;

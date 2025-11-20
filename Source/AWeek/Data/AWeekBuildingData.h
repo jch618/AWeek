@@ -35,6 +35,9 @@ struct FAWeekBuildingData : public FTableRowBase
 	UPROPERTY(EditAnywhere, Category = "Building Data")
 	UTexture2D* Image;
 
+	/*UPROPERTY(EditAnywhere, Category = "Building Data")
+	TObjectPtr<UMaterialInterface> IconMaterial;*/
+
 	UPROPERTY(EditAnywhere, Category = "Building Data")
 	EBuildingType Type;
 

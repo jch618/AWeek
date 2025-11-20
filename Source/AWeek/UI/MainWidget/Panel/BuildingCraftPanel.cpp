@@ -34,6 +34,7 @@ void UBuildingCraftPanel::UpdateData(const FAWeekBuildingData* Data)
 	if (bCheck){UpdateItemCount(); return;}
 	if (Data == nullptr){UpdateItemCount();}
 	BuildingName->SetText(FText::FromName(Data->ID));
+	//BuildingIcon->SetBrushFromMaterial(Data->IconMaterial);
 	BuildingIcon->SetBrushFromTexture(Data->Image);
 	//BuildingText->SetText(FText::FromString(Data->BuildingText));
 	ApplyText(Data->BuildingText);

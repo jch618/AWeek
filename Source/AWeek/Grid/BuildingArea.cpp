@@ -4,6 +4,7 @@
 #include "AWeek/Grid/BuildingArea.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "GridPlacedSubsystem.h"
 
 
 // Sets default values
@@ -31,7 +32,13 @@ ABuildingArea::ABuildingArea()
 void ABuildingArea::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (UWorld* World = GetWorld())
+	{
+		if (UGridPlacedSubsystem* GridPlacedSubsystem = World->GetSubsystem<UGridPlacedSubsystem>())
+		{
+			GridPlacedSubsystem->BuildingArea = this;
+		}
+	}
 }
 
 // Called every frame
@@ -41,7 +48,13 @@ void ABuildingArea::Tick(float DeltaTime)
 
 }
 
-void ABuildingArea::ActiveArea(){
-
+void ABuildingArea::ActiveArea(bool bActive){
+	if (bActive)
+	{
+		Mesh->SetMaterial(0, Material);
+	}else
+	{
+		Mesh->SetMaterial(0, AlphaMaterial);
+	}
 }
 

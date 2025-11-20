@@ -8,7 +8,7 @@
 #include "AWeek/UI/Building/BuildingWheelPanel.h"
 #include "AWeek/UI/MainWidget/Panel/BuildingCraftPanel.h"
 #include "AWeek/UI/Building/PreviewObjectWidget.h"
-
+#include "BuildingArea.h"
 
 void UGridPlacedSubsystem::StartPlacement(TSubclassOf<APreviewObject> PreviewClass, APlayerController* ForPC, UBuildingWheelPanel* CraftPanel)
 {
@@ -43,7 +43,7 @@ void UGridPlacedSubsystem::StartPlacement(TSubclassOf<APreviewObject> PreviewCla
     PreviewActor = NewPreview;
     bActive = true;
     UE_LOG(LogTemp, Log, TEXT("Preview Object5"));
-
+    ActiveBuildingGrid(true);
     //UIWidget 스폰
     if (UClass* Cls = GridWidgetClass.LoadSynchronous())   
     {
@@ -72,6 +72,7 @@ void UGridPlacedSubsystem::StopPlacement()
         //BuildingCraftPanel->OnDeactivated();
         BuildingCraftPanel.Reset();
     }
+    ActiveBuildingGrid(false);
     HideGridUI();
 }
 //LeftClick
@@ -81,6 +82,7 @@ void UGridPlacedSubsystem::ConfirmPlacement()
     if (!PreviewActor.IsValid()) return;
     
     PreviewActor->PlaceActor(ParentUnderCursor.Get());
+    PlacedActors.Add(ParentUnderCursor.Get());
     //TODO Inventory Item Remove
     BuildingCraftPanel->RemoveItem();
     
@@ -176,4 +178,23 @@ void UGridPlacedSubsystem::HideGridUI()
         GridUI->DeactivateWidget();         // 숨김 (필요하면 Remove/Pop도 가능)
     }
 }
+
+void UGridPlacedSubsystem::ActiveBuildingGrid(bool bCheck)
+{
+    if (BuildingArea)
+    {
+        BuildingArea->ActiveArea(bCheck);
+    }
+    for (AGridPlacedActor* Actor : PlacedActors)
+    {
+        Actor->ChangeGridView(bCheck);
+    }
+}
+
+void UGridPlacedSubsystem::RemoveActor(AGridPlacedActor* Actor)
+{
+    PlacedActors.Remove(Actor);
+}
+
+
 

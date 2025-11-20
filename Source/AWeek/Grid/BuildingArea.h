@@ -21,15 +21,18 @@ protected:
 	virtual void BeginPlay() override;
 
 UPROPERTY(VisibleAnywhere)
-TObjectPtr<UStaticMeshComponent> Mesh;
+	TObjectPtr<UStaticMeshComponent> Mesh;
 
-UPROPERTY(VisibleAnywhere)
-TObjectPtr<UMaterialInterface> Material;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UMaterialInterface> Material;
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* AlphaMaterial;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void ActiveArea();
+	void ActiveArea(bool bActive);
+	
 
 };

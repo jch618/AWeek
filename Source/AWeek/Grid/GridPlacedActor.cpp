@@ -2,6 +2,8 @@
 
 
 #include "GridPlacedActor.h"
+
+#include "GridPlacedSubsystem.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "GeometryCollection/GeometryCollectionObject.h"
 #include "TimerManager.h"
@@ -150,7 +152,14 @@ void AGridPlacedActor::BrokeStructure()
 {
 	bActive = false;
 	UE_LOG(LogTemp, Log, TEXT("BrokeStructure start"));
-
+	//Remove GridPlacedSubsystem
+	if (UWorld* World = GetWorld())
+	{
+		if (UGridPlacedSubsystem* GridPlacedSubsystem = World->GetSubsystem<UGridPlacedSubsystem>())
+		{
+			GridPlacedSubsystem->RemoveActor(this);
+		}
+	}
 
 	// 붕괴 가능 상태로 전환
 	GeoComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -232,6 +241,18 @@ FVector AGridPlacedActor::GetLinkWorldPosition()
 	
 	return  FVector(Box.Origin.X, Box.Origin.Y, Box.BoxExtent.Z +Box.Origin.Z);
 }
+
+void AGridPlacedActor::ChangeGridView(bool bCheck)
+{
+	if (bCheck)
+	{
+		BoxMesh->SetMaterial(0, AlaphaMaterial);
+	}else
+	{
+		BoxMesh->SetMaterial(0, Material);
+	}
+}
+
 
 
 

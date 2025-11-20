@@ -4,6 +4,7 @@
 #include "AWeek/Grid/PreviewObject.h"
 #include "AWeek/Grid/GridTriggerBoxComponent.h"
 #include "Components/BoxComponent.h"
+#include "AWeek/Grid/GridPlacedActor.h"
 
 // Sets default values
 APreviewObject::APreviewObject()

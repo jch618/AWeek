@@ -51,7 +51,7 @@ void UBuildingPanel::SetActive()
 			{
 				UE_LOG(LogTemp, Log, TEXT("No HierBox Selected"));
 			}
-			Btn->SetImage(Row->Image);
+			//Btn->SetImage(Row->Image);
 			Btn->SetName(FText::FromName(RowName));
 			
 			Btn->OnClicked().AddWeakLambda(this, [this, Btn, RowName]()

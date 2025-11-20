@@ -33,6 +33,8 @@ public:
 protected:
 	UPROPERTY(meta=(BindWidget))
 	UCommonActivatableWidgetSwitcher* WidgetSwitcher;
+	/*UPROPERTY(meta=(BindWidget))
+	UCommonActivatableWidgetSwitcher* NotionSwitcher;*/
 
 	UPROPERTY(meta=(BindWidget))
 	UBuildingWheelPanel* BaseBuildingWheelPanel;

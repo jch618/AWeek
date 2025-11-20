@@ -11,7 +11,7 @@
 #include "AWeek/Grid/GridPlacedSubsystem.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "AWeek/UI/Building/BuildingNotionPanel.h"
 
 void UBuildingWheelPanel::NativePreConstruct()
 {
@@ -68,6 +68,7 @@ void UBuildingWheelPanel::NativePreConstruct()
 		if (Row->Image)
 		{
 			ImageWidget->SetBrushFromTexture(Row->Image);
+			//ImageWidget->SetBrushFromMaterial(Row->IconMaterial);
 		}
 		
 	}
@@ -117,6 +118,35 @@ void UBuildingWheelPanel::TickCount(float angle)
 	{
 		PreIndex = Index;
 		UpdateData(Index);
+		NotionSwitcher->SetActiveWidgetIndex(Index);
+		UWidget* Active = NotionSwitcher->GetWidgetAtIndex(Index);
+		if (!Active)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Active widget is null"));
+			return;
+		}
+		UBuildingNotionPanel* BuildingNotionPanel = Cast<UBuildingNotionPanel>(Active);
+		if (BuildingNotionPanel)
+		{
+			if (!BuildingRows.IsValidIndex(Index))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("BuildingRows invalid index: %d"), Index);
+				//PreviewObjectClass = nullptr;
+				return;
+			}
+			const FDataTableRowHandle& Handle = BuildingRows[Index];
+			//NULL Check
+			if (Handle.DataTable == nullptr || Handle.RowName.IsNone())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("BuildingRows[%d] has no valid DataTable or RowName"), Index);
+				//PreviewObjectClass = nullptr;
+				return;
+			}
+		
+			const FAWeekBuildingData* Row = Handle.GetRow<FAWeekBuildingData>(TEXT("MyBuildingWidget"));
+			
+			BuildingNotionPanel->UpdateData(Row);
+		}
 	}
 }
 
@@ -151,7 +181,9 @@ void UBuildingWheelPanel::ActiveWheel()
 	}
 		
 	const FAWeekBuildingData* Row = Handle.GetRow<FAWeekBuildingData>(TEXT("MyBuildingWidget"));*/
-
+	UWidget* Widget = NotionSwitcher->GetWidgetAtIndex(Index);
+	UBuildingNotionPanel* NotionPanel = Cast<UBuildingNotionPanel>(Widget);
+	if (!NotionPanel->bTrue){return;}
 	if (CheckItem && PreviewObjectClass)
 	{
 		//TODO GridSystem

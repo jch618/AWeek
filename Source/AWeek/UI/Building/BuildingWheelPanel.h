@@ -12,6 +12,7 @@
 /**
  * 
  */
+class UCommonActivatableWidgetSwitcher;
 class UCommonLazyImage;
 class UBuildingSelectWidget;
 struct FAWeekBuildingData;
@@ -45,6 +46,8 @@ protected:
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> CanvasPanel;
+	UPROPERTY(meta=(BindWidget))
+	UCommonActivatableWidgetSwitcher* NotionSwitcher;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Images")
 	TArray<TObjectPtr<UCommonLazyImage>> Images;

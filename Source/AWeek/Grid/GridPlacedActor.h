@@ -48,6 +48,8 @@ protected:
 	UStaticMesh* BoxMeshApply;
 	UPROPERTY(EditAnywhere, Category="Components")
 	UMaterialInterface* Material;
+	UPROPERTY(EditAnywhere, Category="Components")
+	UMaterialInterface* AlaphaMaterial;
 
 	UPROPERTY(EditAnywhere, Category="BuildingStat")
 	FBuildingStat BuildingStat;
@@ -89,6 +91,8 @@ public:
 
 	void Damage(float Damage);
 
+	void ChangeGridView(bool bCheck);
+	
 	bool bActive = true;
 
 	FVector WorldTopPosition = FVector::ZeroVector;

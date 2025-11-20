@@ -17,6 +17,7 @@ class UBuildingWheelPanel;
 class UAWeekActivatableWidget;
 class UBuildingCraftPanel;
 class UPreviewObjectWidget;
+class ABuildingArea;
 UCLASS()
 class AWEEK_API UGridPlacedSubsystem : public UWorldSubsystem, public FTickableGameObject
 {
@@ -34,11 +35,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float GridSize = 100.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) float TraceDistance = 10000.f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<class AGridPlacedActor* > PlacedActors;
+
+	UPROPERTY()
+	ABuildingArea* BuildingArea;
+
+	
 	// Tickable
 	virtual void Tick(float DeltaTime) override;
 	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(UGridPlacementSubsystem, STATGROUP_Tickables); }
 	virtual bool IsTickable() const override { return bActive && PreviewActor != nullptr && OwnerPC.IsValid(); }
 
+	void RemoveActor(AGridPlacedActor* Actor);
+	
 private:
 	bool bActive = false;
 	TWeakObjectPtr<APlayerController> OwnerPC;
@@ -55,4 +65,8 @@ private:
 	bool UpdatePreview();                    // 디프로젝션+레이캐스트+스냅
 	FVector SnapToGrid(const FVector& P) const;
 	void SnapPreviewToSurface();
+
+	void ActiveBuildingGrid(bool bCheck);
+
+	
 };

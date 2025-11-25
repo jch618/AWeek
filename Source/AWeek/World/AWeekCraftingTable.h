@@ -17,6 +17,10 @@ class AWEEK_API AAWeekCraftingTable : public AActor, public IAWeekInteractionInt
 public:	
 	AAWeekCraftingTable();
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
 	void BeginFocus() override;
 	void EndFocus() override;
 	void BeginInteract() override;
@@ -32,12 +36,13 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Crafting Table | Initialization")
 	float CraftingTableExitRadius;
-	
-	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnCraftingTableRadiusExit(UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
+
+	UPROPERTY(EditAnywhere, Category = "Crafting Table")
+	int32 CraftingTableLevel;
 };

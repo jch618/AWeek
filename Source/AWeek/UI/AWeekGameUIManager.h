@@ -53,16 +53,11 @@ public:
 	void ToggleInventoryHub(EAWeekInventoryHubPanel DisplayPanel);
 	void ToggleMainWidget();
 	void ToggleBuildingWidget();
-	// void ToggleChestInventory(TObjectPtr<UAWeekInventoryComponent> ChestInventory);
-	//
-	// void ToggleCraftingMainPanel(TObjectPtr<UAWeekCraftingComponent> CraftingComponent, const TObjectPtr<UAWeekInventoryComponent> InventoryComponent);
-
 
 	void PreviewObjectRotateL();
 	void PreviewObjectRotateR();
-	
-	// void UpdateInteractionWidget(const FAWeekInteractableData* InteractableData);
-	
+
+	void OpenCraftingPanel(int32 CraftingLevel);
 	void CloseChestInventory();
 	
 	FORCEINLINE UAWeekInventoryController* GetInventoryController() const { return InventoryController; }

@@ -15,6 +15,7 @@ class UAWeekInventoryComponent;
 class UAWeekItemBase;
 
 DECLARE_MULTICAST_DELEGATE(FOnCraftingFinished)
+DECLARE_MULTICAST_DELEGATE(FOnCraftingLevelChanged);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AWEEK_API UAWeekCraftingComponent : public UActorComponent
@@ -26,6 +27,7 @@ public:
 	//	PROPERTIES & VARIABLES
 	//================================================================
 	FOnCraftingFinished OnCraftingFinished;
+	FOnCraftingLevelChanged OnCraftingLevelChanged;
 
 	//================================================================
 	//	FUNCTIONS
@@ -34,14 +36,18 @@ public:
 
 	void InitializeCraftingComponent();
 
-	FORCEINLINE const TArray<FAWeekCachedCraftingRecipe>& GetCachedCraftingRecipes() const { return CachedCraftingRecipes; } 
-	FORCEINLINE bool GetRecipeAt(int32 RecipeIndex, FAWeekCachedCraftingRecipe& Recipe) const;
-
+	FORCEINLINE const TArray<FAWeekCachedCraftingRecipe>& GetCachedCraftingRecipes() const { return CachedCraftingRecipes; }
+	bool GetRecipeAt(int32 RecipeIndex, FAWeekCachedCraftingRecipe& Recipe) const;
+	
+	TArray<int32> GetAvailableRecipes() const;
 	bool TryCraftRecipe(int32 RecipeIndex);
 	
 	bool CanCraft(int32 RecipeIndex);
 	bool CanCraft(const FAWeekItemCraftingRecipe& CraftingRecipe);
 	bool CanCraft(const FAWeekCachedCraftingRecipe& CachedCraftingRecipe);
+
+	void SetCraftingLevel(int32 InCraftingLevel);
+	
 
 	void UpdateInventoryCounts();
 protected:
@@ -57,21 +63,25 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Crafting")
 	TArray<FAWeekCachedCraftingRecipe> CachedCraftingRecipes;
 	
+	UPROPERTY()
+	int32 CurrentCraftingLevel;
+	
 	// (ItemID, Count)
 	UPROPERTY(VisibleAnywhere, Category = "Crafting")
 	TMap<FName, int32> InventoryItemCounts;
-	
+
 	UPROPERTY(VisibleAnywhere, Category = "Crafting")
 	TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter;
 
 	UPROPERTY(VisibleAnywhere, Category = "Crafting")
 	TObjectPtr<UAWeekPlayerInventoryComponent> PlayerInventoryComponent;
+	
 	//================================================================
 	//	FUNCTIONS
 	//================================================================
-
 	bool TryConsumeIngredients(const TArray<FAWeekItemEntry>& IngredientItemEntries);
 	UAWeekItemBase* CreateCraftedItem(const FAWeekItemEntry& CraftedItemEntry);
+	
 private:
 	void CacheCraftingRecipes();
 	void LoadCraftingRecipeData();

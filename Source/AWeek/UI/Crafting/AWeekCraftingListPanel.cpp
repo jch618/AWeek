@@ -27,16 +27,23 @@ void UAWeekCraftingListPanel::RefreshCraftingList()
 	if (IsValid(CraftingComponent) && GridPanel)
 	{
 		GridPanel->ClearChildren();
-
-		const TArray<FAWeekCachedCraftingRecipe>& CachedCraftingRecipes = CraftingComponent->GetCachedCraftingRecipes();
-		for (int i = 0; i < CachedCraftingRecipes.Num(); i++)
-		{		
+		
+		TArray<int32> AvailableRecipes = CraftingComponent->GetAvailableRecipes();
+		for (int i = 0; i < AvailableRecipes.Num(); i++)
+		{
 			UAWeekCraftingItemSlot* ItemRecipeSlotWidget = CreateWidget<UAWeekCraftingItemSlot>(this, CraftingSlotClass);
 
-			bool bIsCraftable = CraftingComponent->CanCraft(i);
-			ItemRecipeSlotWidget->InitializeCraftingItemSlot(i,
-				CachedCraftingRecipes[i].CraftedItemEntry.ItemData,
-				CachedCraftingRecipes[i].CraftedItemEntry.Quantity,
+			int32 RecipeIndex = AvailableRecipes[i];
+			FAWeekCachedCraftingRecipe Recipe;
+			if (!CraftingComponent->GetRecipeAt(RecipeIndex, Recipe))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s: Fail to get recipe=%d"), *FString(__FUNCTION__), RecipeIndex);
+				continue;
+			}
+			bool bIsCraftable = CraftingComponent->CanCraft(RecipeIndex);
+			ItemRecipeSlotWidget->InitializeCraftingItemSlot(RecipeIndex,
+				Recipe.CraftedItemEntry.ItemData,
+				Recipe.CraftedItemEntry.Quantity,
 				bIsCraftable);
 
 			ItemRecipeSlotWidget->OnCraftingSlotLeftClicked.AddLambda([this](int32 RecipeIndex, bool bIsCraftable)

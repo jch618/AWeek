@@ -131,6 +131,7 @@ void UAWeekGameUIManager::CloseInventoryHub()
 		{
 			CloseChestInventory();
 		}
+		PlayerCharacter->GetCraftingComponent()->SetCraftingLevel(0);
 		InventoryHubWidget->DeactivateWidget();
 		InventoryController->ReturnHeldItemToInventory();
 	}
@@ -251,10 +252,10 @@ void UAWeekGameUIManager::PreviewObjectRotateR()
 	}
 }
 
-// void UAWeekGameUIManager::UpdateInteractionWidget(const FAWeekInteractableData* InteractableData)
-// {
-// 	InteractionWidget->UpdateWidget(InteractableData);
-// }
+void UAWeekGameUIManager::OpenCraftingPanel(int32 CraftingLevel)
+{
+	
+}
 
 void UAWeekGameUIManager::CloseChestInventory()
 {

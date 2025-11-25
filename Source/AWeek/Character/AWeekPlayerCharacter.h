@@ -267,7 +267,6 @@ public:
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); }
 	FORCEINLINE UAWeekPlayerInventoryComponent* GetPlayerInventoryComponent() const { return PlayerInventoryComponent; }
 	FORCEINLINE UAWeekCraftingComponent* GetCraftingComponent() const { return CraftingComponent; }
-
 	void UpdateInteractionWidget() const;
 	
 	void ToggleInventoryHub();

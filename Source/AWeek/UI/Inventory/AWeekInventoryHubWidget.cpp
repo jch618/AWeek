@@ -242,5 +242,7 @@ void UAWeekInventoryHubWidget::InitializeCraftingPanel()
 			CraftingListPanel, &UAWeekCraftingListPanel::RefreshCraftingList);
 		CraftingController->GetCraftingComponent()->OnCraftingFinished.AddUObject(
 			CraftingDetailPanel, &UAWeekCraftingDetailPanel::UpdateCraftButton);
+		CraftingController->GetCraftingComponent()->OnCraftingLevelChanged.AddUObject(
+			CraftingListPanel, &UAWeekCraftingListPanel::RefreshCraftingList);
 	}
 }

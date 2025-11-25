@@ -33,7 +33,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Item Slot", meta = (BindWidget))
 	TObjectPtr<UBorder> ItemBorder;
 
-	UPROPERTY(VisibleAnywhere, Category = "Item Slot", meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere, Category = "Item Slot", meta = (BindWidgetOptional))
 	TObjectPtr<UBorder> SelectionBorder;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item Slot")
@@ -45,9 +45,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Item Slot", meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantityText;
 
-	UPROPERTY(EditAnywhere, Category = "Item Slot", meta = (BindWidget))
+	UPROPERTY(EditAnywhere, Category = "Item Slot")
 	FLinearColor DefaultBorderColor = FLinearColor::Gray;
 	
-	UPROPERTY(EditAnywhere, Category = "Item Slot", meta = (BindWidget))
+	UPROPERTY(EditAnywhere, Category = "Item Slot")
 	FLinearColor HighlightedBorderColor = FLinearColor::Yellow;
 };

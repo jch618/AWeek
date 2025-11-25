@@ -28,18 +28,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
 	TSubclassOf<UAWeekInventoryHubWidget> InventoryHubWidgetClass;
 
-	// UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
-	// TSubclassOf<UAWeekPlayerHotBar> PlayerHotBarClass;
-
-	// UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
-	// TSubclassOf<UAWeekInventoryMainPanel> InventoryMainPanelClass;
-	//
-	// UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
-	// TSubclassOf<UAWeekCraftingMainPanel> CraftingMainPanelClass;
-
-	// UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
-	// TSubclassOf<UAWeekInteractionWidget> InteractionWidgetClass;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Widget Class")
 	TSubclassOf<UAWeekHeldItemVisual> HeldItemVisualClass;
 	

@@ -8,7 +8,7 @@
 #include "AWeek/Data/AWeekItemCraftingRecipe.h"
 #include "AWeek/Items/AWeekItemBase.h"
 
-UAWeekCraftingComponent::UAWeekCraftingComponent()
+UAWeekCraftingComponent::UAWeekCraftingComponent() : CurrentCraftingLevel(0)
 {
 	PrimaryComponentTick.bCanEverTick = false;	
 }
@@ -26,7 +26,7 @@ void UAWeekCraftingComponent::InitializeCraftingComponent()
 
 void UAWeekCraftingComponent::LoadCraftingRecipeData()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (IsValid(CraftingRecipesTable))
 	{
 		// Access all the rows in the data table
@@ -45,7 +45,7 @@ void UAWeekCraftingComponent::LoadCraftingRecipeData()
 
 bool UAWeekCraftingComponent::TryCraftRecipe(int32 RecipeIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (CachedCraftingRecipes.IsValidIndex(RecipeIndex))
 	{
 		const FAWeekCachedCraftingRecipe& Recipe = CachedCraftingRecipes[RecipeIndex];
@@ -53,8 +53,6 @@ bool UAWeekCraftingComponent::TryCraftRecipe(int32 RecipeIndex)
 			Recipe.CraftedItemEntry.ItemData.NumericData.Weight,
 			Recipe.CraftedItemEntry.Quantity))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s: Can't Craft Item because there is no space in inventory."),
-				*FString(__FUNCTION__));
 			return false;
 		}
 		if (TryConsumeIngredients(Recipe.IngredientItemEntries))
@@ -98,18 +96,16 @@ UAWeekItemBase* UAWeekCraftingComponent::CreateCraftedItem(const FAWeekItemEntry
 
 void UAWeekCraftingComponent::CacheCraftingRecipes()
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (IsValid(CraftingRecipesTable))
 	{
 		// Access all the rows in the data table
 		TArray<FAWeekItemCraftingRecipe*> CraftingRecipePointers;
 		CraftingRecipesTable->GetAllRows<FAWeekItemCraftingRecipe>(FString(), CraftingRecipePointers);
-
 		for (const FAWeekItemCraftingRecipe* Recipe : CraftingRecipePointers)
 		{
 			if (Recipe)
 			{
-				// UE_LOG(LogTemp, Warning, TEXT("%s: Cache recipe"), *FString(__FUNCTION__));
 				FAWeekCachedCraftingRecipe CachedCraftingRecipe;
 				
 				const FAWeekItemData* CraftedItemData = Recipe->CraftedItem.GetRow<FAWeekItemData>(Recipe->CraftedItem.RowName.ToString());
@@ -125,11 +121,16 @@ void UAWeekCraftingComponent::CacheCraftingRecipes()
 				CachedCraftingRecipe.OriginalRecipe = *Recipe;
 				CachedCraftingRecipe.CraftedItemEntry = CraftedItemEntry;
 				CachedCraftingRecipe.IngredientItemEntries = IngredientItemEntries;
+				CachedCraftingRecipe.CraftingLevel = Recipe->CraftingLevel;
 				CachedCraftingRecipe.bIsCacheValid = true;
 
 				CachedCraftingRecipes.Add(CachedCraftingRecipe);
 			}
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: Crafting Table is Invalid!"), *FString(__FUNCTION__));
 	}
 }
 
@@ -162,6 +163,15 @@ bool UAWeekCraftingComponent::CanCraft(const FAWeekCachedCraftingRecipe& CachedC
 	return true;
 }
 
+void UAWeekCraftingComponent::SetCraftingLevel(int32 InCraftingLevel)
+{
+	if (InCraftingLevel != CurrentCraftingLevel)
+	{
+		CurrentCraftingLevel = InCraftingLevel;
+		OnCraftingLevelChanged.Broadcast();
+	}
+}
+
 bool UAWeekCraftingComponent::CanCraft(int32 RecipeIndex)
 {
 	if (CachedCraftingRecipes.IsValidIndex(RecipeIndex))
@@ -185,11 +195,23 @@ void UAWeekCraftingComponent::UpdateInventoryCounts()
 
 bool UAWeekCraftingComponent::GetRecipeAt(int32 RecipeIndex, FAWeekCachedCraftingRecipe& Recipe) const
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s: Clicked RecipeIndex=%d"), *FString(__FUNCTION__), RecipeIndex);
 	if (CachedCraftingRecipes.IsValidIndex(RecipeIndex))
 	{
 		Recipe = CachedCraftingRecipes[RecipeIndex];
 		return true;
 	}
 	return false;
+}
+
+TArray<int32> UAWeekCraftingComponent::GetAvailableRecipes() const
+{
+	TArray<int32> AvailableIndices;
+	for (int32 i = 0; i < CachedCraftingRecipes.Num(); i++)
+	{
+		if (CachedCraftingRecipes[i].CraftingLevel <= CurrentCraftingLevel)
+		{
+			AvailableIndices.Add(i);
+		}
+	}
+	return AvailableIndices;
 }

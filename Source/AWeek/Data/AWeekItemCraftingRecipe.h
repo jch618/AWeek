@@ -26,18 +26,28 @@ USTRUCT()
 struct FAWeekItemCraftingRecipe : public FTableRowBase
 {
 	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, Category = "Crafting Recipe")
+	FDataTableRowHandle CraftedItem; 
 
-	// What the recipe produces
-	UPROPERTY(EditAnywhere, Category = "Recipe Output")
-	FDataTableRowHandle CraftedItem; // Use a Data Table Row Handle
-
-	UPROPERTY(EditAnywhere, Category = "Recipe Output")
+	UPROPERTY(EditAnywhere, Category = "Crafting Recipe")
 	int32 CraftedAmount;
 
-	UPROPERTY(EditAnywhere, Category = "Recipe Ingredients")
-	//FAWeekIngredientItemList IngredientItemList;
+	UPROPERTY(EditAnywhere, Category = "Crafting Recipe")
 	TArray<FAWeekRequiredIngredientItem> IngredientItems;
+
+	UPROPERTY(EditAnywhere, Category = "Crafting Recipe")
+	int32 CraftingLevel;
 };
+
+// USTRUCT()
+// struct FAWeekItemCraftingRecipeCSV
+// {
+// 	GENERATED_BODY()
+//
+// 	UPROPERTY(EditAnywhere, Category = "Crafting Recipe")
+// 	FString CraftedItem;
+// };
 
 USTRUCT()
 struct FAWeekCachedCraftingRecipe
@@ -53,5 +63,8 @@ struct FAWeekCachedCraftingRecipe
 	UPROPERTY()
 	TArray<FAWeekItemEntry> IngredientItemEntries;
 
+	UPROPERTY()
+	int32 CraftingLevel;
+	
 	bool bIsCacheValid = false;
 };

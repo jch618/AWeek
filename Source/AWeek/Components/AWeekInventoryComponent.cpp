@@ -124,7 +124,6 @@ bool UAWeekInventoryComponent::TryRemoveAmountOfItem(FName ItemID, int32 Desired
 		}
 		else
 		{
-			// TODO: restore removed items
 			return false;
 		}
 	}

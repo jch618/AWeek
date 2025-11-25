@@ -3,6 +3,7 @@
 
 #include "AWeek/World/AWeekCraftingTable.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
+#include "AWeek/Components/AWeekCraftingComponent.h"
 #include "Components/SphereComponent.h"
 
 AAWeekCraftingTable::AAWeekCraftingTable() : CraftingTableExitRadius(225.0f)
@@ -16,6 +17,12 @@ AAWeekCraftingTable::AAWeekCraftingTable() : CraftingTableExitRadius(225.0f)
 	CraftingTableExitSphere = CreateDefaultSubobject<USphereComponent>("Sphere");
 	CraftingTableExitSphere->SetupAttachment(RootComponent);
 	CraftingTableExitSphere->InitSphereRadius(CraftingTableExitRadius);
+}
+
+void AAWeekCraftingTable::BeginPlay()
+{
+	Super::BeginPlay();
+	CraftingTableExitSphere->OnComponentEndOverlap.AddDynamic(this, &AAWeekCraftingTable::OnCraftingTableRadiusExit);
 }
 
 void AAWeekCraftingTable::BeginFocus()
@@ -46,6 +53,7 @@ void AAWeekCraftingTable::Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerChara
 {
 	if (IsValid(PlayerCharacter))
 	{
+		PlayerCharacter->GetCraftingComponent()->SetCraftingLevel(CraftingTableLevel);
 		PlayerCharacter->ToggleCraftingPanel();
 	}
 }
@@ -53,18 +61,18 @@ void AAWeekCraftingTable::Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerChara
 void AAWeekCraftingTable::OnCraftingTableRadiusExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s: OnCraftingTableRadiusExit"), *FString(__FUNCTION__));
 	if (OtherActor->IsA(AAWeekPlayerCharacter::StaticClass()))
 	{
 		AAWeekPlayerCharacter* PlayerCharacter = Cast<AAWeekPlayerCharacter>(OtherActor);
 		if (IsValid(PlayerCharacter))
 		{
-			PlayerCharacter->CloseCraftingPanel();
+			PlayerCharacter->GetCraftingComponent()->SetCraftingLevel(0);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s: PlayerCharacter is invalid!"), *FString(__FUNCTION__));
 		}
 	}
 }
 
-void AAWeekCraftingTable::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}

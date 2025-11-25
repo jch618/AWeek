@@ -32,6 +32,9 @@ struct FAWeekPanelContext
 	UPROPERTY()
 	TObjectPtr<UAWeekCraftingComponent> CraftingComponent = nullptr;
 
+	UPROPERTY()
+	int32 CraftingTableLevel = 0;
+
 	FAWeekPanelContext() = default;
 	
 	static FAWeekPanelContext ForChest(TObjectPtr<UAWeekInventoryComponent> ChestInventoryComponent)

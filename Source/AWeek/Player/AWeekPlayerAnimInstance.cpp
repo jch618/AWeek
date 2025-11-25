@@ -127,6 +127,16 @@ UAnimMontage* UAWeekPlayerAnimInstance::FindAnimMontage(const FName& Name)
 	return Montage->Get();
 }
 
+void UAWeekPlayerAnimInstance::PlayMontageByName(FName Name, float PlayRate)
+{
+	UAnimMontage* Montage = FindAnimMontage(Name);
+	if (Montage)
+	{
+		mOwner->EndFire();
+		Montage_Play(Montage, PlayRate);
+	}
+}
+
 void UAWeekPlayerAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupted)
 {
 	if (Montage == FindAnimMontage(TEXT("Vault")))

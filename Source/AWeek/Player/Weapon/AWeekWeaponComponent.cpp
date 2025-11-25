@@ -55,7 +55,6 @@ void UAWeekWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 	if (bIsFiring && mCurrentBullet > 0 && mWeaponType == EWeaponType::Ranged)
 	{
-		// �߻� ���� ��� (RPS)
 		float FireInterval = 1.f / mFireRate;
 		if (mTimeSinceLastShot >= FireInterval)
 		{

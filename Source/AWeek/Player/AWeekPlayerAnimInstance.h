@@ -127,14 +127,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void PlayMontageByName(FName Name, float PlayRate = 1.0f)
-	{
-		UAnimMontage* Montage = FindAnimMontage(Name);
-		if (Montage)
-		{
-			Montage_Play(Montage, PlayRate);
-		}
-	}
+	void PlayMontageByName(FName Name, float PlayRate = 1.0f);
 
 	void StopMontageByName(FName Name, float BlendRate = 1.0f)
 	{

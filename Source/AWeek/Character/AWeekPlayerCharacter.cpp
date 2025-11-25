@@ -378,6 +378,8 @@ void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 
 void AAWeekPlayerCharacter::StartFire()
 {
+	if (mAnimInst->IsAnyMontagePlaying())
+		return;
 	if (mWeapon->GetWeaponType() != EWeaponType::Ranged)
 		return;
 	mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Aiming);
@@ -389,6 +391,7 @@ void AAWeekPlayerCharacter::StartFire()
 
 void AAWeekPlayerCharacter::EndFire()
 {
+	UE_LOG(LogTemp, Warning, TEXT("EndFireCalled"));
 	if (!bIsZooming)
 		mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
 	mWeapon->EndFire();
@@ -475,6 +478,8 @@ void AAWeekPlayerCharacter::WeaponReload()
 
 void AAWeekPlayerCharacter::TakeSomeFood()
 {
+	if (mAnimInst->IsAnyMontagePlaying())
+		return;
 	mAnimInst->PlayMontageByName(TEXT("Drink"));
 	//GetCharacterMovement()->MaxWalkSpeed *= mBusySpeedDecRate;
 }

@@ -3,6 +3,7 @@
 
 #include "AWeekWeaponProjectile.h"
 #include "../../System/DamageSystemComponent.h"
+#include "AWeek/System/GameEventMessageSubsystem.h"
 
 // Sets default values
 AAWeekWeaponProjectile::AAWeekWeaponProjectile()
@@ -57,6 +58,13 @@ void AAWeekWeaponProjectile::ProjectileStop(const FHitResult& Hit)
 		FDamageInfo DamageInfo;
 		DamageInfo.Amount = mDamage;
 		IDamageAble::Execute_TakeDamage(Hit.GetActor(), DamageInfo);
+	}
+
+	if (Hit.GetActor()->ActorHasTag("Enemy"))
+	{
+		FEmptyPayload EmptyPayload;
+		UGameEventMessageSubsystem::Get(this).BroadcastMessage(
+	FGameplayTag::RequestGameplayTag(TEXT("Event.Hit.Enemy")), EmptyPayload);
 	}
 
 	Destroy();

@@ -7,6 +7,8 @@
 #include "Components/TextBlock.h"
 #include "Components/EditableTextBox.h"
 #include "Components/Button.h"
+#include "CommonUIExtensions.h"
+
 
 
 
@@ -72,8 +74,7 @@ void UAWeekGameOverPanel::HandleSubmitScoreClicked()
     if (ScoreSubsystem)
     {
         ScoreSubsystem->SaveRankEntry(PlayerName);
-        UE_LOG(LogTemp, Log, TEXT("Saved Score: %d, KillCount: %d, Day: %d, Player: %s"),
-            CurrentScore, CurrentKillCount, CurrentDay, *PlayerName);
+
     }
 
     if (SubmitScoreButton)
@@ -82,6 +83,32 @@ void UAWeekGameOverPanel::HandleSubmitScoreClicked()
     }
     DeactivateWidget();
     RemoveFromParent();
+
+    //if (RankingPanelClass && GetOwningPlayer())
+    //{
+    //    ULocalPlayer* LocalPlayer = GetOwningPlayer()->GetLocalPlayer();
+    //    if (LocalPlayer)
+    //    {
+    //        UCommonActivatableWidget* Widget = UCommonUIExtensions::PushContentToLayer_ForPlayer(
+    //            LocalPlayer,
+    //            FGameplayTag::RequestGameplayTag(TEXT("UI.Layer.Menu")),
+    //            RankingPanelClass
+    //        );
+    //    }
+    //}
+
+    if (RankingMain && GetOwningPlayer())
+    {
+        ULocalPlayer* LocalPlayer = GetOwningPlayer()->GetLocalPlayer();
+        if (LocalPlayer)
+        {
+            UCommonActivatableWidget* Widget = UCommonUIExtensions::PushContentToLayer_ForPlayer(
+                LocalPlayer,
+                FGameplayTag::RequestGameplayTag(TEXT("UI.Layer.Menu")),
+                RankingMain
+            );
+        }
+    }
 }
 
 void UAWeekGameOverPanel::HandleTextChanged(const FText& Text)

@@ -22,6 +22,9 @@ struct FRankEntry
 
     UPROPERTY()
     int32 ZombieKillCount;
+
+    UPROPERTY()
+    FGuid EntryID;
 };
 
 UCLASS()

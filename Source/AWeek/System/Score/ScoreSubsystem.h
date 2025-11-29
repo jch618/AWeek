@@ -60,8 +60,20 @@ public:
     UPROPERTY(BlueprintAssignable)
     FOnScoreChanged OnScoreChanged;
 
+    UPROPERTY()
+    FGuid CurrentRunID;
+
 private:
     FGameEventMessageListenerHandle DayChangedListenerHandle;
 
     void OnDayChanged(const FDayChangedMessage& Msg);
+
+public:
+    // TODO : Call It When New Game Level Started
+    UFUNCTION(BlueprintCallable)
+    void StartNewRun();
+    UFUNCTION(BlueprintCallable)
+    int32 GetRank(const FGuid& EntryID) const;
+    UPROPERTY()
+    TMap<FGuid, int32> EntryRankMap;
 };

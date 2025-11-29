@@ -7,6 +7,8 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
+#include "AWeekRankingPanel.h"
+#include"AWeekRankingMain.h"
 #include "AWeekGameOverPanel.generated.h"
 
 
@@ -35,6 +37,12 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> SubmitScoreButton;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Ranking")
+    TSubclassOf<UAWeekRankingPanel> RankingPanelClass;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Ranking")
+    TSubclassOf<UAWeekRankingMain> RankingMain;
 
 private:
     UFUNCTION()

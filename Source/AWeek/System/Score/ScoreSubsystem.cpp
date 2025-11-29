@@ -75,6 +75,7 @@ void UScoreSubsystem::SaveRankEntry(const FString& Name)
     NewEntry.Score = CurrentEntry.Score;
     NewEntry.ZombieKillCount = CurrentEntry.ZombieKillCount;
     NewEntry.Day = CurrentEntry.Day;
+    NewEntry.EntryID = CurrentRunID;
 
     Data->RankList.Add(NewEntry);
 
@@ -86,20 +87,51 @@ void UScoreSubsystem::SaveRankEntry(const FString& Name)
     UGameplayStatics::SaveGameToSlot(Data, RANK_SAVE_SLOT, SAVE_INDEX);
 
     CurrentEntry = FCurrentScoreEntry{};
+
 }
 
 TArray<FRankEntry> UScoreSubsystem::LoadRankList()
 {
+    TArray<FRankEntry> RankList;
+
     if (UGameplayStatics::DoesSaveGameExist(RANK_SAVE_SLOT, SAVE_INDEX))
     {
         URankSaveData* Data = Cast<URankSaveData>(
             UGameplayStatics::LoadGameFromSlot(RANK_SAVE_SLOT, SAVE_INDEX)
         );
-        return Data->RankList;
+
+        if (Data)
+        {
+            RankList = Data->RankList;
+
+            RankList.Sort([](const FRankEntry& A, const FRankEntry& B)
+                {
+                    return A.Score > B.Score;
+                });
+
+            EntryRankMap.Empty();
+            int32 CurrentRank = 1;
+            for (int32 i = 0; i < RankList.Num(); ++i)
+            {
+                const FRankEntry& Entry = RankList[i];
+
+                if (i > 0 && Entry.Score == RankList[i - 1].Score)
+                {
+                    EntryRankMap.Add(Entry.EntryID, EntryRankMap[RankList[i - 1].EntryID]);
+                }
+                else
+                {
+                    EntryRankMap.Add(Entry.EntryID, CurrentRank);
+                }
+
+                CurrentRank++;
+            }
+        }
     }
 
-    return {};
+    return RankList;
 }
+
 
 void UScoreSubsystem::OnDayChanged(const FDayChangedMessage& Msg)
 {
@@ -107,4 +139,20 @@ void UScoreSubsystem::OnDayChanged(const FDayChangedMessage& Msg)
     CurrentEntry.Score += 10000;
     OnScoreChanged.Broadcast(CurrentEntry.Score);
 
+}
+
+void UScoreSubsystem::StartNewRun()
+{
+    CurrentRunID = FGuid::NewGuid();// New Play Session ID
+    CurrentEntry = FCurrentScoreEntry{};
+}
+
+int32 UScoreSubsystem::GetRank(const FGuid& EntryID) const
+{
+    if (EntryRankMap.Contains(EntryID))
+    {
+        return EntryRankMap[EntryID];
+    }
+
+    return 0;
 }

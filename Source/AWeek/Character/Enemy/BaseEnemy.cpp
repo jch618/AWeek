@@ -112,6 +112,20 @@ float ABaseEnemy::GetMontagePlayRate_Code() const
     return m_Stat.AnimPlayRate;
 }
 
+void ABaseEnemy::DropItemBox()
+{
+    if (!LootChestClass) return;
+    FVector Offset(0.f, 0.f, -100.f);
+    FVector DropLocation = GetActorLocation() + Offset;
+    AAWeekLootChest* Chest = AAWeekLootChest::SpawnLootChest(
+        LootChestClass,
+        GetWorld(),
+        DropLocation,
+        LootTableRow,
+        30.0f
+    );
+}
+
 void ABaseEnemy::OnLoadFromPool_Implementation()
 {
     m_tryCleanUpCount = 0;

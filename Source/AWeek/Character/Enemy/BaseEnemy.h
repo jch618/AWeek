@@ -7,6 +7,7 @@
 #include "../../System/AWeekEventMessageInfo.h"
 #include "EnemyStatDataAsset.h"
 #include "GameEventMessageSubsystem.h"
+#include <AWeek/World/AWeekLootChest.h>
 #include "BaseEnemy.generated.h"
 
 class AEnemyActorSpawner;
@@ -55,13 +56,21 @@ private:
 
     UPROPERTY()
     AEnemyActorSpawner* OwnerSpawner;
+public: 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FDataTableRowHandle LootTableRow;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<AAWeekLootChest> LootChestClass;
 public:
     //Spawner Delegate
     DECLARE_DELEGATE_OneParam(FOnReturnToSpawner, ABaseEnemy*);
     FOnReturnToSpawner OnReturnToSpawner;
 
     void SetSpawner(AEnemyActorSpawner* Spawner) { OwnerSpawner = Spawner; }
+
+    UFUNCTION(BlueprintCallable, Category = "Loot")
+    void DropItemBox();
 
 protected:
     virtual void OnLoadFromPool_Implementation() override;

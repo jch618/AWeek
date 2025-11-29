@@ -8,14 +8,6 @@
 #include "AWeekPlayerAnimInstance.generated.h"
 
 UENUM(BlueprintType)
-enum class EPlayerMoveState : uint8
-{
-	Ground,
-	Ledge,
-	Climb
-};
-
-UENUM(BlueprintType)
 enum class EPlayerWeaponState : uint8
 {
 	Default,
@@ -56,9 +48,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TMap<FName, FPlayerAnimInfo> mAnimMap;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EPlayerMoveState mMoveState = EPlayerMoveState::Ground;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EPlayerWeaponState mWeaponState = EPlayerWeaponState::Default;
@@ -105,15 +94,6 @@ public:
 	FName GetCurrentOverride()
 	{
 		return mStatusKey;
-	}
-
-	EPlayerMoveState GetPlayerMoveState()
-	{
-		return mMoveState;
-	}
-	void SetPlayerMoveState(EPlayerMoveState MoveState)
-	{
-		mMoveState = MoveState;
 	}
 
 	UFUNCTION(BlueprintCallable)

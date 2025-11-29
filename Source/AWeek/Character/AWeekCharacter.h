@@ -33,8 +33,6 @@ public:
 public:
 	virtual void VaultStart();
 	virtual void VaultEnd();
-	virtual void LedgeStart();
-	virtual void LedgeEnd();
 	virtual void ClimbStart();
 	virtual void ClimbEnd();
 	TObjectPtr<UMotionWarpingComponent> GetMWC()

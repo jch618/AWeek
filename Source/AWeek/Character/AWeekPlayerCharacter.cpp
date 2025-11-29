@@ -11,6 +11,7 @@
 #include "../Player/Hunger/AWeekHungerComponent.h"
 #include "../Player/Weapon/AWeekWeaponComponent.h"
 #include "Perception/AISense_Hearing.h"
+#include "../Components/Sound/AWeekSoundComponent.h"
 
 #include "../System/DamageSystemComponent.h"
 #include "../Input/AWeekGameInput.h"
@@ -77,6 +78,7 @@ AAWeekPlayerCharacter::AAWeekPlayerCharacter()
 	mWeapon = CreateDefaultSubobject<UAWeekWeaponComponent>(TEXT("Weapon"));
 	mHunger = CreateDefaultSubobject<UAWeekHungerComponent>(TEXT("Hunger"));
 	mDamageSystem = CreateDefaultSubobject<UDamageSystemComponent>(TEXT("DamageSystem"));
+	mSound = CreateDefaultSubobject<UAWeekSoundComponent>(TEXT("Sound"));
 }
 
 // Called when the game starts or when spawned
@@ -192,12 +194,6 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
-
-	if (mAnimInst->GetPlayerMoveState() == EPlayerMoveState::Ledge)
-	{
-		if (!mStamina->UseStamina(EStaminaUseType::Ledge))
-			ClimbEnd();
-	}
 }
 
 // Called to bind functionality to input
@@ -283,16 +279,6 @@ void AAWeekPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 void AAWeekPlayerCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
-	
-	if (mAnimInst->GetPlayerMoveState() == EPlayerMoveState::Ledge && !mAnimInst->IsPlayingMontageByName(TEXT("Ledge")))
-	{
-		if (MovementVector.X < 1 && MovementVector.Y > 0 && mAnimInst->GetPlayerMoveState() != EPlayerMoveState::Climb)
-		{
-			ClimbStart();
-		}
-		return;
-	}
-	// input is a Vector2D
 
 	if (Controller != nullptr)
 	{
@@ -327,13 +313,7 @@ void AAWeekPlayerCharacter::Look(const FInputActionValue& Value)
 
 void AAWeekPlayerCharacter::Jump()
 {
-	if (mAnimInst->GetPlayerMoveState() == EPlayerMoveState::Ledge && !mAnimInst->IsPlayingMontageByName(TEXT("Ledge")))
-	{
-		ClimbEnd();
-		return;
-	}
-
-	if (mPakour->TriggerPakour(EPakourType::Ledge) ||
+	if (mPakour->TriggerPakour(EPakourType::Climb) ||
 		GetMovementComponent()->IsFalling() ||
 		mAnimInst->IsAnyMontagePlaying())
 	{
@@ -371,10 +351,6 @@ void AAWeekPlayerCharacter::Attack(const FInputActionValue& Value)
 		return;
 	SetCombatBool(true);
 	mAnimInst->PlayMontageByName(TEXT("Attack"));
-	//UE_LOG(LogTemp, Warning, TEXT("%f"), mDamageSystem->GetCurrentHealth_Implementation());
-
-	// Get Weapon Damage from Weapon Component
-	// Apply damage later..
 }
 
 void AAWeekPlayerCharacter::StartFire()
@@ -392,7 +368,6 @@ void AAWeekPlayerCharacter::StartFire()
 
 void AAWeekPlayerCharacter::EndFire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("EndFireCalled"));
 	if (!bIsZooming)
 		mAnimInst->SetPlayerWeaponState(EPlayerWeaponState::Default);
 	mWeapon->EndFire();
@@ -482,18 +457,16 @@ void AAWeekPlayerCharacter::TakeSomeFood()
 	if (mAnimInst->IsAnyMontagePlaying())
 		return;
 	PlayerInventoryComponent->UseSelectedItem(this);
-	//GetCharacterMovement()->MaxWalkSpeed *= mBusySpeedDecRate;
 }
 
 void AAWeekPlayerCharacter::Heal()
 {
 	mHunger->ChangeHunger(30.f);
-	//GetCharacterMovement()->MaxWalkSpeed = mWalkSpeed;
 }
 
 void AAWeekPlayerCharacter::VaultStart()
 {
-	if (GetVelocity().Size() < 50 || GetCharacterMovement()->IsFalling())
+	if (mAnimInst->IsAnyMontagePlaying() || GetVelocity().Size() < 50 || GetCharacterMovement()->IsFalling())
 		return;
 
 	if (mStamina->UseStamina(EStaminaUseType::Vault))
@@ -513,59 +486,27 @@ void AAWeekPlayerCharacter::VaultEnd()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }
 
-void AAWeekPlayerCharacter::LedgeStart()
-{
-	if (!mStamina->UseStamina(EStaminaUseType::LedgeStart))
-		return;
-	mAnimInst->PlayMontageByName(TEXT("Ledge"));
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-	CameraBoom->bDoCollisionTest = false;
-}
-
-void AAWeekPlayerCharacter::LedgeEnd()
-{
-	mAnimInst->SetPlayerMoveState(EPlayerMoveState::Ledge);
-	GetMovementComponent()->StopMovementImmediately();
-	CameraBoom->bDoCollisionTest = true;
-}
-
 void AAWeekPlayerCharacter::ClimbStart()
 {
+	if (mAnimInst->IsAnyMontagePlaying() || !mStamina->UseStamina(EStaminaUseType::Climb))
+		return;
 	mAnimInst->PlayMontageByName(TEXT("Climb"));
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	
+	float HeightDelta = mPakour->mWallHeight - 170;
+	FVector Current = GetActorLocation();
+	Current.Z += HeightDelta;
 
-	// Motion Warping didnt work... why???????
-	// so i move character immediatley
-	mAnimInst->SetPlayerMoveState(EPlayerMoveState::Climb);
+	SetActorLocation(Current);
+
 	CameraBoom->bDoCollisionTest = false;
-
-	FVector Dest = mPakour->GetFirstTopHitLocation();
-	Dest.Z+=90;
-
-	FLatentActionInfo LatentActionInfo;
-	LatentActionInfo.UUID = 0;
-	LatentActionInfo.Linkage = 0;
-	LatentActionInfo.CallbackTarget = this;
-	LatentActionInfo.ExecutionFunction = FName("ClimbEnd");
-
-	UKismetSystemLibrary::MoveComponentTo(
-		GetCapsuleComponent(),
-		Dest,
-		GetActorRotation(),
-		false,
-		false,
-		1,
-		false,
-		EMoveComponentAction::Move,
-		LatentActionInfo
-	);
 }
 
 void AAWeekPlayerCharacter::ClimbEnd()
 {
-	mAnimInst->SetPlayerMoveState(EPlayerMoveState::Ground);
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	CameraBoom->bDoCollisionTest = true;
 }
 
@@ -620,6 +561,7 @@ void AAWeekPlayerCharacter::GameOver()
 void AAWeekPlayerCharacter::FootStepEffect(FName SocketName)
 {
 	FVector	Position = GetMesh()->GetSocketLocation(SocketName);
+	mSound->PlaySound(FName("Footstep"), Position);
 
 	UAISense_Hearing::ReportNoiseEvent(
 		GetWorld(),          // World Context

@@ -13,7 +13,7 @@ enum class EPakourType
 {
 	None,
 	Vault,
-	Ledge
+	Climb
 };
 
 UENUM()
@@ -57,6 +57,9 @@ protected:
 	// 벽의 역노말 벡터
 	FVector mWallRotation = FVector::ZeroVector;
 
+public:
+	// Use on climb
+	float mWallHeight = 0;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -79,10 +82,9 @@ protected:
 	FHitResult DetectWall(float Distance);
 	bool ScanWall(FHitResult Hit);
 	void SetVaultMotionWarping();
-	void SetLedgeMotionWarping(float WallHeight);
 	void SetClimbMotionWarping();
 	bool TryVault();
-	bool TryLedge();
+	bool TryClimb();
 
 protected:
 	// Utility Functions

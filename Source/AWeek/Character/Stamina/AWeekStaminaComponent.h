@@ -13,8 +13,7 @@ enum class EStaminaUseType
 {
 	Sprint,
 	Vault,
-	Ledge,
-	LedgeStart
+	Climb,
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -50,10 +49,7 @@ protected:
 	float mVaultUsage = 10;
 
 	UPROPERTY(EditAnywhere)
-	float mLedgeUsage = 10; // �ʴ� �Ҹ�
-
-	UPROPERTY(EditAnywhere)
-	float mLedgeStartUsage = 10;
+	float mClimbUsage = 30;
 
 protected:
 	// Called every frame

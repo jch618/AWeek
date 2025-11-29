@@ -60,6 +60,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UParticleSystem* mFireEffect;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<USoundBase> mFireSound;
+
 	/*--------------RANGED WEAPON--------------*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsFiring;

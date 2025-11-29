@@ -40,14 +40,6 @@ void AAWeekCharacter::VaultEnd()
 {
 }
 
-void AAWeekCharacter::LedgeStart()
-{
-}
-
-void AAWeekCharacter::LedgeEnd()
-{
-}
-
 void AAWeekCharacter::ClimbStart()
 {
 }

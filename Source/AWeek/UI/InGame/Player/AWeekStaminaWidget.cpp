@@ -55,27 +55,52 @@ void UAWeekStaminaWidget::NativeConstruct()
 	);
 }
 
+void UAWeekStaminaWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
+{
+	Super::NativeTick(MyGeometry, DeltaTime);
+
+	if (GetVisibility() == ESlateVisibility::Hidden || GetVisibility() == ESlateVisibility::Collapsed)
+	{
+		return;
+	}
+
+	if (!bStartFade)
+	{
+		mCurrentDelayTime += DeltaTime;
+
+		if (mCurrentDelayTime >= TimeToFadeOut)
+		{
+			bStartFade = true;
+		}
+	}
+	else
+	{
+		float FadeSpeed = DeltaTime / FadeDuration;
+
+		mCurrentFadeOpacity -= FadeSpeed;
+
+		if (mCurrentFadeOpacity <= 0.0f)
+		{
+			mCurrentFadeOpacity = 0.0f;
+			SetVisibility(ESlateVisibility::Hidden);
+		}
+
+		SetRenderOpacity(mCurrentFadeOpacity);
+	}
+}
+
 void UAWeekStaminaWidget::UpdateProgress(float Stamina, bool bDecrease)
 {
 	Progress->SetPercent(Stamina / 100);
 
-	// ���¹̳ʰ� �پ��������� Ÿ�̸� �ʱ�ȭ
 	if (bDecrease)
 	{
 		ShowWidget();
 
-		if (IsAnimationPlaying(FadeOutAnim))
-			StopAnimation(FadeOutAnim);
+		mCurrentDelayTime = 0.0f;
+		bStartFade = false;
+		mCurrentFadeOpacity = 1.0f;
 
-		GetWorld()->GetTimerManager().ClearTimer(FadeOutTimer);
-		GetWorld()->GetTimerManager().SetTimer(
-			FadeOutTimer,
-			[this]()
-			{
-				PlayAnimation(FadeOutAnim, 0, 1, EUMGSequencePlayMode::Forward, 1, true);
-			},
-			TimeToFadeOut,
-			false
-		);
+		SetRenderOpacity(mCurrentFadeOpacity);
 	}
 }

@@ -84,6 +84,10 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UAWeekHungerComponent> mHunger;
 
+	/*--------------SOUND--------------*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<class UAWeekSoundComponent> mSound;
+
 	/*--------------HUD--------------*/
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAWeekPlayerStateWidget> mStateWidget;
@@ -247,8 +251,6 @@ public:
 
 	virtual void VaultStart();
 	virtual void VaultEnd();
-	virtual void LedgeStart();
-	virtual void LedgeEnd();
 	virtual void ClimbStart();
 
 	UFUNCTION(BlueprintCallable)

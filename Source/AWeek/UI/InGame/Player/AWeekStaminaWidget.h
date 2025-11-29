@@ -23,13 +23,23 @@ public:
 protected:
 	TObjectPtr<UProgressBar> Progress;
 	class UWidgetAnimation* FadeOutAnim;
-	FTimerHandle FadeOutTimer;
-	float TimeToFadeOut = 2;
+	float CurrentTimer = 0;
 
 	FGameEventMessageListenerHandle StaminaChangedHandle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TimeToFadeOut = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float FadeDuration = 0.7f;
+
+private:
+	float mCurrentDelayTime = 0.0f;
+	bool bStartFade = false;
+	float mCurrentFadeOpacity = 1.0f;
+
 protected:
 	virtual void NativeConstruct();
+	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 	
 public:
 	void UpdateProgress(float Stamina, bool bDecrease);

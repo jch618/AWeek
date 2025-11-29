@@ -30,11 +30,8 @@ bool UAWeekStaminaComponent::UseStamina(EStaminaUseType StaminaUseType)
 	case EStaminaUseType::Vault:
 		Usage = mVaultUsage;
 		break;
-	case EStaminaUseType::Ledge:
-		Usage = mLedgeUsage * DeltaTime;
-		break;
-	case EStaminaUseType::LedgeStart:
-		Usage = mLedgeStartUsage;
+	case EStaminaUseType::Climb:
+		Usage = mClimbUsage;
 		break;
 	}
 

@@ -32,7 +32,9 @@ public class AWeek : ModuleRules
 
             "Niagara",
             "MotionWarping",
-            
+
+            "AnimGraphRuntime",
+
             "GeometryCollectionEngine",
             "FieldSystemEngine",
             "Chaos",

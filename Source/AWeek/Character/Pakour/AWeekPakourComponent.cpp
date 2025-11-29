@@ -50,8 +50,8 @@ bool UAWeekPakourComponent::TriggerPakour(EPakourType PakourType)
 	case EPakourType::Vault:
 		WallHit = DetectWall(200);
 		break;
-	case EPakourType::Ledge:
-		WallHit = DetectWall(140);
+	case EPakourType::Climb:
+		WallHit = DetectWall(80);
 		break;
 	}
 	
@@ -81,7 +81,6 @@ FHitResult UAWeekPakourComponent::DetectWall(float Distance)
 
 bool UAWeekPakourComponent::ScanWall(FHitResult Hit)
 {
-	// 1: ���� �����Ǿ����� 3���� ������ 10��ġ�� �������鼭 �� ���κ��� Ž�� (����Ʈ���̽�)
 	FVector HitLocation = Hit.Location;
 	HitLocation.Z += 300;
 	for (int i = 0; i < 30; i++)
@@ -100,11 +99,9 @@ bool UAWeekPakourComponent::ScanWall(FHitResult Hit)
 	if (!mFirstWallHit.bBlockingHit)
 		return false;
 
-	// 2: �� �β��� Ž���ϸ鼭 ó�� �����κа� �������� ���� �κ� Ž��
 	mWallRotation = -mFirstWallHit.Normal.GetSafeNormal();
 	for (int i = 0; i < 10; i++)
 	{
-		// ó�� ���� ��ġ���� ������ 20��Ƽ���;� �÷������鼭 Ž���Ѵ�
 		FVector Start = mFirstWallHit.Location + mWallRotation * 20*i;
 		FVector End = mFirstWallHit.Location + mWallRotation * 20*i;
 		Start.Z += 10;
@@ -127,10 +124,9 @@ bool UAWeekPakourComponent::ScanWall(FHitResult Hit)
 	if (!mLastTopHit.bBlockingHit)
 		return false;
 
-	if (mPakourType == EPakourType::Ledge)
-		return TryLedge();
+	if (mPakourType == EPakourType::Climb)
+		return TryClimb();
 
-	// 3: �� �β� ���κ��� ImpactPoint�� ���ͼ� ���� ���κ��� Ž���Ѵ�.
 	mEndOfWallHit = WallTracing(ETraceType::Sphere,
 		mLastTopHit.ImpactPoint + mWallRotation * 20,
 		mLastTopHit.ImpactPoint, FColor::Yellow);
@@ -138,7 +134,6 @@ bool UAWeekPakourComponent::ScanWall(FHitResult Hit)
 	if (!mEndOfWallHit.bBlockingHit)
 		return false;
 
-	// 4: �� ���κп��� �÷��̾��� Ű��ŭ ������ Ž���ϸ鼭 ��Ʈ ���� ��ġ�� ��´�.
 	FVector Start = mEndOfWallHit.ImpactPoint + mWallRotation * 60;
 	FVector End = mEndOfWallHit.ImpactPoint + mWallRotation * 60;
 	float Height = mOwner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2.0f;
@@ -168,18 +163,17 @@ bool UAWeekPakourComponent::TryVault()
 	return false;
 }
 
-bool UAWeekPakourComponent::TryLedge()
+bool UAWeekPakourComponent::TryClimb()
 {
 	float GroundHeight = mOwner->GetMesh()->GetComponentLocation().Z;
-	float WallHeight = mFirstWallHit.Location.Z - GroundHeight;
+	mWallHeight = mFirstWallHit.Location.Z - GroundHeight;
 	float PlayerHeight = 190.f;
 
 	if (FVector::Dist(mFirstTopHit.Location, mLastTopHit.Location) > 60 &&
-		WallHeight >= 220 && WallHeight <= 300)
+		mWallHeight >= 170 && mWallHeight <= 250)
 	{
-		SetLedgeMotionWarping(PlayerHeight);
 		SetClimbMotionWarping();
-		mOwner->LedgeStart();
+		mOwner->ClimbStart();	
 		return true;
 	}
 
@@ -205,25 +199,14 @@ void UAWeekPakourComponent::SetVaultMotionWarping()
 	);
 }
 
-void UAWeekPakourComponent::SetLedgeMotionWarping(float PlayerHeight)
-{
-	FVector Dest = mFirstTopHit.ImpactPoint - mOwner->GetActorForwardVector()*50;
-
-	Dest.Z-=PlayerHeight;
-
-	mOwnerMWC->AddOrUpdateWarpTargetFromLocationAndRotation(
-		FName("Ledge"),
-		Dest,
-		mWallRotation.Rotation()
-	);
-}
-
 void UAWeekPakourComponent::SetClimbMotionWarping()
 {
-	FVector Dest = mFirstWallHit.ImpactPoint;
 	mOwnerMWC->AddOrUpdateWarpTargetFromLocationAndRotation(
-		FName("Climb"),
-		Dest,
+		FName("VaultStart"),
+		mFirstWallHit.ImpactPoint,
 		mWallRotation.Rotation()
 	);
+
 }
+
+

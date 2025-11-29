@@ -98,6 +98,12 @@ public:
 	float WeaponWeight;
 
 	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> FireSound;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> ReloadSound;
+
+	UPROPERTY(EditAnywhere)
 	UParticleSystem* FireEffect;
 
 	UPROPERTY(EditAnywhere)

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "DetourCrowdAIController.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "Perception/AIPerceptionComponent.h"
 #include "BaseEnemyAIController.generated.h"
 
 /**

@@ -3,6 +3,8 @@
 
 #include "AWeekPlayerStateWidget.h"
 
+#include "AWeek/System/AWeekEventMessageInfo.h"
+
 UAWeekPlayerStateWidget::UAWeekPlayerStateWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
 }

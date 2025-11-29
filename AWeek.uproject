@@ -13,7 +13,6 @@
 				"CommonGame",
 				"ModularGameplay",
 				"CommonUI",
-				"BlueprintGraph",
 				"UMG",
 				"AIModule",
 				"SettingSystem",

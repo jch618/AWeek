@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../../System/GameEventMessageSubsystem.h"
+#include "GameEventMessageSubsystem.h"
+#include "AWeek/System/AWeekEventMessageInfo.h"
 #include "Components/ActorComponent.h"
 #include "AWeekStaminaComponent.generated.h"
 
@@ -27,10 +28,10 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere)
-	float mMaxStamina = 100; // ¿ø·¡°ª 100
+	float mMaxStamina = 100; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 100
 
 	UPROPERTY(VisibleAnywhere)
-	float mStamina = 100; // ¿ø·¡°ª 100
+	float mStamina = 100; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 100
 
 	UPROPERTY(EditAnywhere)
 	float mRecoveryRate = 20;
@@ -43,13 +44,13 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere)
-	float mSprintUsage = 20; // ÃÊ´ç ¼Ò¸ð·®
+	float mSprintUsage = 20; // ï¿½Ê´ï¿½ ï¿½Ò¸ï¿½
 
 	UPROPERTY(EditAnywhere)
 	float mVaultUsage = 10;
 
 	UPROPERTY(EditAnywhere)
-	float mLedgeUsage = 10; // ÃÊ´ç ¼Ò¸ð·®
+	float mLedgeUsage = 10; // ï¿½Ê´ï¿½ ï¿½Ò¸ï¿½
 
 	UPROPERTY(EditAnywhere)
 	float mLedgeStartUsage = 10;

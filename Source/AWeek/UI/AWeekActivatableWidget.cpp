@@ -7,6 +7,11 @@ UAWeekActivatableWidget::UAWeekActivatableWidget(const FObjectInitializer& Objec
 {
 }
 
+bool UAWeekActivatableWidget::NativeOnHandleBackAction()
+{
+	return Super::NativeOnHandleBackAction();
+}
+
 TOptional<FUIInputConfig> UAWeekActivatableWidget::GetDesiredInputConfig() const
 {
 	switch (InputConfig)

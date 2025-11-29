@@ -3,9 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
-#include "../../../System/GameEventMessageSubsystem.h"
-
+#include "GameEventMessageSubsystem.h"
 #include "Components/ProgressBar.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekPlayerStateWidget.generated.h"

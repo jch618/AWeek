@@ -25,6 +25,7 @@ class AWEEK_API UAWeekActivatableWidget : public UCommonActivatableWidget
 
 public:
 	UAWeekActivatableWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	virtual bool NativeOnHandleBackAction() override;
 	
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
 

@@ -122,8 +122,9 @@ FName UActorPoolSubSystem::GetPoolFolderPath(TSubclassOf<AActor> ActorClass) con
 void UActorPoolSubSystem::ApplyPoolFolderPath(AActor* Actor, TSubclassOf<AActor> ActorClass)
 {
     if (!Actor) return;
-
+#if WITH_EDITOR
     const FName FolderPath = GetPoolFolderPath(ActorClass);
     Actor->SetFolderPath(FolderPath);
+#endif
     
 }

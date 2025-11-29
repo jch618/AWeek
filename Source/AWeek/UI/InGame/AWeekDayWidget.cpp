@@ -2,6 +2,7 @@
 
 #include "AWeekDayWidget.h"
 #include "../../System/DaySystem/AWeekDaySystem.h"
+#include "AWeek/System/AWeekEventMessageInfo.h"
 
 UAWeekDayWidget::UAWeekDayWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {

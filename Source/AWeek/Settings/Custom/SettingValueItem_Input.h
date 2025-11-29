@@ -17,7 +17,7 @@ class AWEEK_API USettingValueItem_Input : public USettingValueItem
 
 public:
 	void Init(const UEnhancedPlayerMappableKeyProfile* KeyProfile, const FKeyMappingRow& MappingData, const FPlayerMappableKeyQueryOptions& InQueryOptions, UEnhancedInputUserSettings* NewInputSetting);
-	
+	virtual void Init() override;
 	virtual void Reset() override;
 	virtual void Store() override;
 	virtual void Restore() override;

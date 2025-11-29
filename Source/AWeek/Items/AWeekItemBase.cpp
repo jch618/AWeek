@@ -1,8 +1,5 @@
 #include "AWeek/Items/AWeekItemBase.h"
 
-#include "ContentBrowserDataSource.h"
-#include "AWeek/Components/AWeekInventoryComponent.h"
-
 UAWeekItemBase::UAWeekItemBase() : Quantity(0), bIsCopy(false), bIsPickup(false)
 {
 

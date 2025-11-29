@@ -2,7 +2,9 @@
 
 
 #include "AWeekDaySystem.h"
-#include "../GameEventMessageSubsystem.h"
+
+#include "GameEventMessageSubsystem.h"
+#include "AWeek/System/AWeekEventMessageInfo.h"
 
 AAWeekDaySystem::AAWeekDaySystem()
 {

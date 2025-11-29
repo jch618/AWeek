@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
-#include "AWeek/System/GameEventMessageSubsystem.h"
+#include "GameEventMessageSubsystem.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekHitMarkerWidget.generated.h"
 

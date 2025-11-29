@@ -2,9 +2,7 @@
 
 
 #include "AIParkourLinkProxy.h"
-#include "GameFramework/Character.h"
 #include "AIController.h"
-#include "GameplayTagAssetInterface.h"
 
 AAIParkourLinkProxy::AAIParkourLinkProxy()
 {

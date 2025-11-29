@@ -2,6 +2,9 @@
 
 
 #include "AWeekPlayerCharacter.h"
+
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Pakour/AWeekPakourComponent.h"
 #include "Stamina/AWeekStaminaComponent.h"
@@ -177,12 +180,15 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 	// update held item ui position
 	if (UIManager)
 	{
-		if (UIManager->GetInventoryController()->IsHoldingItem())
+		if (UAWeekInventoryController* IC = UIManager->GetInventoryController())
 		{
-			FVector2D MousePos;
-			if (PlayerController->GetMousePosition(MousePos.X, MousePos.Y))
+			if (IC->IsHoldingItem())
 			{
-				UIManager->GetInventoryController()->UpdateHeldItemPosition(MousePos);
+				FVector2D MousePos;
+				if (PlayerController->GetMousePosition(MousePos.X, MousePos.Y))
+				{
+					UIManager->GetInventoryController()->UpdateHeldItemPosition(MousePos);
+				}
 			}
 		}
 	}

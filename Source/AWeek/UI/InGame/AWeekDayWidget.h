@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEventMessageSubsystem.h"
 #include "Components/TextBlock.h"
-#include "../../System/GameEventMessageSubsystem.h"
 #include "Blueprint/UserWidget.h"
 #include "AWeekDayWidget.generated.h"
 

@@ -39,14 +39,11 @@ public class AWeek : ModuleRules
             "ChaosSolverEngine",
             "NavigationSystem",
             "AIModule",
-            "BlueprintGraph",
-            "KismetCompiler",
-            "PropertyEditor",
-            "UnrealEd",
             "RHI",
+            "AnimGraphRuntime",
         });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "SettingSystem" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "SettingSystem", "GameEventMessage", "AnimationSharing" });
 
 		// Uncomment if you are using Slate UI
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

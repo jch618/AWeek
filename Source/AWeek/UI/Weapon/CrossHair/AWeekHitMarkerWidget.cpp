@@ -4,7 +4,6 @@
 #include "AWeekHitMarkerWidget.h"
 
 #include "SAWeekHitMarkerWidget.h"
-#include "AWeek/System/GameEventMessageSubsystem.h"
 
 void UAWeekHitMarkerWidget::NativeConstruct()
 {

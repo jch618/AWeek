@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AWeek/UI/Inventory/AWeekHeldItem.h"
 #include "UObject/NoExportTypes.h"
 #include "AWeekInventoryController.generated.h"
 
@@ -27,7 +28,11 @@ public:
 	void InitializeInventoryController(TObjectPtr<UAWeekGameUIManager> InUIManager, TSubclassOf<UAWeekHeldItemVisual> InHeldItemVisualClass);
 	
 	// held item functions
-	FORCEINLINE bool IsHoldingItem() const;
+	FORCEINLINE bool IsHoldingItem() const
+	{
+		return IsValid(HeldItem);
+	}
+	
 	FORCEINLINE UAWeekHeldItem* GetHeldItem() const { return HeldItem; };
 	FORCEINLINE void SetHeldItem(const TObjectPtr<UAWeekHeldItem> InHeldItem) { HeldItem = InHeldItem; }
 	void UpdateHeldItemPosition(FVector2D NewPosition);

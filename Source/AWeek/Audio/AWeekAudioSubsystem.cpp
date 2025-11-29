@@ -3,7 +3,6 @@
 
 #include "AWeekAudioSubsystem.h"
 
-#include "AssetTypeCategories.h"
 #include "AWeekAudioSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundClass.h"

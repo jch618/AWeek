@@ -3,14 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
-#include "../../../System/GameEventMessageSubsystem.h"
+#include "GameEventMessageSubsystem.h"
 
 #include "Components/ProgressBar.h"
 #include "Blueprint/WidgetBlueprintGeneratedClass.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Blueprint/SlateBlueprintLibrary.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/UserWidget.h"
 
 #include "AWeekStaminaWidget.generated.h"

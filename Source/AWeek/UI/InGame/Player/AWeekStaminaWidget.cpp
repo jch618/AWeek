@@ -4,6 +4,7 @@
 #include "AWeekStaminaWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Animation/WidgetAnimation.h"
+#include "AWeek/System/AWeekEventMessageInfo.h"
 
 UAWeekStaminaWidget::UAWeekStaminaWidget(const FObjectInitializer& ObjectInitializer) : UUserWidget(ObjectInitializer)
 {
@@ -58,7 +59,7 @@ void UAWeekStaminaWidget::UpdateProgress(float Stamina, bool bDecrease)
 {
 	Progress->SetPercent(Stamina / 100);
 
-	// ½ºÅÂ¹Ì³Ê°¡ ÁÙ¾îµé¾úÀ»¶§¸¸ Å¸ÀÌ¸Ó ÃÊ±âÈ­
+	// ï¿½ï¿½ï¿½Â¹Ì³Ê°ï¿½ ï¿½Ù¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½Ê±ï¿½È­
 	if (bDecrease)
 	{
 		ShowWidget();

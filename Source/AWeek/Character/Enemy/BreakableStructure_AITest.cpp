@@ -5,7 +5,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "NavModifierComponent.h"
 #include "NavAreas/NavArea_Obstacle.h"
-#include "NavigationSystem.h"
 
 // Sets default values
 ABreakableStructure_AITest::ABreakableStructure_AITest()

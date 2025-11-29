@@ -3,6 +3,8 @@
 
 #include "GameFeatureAction_AddWidget.h"
 
+#include "AnimationSharingManager.h"
+#include "AnimationSharingManager.h"
 #include "CommonUIExtensions.h"
 #include "AWeek/UI/AWeekHUD.h"
 #include "Components/GameFrameworkComponentManager.h"
@@ -52,6 +54,19 @@ void UGameFeatureAction_AddWidget::RemoveWidgets(AActor* Actor, FPerContextData&
 void UGameFeatureAction_AddWidget::OnGameFeatureDeactivating(FGameFeatureDeactivatingContext& Context)
 {
 	Super::OnGameFeatureDeactivating(Context);
+
+	FPerContextData* ActiveData = ContextData.Find(Context);
+	if ensure(ActiveData)
+	{
+		ActiveData->ComponentRequests.Empty();
+
+		for (FUIExtensionHandle& Handle : ActiveData->ExtensionHandles)
+		{
+			Handle.Unregister();
+		}
+		ActiveData->LayoutAdded.Empty();
+		ActiveData->ExtensionHandles.Empty();
+	}
 }
 
 void UGameFeatureAction_AddWidget::AddToWorld(const FWorldContext& WorldContext,

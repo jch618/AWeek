@@ -2,6 +2,8 @@
 
 
 #include "AWeekPlayerAnimInstance.h"
+
+#include "KismetAnimationLibrary.h"
 #include "../Data/AWeekPlayerAnimInfo.h"
 #include "../Character/AWeekPlayerCharacter.h"
 #include "../AWeekAssetManager.h"
@@ -14,7 +16,6 @@ void UAWeekPlayerAnimInstance::NativeBeginPlay()
 	mOwner = Cast<AAWeekPlayerCharacter>(GetOwningActor());
 
 	// �ִϸ��̼� ���������̺� ��ü�� ������
-	UDataTable* AnimInfoDT = UAWeekAssetManager::Get().FindDataTable(TEXT("DT_PlayerAnimInfo"));
 	if (!AnimInfoDT) return;
 
 	// ���������̺��� RowMap�̶�� TMap������ ��ȯ�� (Row�� Ű��, �� ����� ���� ����)
@@ -58,7 +59,7 @@ void UAWeekPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	FVector Velocity = mOwner->GetVelocity();
 	Velocity.Z = 0.0f;
 	float Speed = Velocity.Size();
-	Direction = CalculateDirection(Velocity, mOwner->GetActorRotation());
+	Direction = UKismetAnimationLibrary::CalculateDirection(Velocity, mOwner->GetActorRotation());
 	
 	FRotator ControlRot = Controller->GetControlRotation();
 	ControllerYaw = ControlRot.Yaw;

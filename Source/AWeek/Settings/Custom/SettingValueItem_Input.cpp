@@ -36,6 +36,11 @@ void USettingValueItem_Input::Init(const UEnhancedPlayerMappableKeyProfile* KeyP
 	}
 }
 
+void USettingValueItem_Input::Init()
+{
+	Super::Init();
+}
+
 void USettingValueItem_Input::Reset()
 {
 	Super::Reset();

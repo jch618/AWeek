@@ -191,12 +191,6 @@ void UAWeekInventoryHubWidget::UpdatePanelButtons()
 		CraftingPanelButton->SetIsSelected(CurrentPanel == EAWeekInventoryHubPanel::Crafting);
 	}	
 }
-
-bool UAWeekInventoryHubWidget::IsChestOpen() const
-{
-	return ChestInventoryPanel->IsLinkedToInventory();
-}
-
 void UAWeekInventoryHubWidget::CloseChestInventory()
 {
 	if (!IsChestOpen())

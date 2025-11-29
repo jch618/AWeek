@@ -18,6 +18,8 @@ public:
 	UPROPERTY()
 	TObjectPtr<const UAWeekExperienceDefinition> CurrentExperience;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	void ServerSetCurrentExperience(const FPrimaryAssetId& ExperienceId);
 	void StartExperienceLoad();
 	void OnExperienceLoadComplete();

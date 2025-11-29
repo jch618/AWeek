@@ -2,10 +2,10 @@
 
 
 #include "BaseEnemyAIController.h"
-#include"BehaviorTree/BehaviorTree.h"
 #include"BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Perception/AIPerceptionComponent.h"
 
 void ABaseEnemyAIController::Initialize()
 {

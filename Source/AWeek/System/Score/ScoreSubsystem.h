@@ -1,9 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEventMessageSubsystem.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "RankSaveData.h"
-#include "../../System/GameEventMessageSubsystem.h"
 #include "../../System/AWeekEventMessageInfo.h"
 #include "ScoreSubsystem.generated.h"
 

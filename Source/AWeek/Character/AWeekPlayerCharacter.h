@@ -10,17 +10,10 @@
 
 #include "../UI/InGame/Player/AWeekPlayerStateWidget.h"
 #include "NiagaraFunctionLibrary.h"
-#include "../System/GameEventMessageSubsystem.h"
 #include "../System/DamageInfo.h"
 #include "../System/IDamageAble.h"
 
 #include "InputActionValue.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-
-#include "Kismet/KismetSystemLibrary.h"
-#include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
-
 #include "AWeekPlayerCharacter.generated.h"
 
 

@@ -4,9 +4,9 @@
 #include "GameFramework/Character.h"
 #include "../../System/IDamageAble.h"
 #include "../../System/Pool/IPoolable.h"
-#include "../../System/GameEventMessageSubsystem.h"
 #include "../../System/AWeekEventMessageInfo.h"
 #include "EnemyStatDataAsset.h"
+#include "GameEventMessageSubsystem.h"
 #include "BaseEnemy.generated.h"
 
 class AEnemyActorSpawner;

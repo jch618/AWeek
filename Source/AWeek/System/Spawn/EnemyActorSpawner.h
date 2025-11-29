@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AWeekActorSpawner.h"
 #include "../../Character/Enemy/BaseEnemy.h"
-#include "../../System/GameEventMessageSubsystem.h"
+#include "GameEventMessageSubsystem.h"
 #include "../../System/AWeekEventMessageInfo.h"
 #include "EnemyActorSpawner.generated.h"
 

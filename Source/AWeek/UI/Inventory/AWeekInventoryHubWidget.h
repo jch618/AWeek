@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AWeekInventoryPanel.h"
 #include "AWeek/Components/AWeekPlayerInventoryComponent.h"
 #include "AWeek/UI/AWeekActivatableWidget.h"
 #include "AWeekInventoryHubWidget.generated.h"
@@ -73,7 +74,10 @@ public:
 
 	FORCEINLINE EAWeekInventoryHubPanel GetCurrentPanel() const { return CurrentPanel; }
 	FORCEINLINE bool IsPanelOpen(EAWeekInventoryHubPanel Panel) const { return CurrentPanel == Panel; }
-	FORCEINLINE bool IsChestOpen() const;
+	FORCEINLINE bool IsChestOpen() const
+	{
+		return ChestInventoryPanel->IsLinkedToInventory();
+	}
 	void CloseChestInventory();
 
 	void ShowCraftingDetailPanel() const;

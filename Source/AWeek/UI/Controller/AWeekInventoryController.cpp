@@ -17,11 +17,6 @@ void UAWeekInventoryController::InitializeInventoryController(const TObjectPtr<U
 	HeldItemVisualClass = InHeldItemVisualClass;
 }
 
-bool UAWeekInventoryController::IsHoldingItem() const
-{
-	return IsValid(HeldItem);
-}
-
 void UAWeekInventoryController::UpdateHeldItemPosition(FVector2D NewPosition)
 {
 	if (IsValid(HeldItem))

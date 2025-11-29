@@ -2,8 +2,6 @@
 
 
 #include "AWeek/Components/AWeekPlayerInventoryComponent.h"
-
-#include "IDetailTreeNode.h"
 #include "AWeek/Character/AWeekPlayerCharacter.h"
 #include "AWeek/Items/AWeekItemBase.h"
 #include "AWeek/Player/Weapon/AWeekWeaponComponent.h"

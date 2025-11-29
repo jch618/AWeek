@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameEventMessageSubsystem.h"
+#include "AWeek/System/AWeekEventMessageInfo.h"
 #include "Components/ActorComponent.h"
-#include "../../System/GameEventMessageSubsystem.h"
 #include "AWeekHungerComponent.generated.h"
 
 UENUM()
@@ -34,12 +35,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxHunger = 100;
 
-	// »ç¿ëÇÑ ½ºÅÂ¹Ì³ÊÀÇ 1/N¹è¸¸Å­ Çã±â °¨¼Ò
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¹Ì³ï¿½ï¿½ï¿½ 1/Nï¿½è¸¸Å­ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float StaminaAffected = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float UsageRate = 120; // 600ÃÊµÚ¿¡ ¸ðµç Çã±â ¼Ò¸ð
+	float UsageRate = 120; // 600ï¿½ÊµÚ¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ò¸ï¿½
 
 	FGameEventMessageListenerHandle StaminaChangedHandle;
 

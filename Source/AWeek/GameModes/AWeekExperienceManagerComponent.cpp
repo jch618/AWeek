@@ -10,6 +10,39 @@
 #include "GameFeaturesSubsystemSettings.h"
 #include "Engine/AssetManager.h"
 
+void UAWeekExperienceManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	
+	FGameFeatureDeactivatingContext Context(TEXT(""), [this](FStringView) { });
+	const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld());
+	if (ExistingWorldContext)
+	{
+		Context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);
+	}
+
+	auto DeactivateListOfActions = [&Context](const TArray<UGameFeatureAction*>& ActionList)
+	{
+		for (UGameFeatureAction* Action : ActionList)
+		{
+			if (Action)
+			{
+				Action->OnGameFeatureDeactivating(Context);
+				Action->OnGameFeatureUnregistering();
+			}
+		}
+	};
+
+	DeactivateListOfActions(CurrentExperience->Actions);
+	for (const TObjectPtr<UAWeekExperienceActionSet>& ActionSet : CurrentExperience->ActionSets)
+	{
+		if (ActionSet != nullptr)
+		{
+			DeactivateListOfActions(ActionSet->Actions);
+		}
+	}
+}
+
 void UAWeekExperienceManagerComponent::ServerSetCurrentExperience(const FPrimaryAssetId& ExperienceId)
 {
 	const UAssetManager& AssetManager = UAssetManager::Get();

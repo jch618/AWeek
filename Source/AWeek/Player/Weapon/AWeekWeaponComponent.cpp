@@ -66,7 +66,6 @@ void UAWeekWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 {
-	UDataTable* WeaponInfoDT = UAWeekAssetManager::Get().FindDataTable(TEXT("DT_WeaponInfo"));
 	if (!WeaponInfoDT)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Weapon DataTable Not Found"));

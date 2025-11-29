@@ -4,13 +4,11 @@
 #include "BTTask_MoveToWithStuckCheck.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "NavigationSystem.h"
 #include "GameFramework/Pawn.h"
 #include "DrawDebugHelpers.h"
-#include "Navigation/PathFollowingComponent.h"
 #include "EnemyState.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
-
+#include "Navigation/PathFollowingComponent.h"
 
 
 UBTTask_MoveToWithStuckCheck::UBTTask_MoveToWithStuckCheck()

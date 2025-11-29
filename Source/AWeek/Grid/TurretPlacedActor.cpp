@@ -26,10 +26,10 @@ ATurretPlacedActor::ATurretPlacedActor()
 	MuzzleArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("MuzzleArrow"));
 	MuzzleArrow->SetupAttachment(TurretHead);
 
-	if (MuzzleArrow && TurretHead)
-	{
-		MuzzleArrow->AttachToComponent(TurretHead, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Muzzle"));
-	}
+	// if (MuzzleArrow && TurretHead)
+	// {
+	// 	MuzzleArrow->AttachToComponent(TurretHead, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Muzzle"));
+	// }
 	
 	/*Muzzle = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle"));
 	Muzzle->SetupAttachment(TurretHead);*/

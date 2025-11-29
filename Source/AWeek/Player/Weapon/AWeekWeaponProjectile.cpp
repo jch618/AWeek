@@ -2,8 +2,9 @@
 
 
 #include "AWeekWeaponProjectile.h"
+
+#include "GameEventMessageSubsystem.h"
 #include "../../System/DamageSystemComponent.h"
-#include "AWeek/System/GameEventMessageSubsystem.h"
 
 // Sets default values
 AAWeekWeaponProjectile::AAWeekWeaponProjectile()

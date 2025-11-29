@@ -119,6 +119,7 @@ void ABaseEnemy::OnLoadFromPool_Implementation()
     const FString ClassName = GetClass()->GetName();
 
     const FString EnemyFolder = FString::Printf(TEXT("Pool/%s"), *ClassName);
+#if WITH_EDITOR
     SetFolderPath(FName(*EnemyFolder));
 
     // Controller FolderSetting
@@ -127,6 +128,7 @@ void ABaseEnemy::OnLoadFromPool_Implementation()
         const FString ControllerFolder = FString::Printf(TEXT("Pool/%s/Controller"), *ClassName);
         Controller->SetFolderPath(FName(*ControllerFolder));
     }
+#endif
 }
 
 void ABaseEnemy::OnStoreToPool_Implementation()
@@ -135,7 +137,7 @@ void ABaseEnemy::OnStoreToPool_Implementation()
     {
         OnReturnToSpawner.ExecuteIfBound(this);
     }
-
+#if WITH_EDITOR
     const FString ClassName = GetClass()->GetName();
     const FString EnemyFolder = FString::Printf(TEXT("Pool/%s"), *ClassName);
     SetFolderPath(FName(*EnemyFolder));
@@ -145,4 +147,5 @@ void ABaseEnemy::OnStoreToPool_Implementation()
         const FString ControllerFolder = FString::Printf(TEXT("Pool/%s/Controller"), *ClassName);
         Controller->SetFolderPath(FName(*ControllerFolder));
     }
+#endif
 }

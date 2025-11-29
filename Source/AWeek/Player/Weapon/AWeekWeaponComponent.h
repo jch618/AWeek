@@ -109,6 +109,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UAWeekReticleDefinition> mReticleDefinition;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UDataTable> WeaponInfoDT;
+	
 private:
 	FRangedWeaponInfo RangedWeaponInfo;
 public:

@@ -72,6 +72,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TMap<FName, TObjectPtr<UAnimMontage>>	mMontageMap;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UDataTable> AnimInfoDT;
 public:
 	virtual void NativeBeginPlay();
 	virtual void NativeInitializeAnimation();

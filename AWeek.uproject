@@ -18,7 +18,8 @@
 				"SettingSystem",
 				"DeveloperSettings",
 				"GameFeatures",
-				"EnhancedInput"
+				"EnhancedInput",
+				"CoreUObject"
 			]
 		}
 	],

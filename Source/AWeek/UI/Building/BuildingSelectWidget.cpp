@@ -37,13 +37,13 @@ void UBuildingSelectWidget::NativeConstruct()
 		ChangeWheel(0);
 		
 	}
-
-	FBindUIActionArgs ArgsL(FUIActionTag::ConvertChecked(FGameplayTag::RequestGameplayTag(TEXT("UI.Action.LeftClick"))),
+	
+	FBindUIActionArgs ArgsL(FUIActionTag::TryConvert(FGameplayTag::RequestGameplayTag(TEXT("UI.Action.LeftClick"))),
 		false,
 		FSimpleDelegate::CreateUObject(this, &UBuildingSelectWidget::ActiveButton));
 	LeftClickBindingHandle = RegisterUIActionBinding(ArgsL);
 
-	FBindUIActionArgs ArgsR(FUIActionTag::ConvertChecked(FGameplayTag::RequestGameplayTag(TEXT("UI.Action.RightClick"))),
+	FBindUIActionArgs ArgsR(FUIActionTag::TryConvert(FGameplayTag::RequestGameplayTag(TEXT("UI.Action.RightClick"))),
 		false,
 		FSimpleDelegate::CreateUObject(this, &UBuildingSelectWidget::ReturnButton));
 	RightClickBindingHandle = RegisterUIActionBinding(ArgsR);

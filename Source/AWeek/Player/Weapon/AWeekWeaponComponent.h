@@ -46,7 +46,7 @@ protected:
 
 	bool bOutOfBullet = false;
 
-	int32 mCurrentBullet = 10;
+	int32 mCurrentBullet = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int32 mBulletMaxStack = 0;

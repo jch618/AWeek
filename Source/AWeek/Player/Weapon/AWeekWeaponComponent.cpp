@@ -84,7 +84,7 @@ void UAWeekWeaponComponent::ChangeWeapon(FName WeaponKey)
 	mWeaponType = WeaponInfo->WeaponType;
 	mDamage = WeaponInfo->Damage;
 	mProjectile = WeaponInfo->Projectile;
-	mCurrentBullet = WeaponInfo->BulletMaxStack;
+	//mCurrentBullet = WeaponInfo->BulletMaxStack;
 	mBulletMaxStack = WeaponInfo->BulletMaxStack;
 	mBulletUsagePerSingle = WeaponInfo->BulletUsagePerSingle;
 	mFireRate = WeaponInfo->FireRate;

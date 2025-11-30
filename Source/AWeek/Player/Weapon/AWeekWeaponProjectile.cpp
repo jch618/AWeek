@@ -58,6 +58,10 @@ void AAWeekWeaponProjectile::ProjectileStop(const FHitResult& Hit)
 	{
 		FDamageInfo DamageInfo;
 		DamageInfo.Amount = mDamage;
+		DamageInfo.HitInfo.ImpactPoint = Hit.ImpactPoint;
+		DamageInfo.HitInfo.ImpactNormal = Hit.ImpactNormal;
+		DamageInfo.HitInfo.BoneName = Hit.BoneName;
+		DamageInfo.HitInfo.HitComponent = Hit.GetComponent();
 		IDamageAble::Execute_TakeDamage(Hit.GetActor(), DamageInfo);
 	}
 

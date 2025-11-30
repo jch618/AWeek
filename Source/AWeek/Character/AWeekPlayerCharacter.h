@@ -216,6 +216,7 @@ public:
 		bIsZooming = false;
 	}
 	void StartFire();
+	UFUNCTION(BlueprintCallable)
 	void EndFire();
 	void SprintStart();
 	void SprintCompleted();
@@ -248,6 +249,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void Die();
 
+	UFUNCTION(BlueprintImplementableEvent)
 	void GameOver();
 
 	virtual void VaultStart();

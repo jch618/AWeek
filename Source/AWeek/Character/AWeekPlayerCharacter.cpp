@@ -194,6 +194,9 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	if (GetCharacterMovement()->IsFalling())
+		EndFire();
 }
 
 // Called to bind functionality to input
@@ -545,16 +548,6 @@ void AAWeekPlayerCharacter::AttackImpact()
 				IDamageAble::Execute_TakeDamage(HitActor, DamageInfo);
 			}
 		}
-	}
-}
-
-void AAWeekPlayerCharacter::GameOver()
-{
-	APlayerController* PC = GetController<APlayerController>();
-	if (PC)
-	{
-		// MUST BE CHANGED !!
-		DisableInput(PC);
 	}
 }
 

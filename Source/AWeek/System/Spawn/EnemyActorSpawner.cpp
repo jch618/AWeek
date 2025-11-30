@@ -93,14 +93,14 @@ void AEnemyActorSpawner::SpawnEnemiesFromPool()
 
             SpawnLocation.Z += ZOffset;
 
-            bool bVisibleToPlayer = VisibilitySubsystem->IsLocationVisible(SpawnLocation, false);
+            //bool bVisibleToPlayer = VisibilitySubsystem->IsLocationVisible(SpawnLocation, false);
 
-            if (bVisibleToPlayer)
-            {
-                UE_LOG(LogTemp, Log, TEXT("[%s] Skip spawn: player can see location (%s)"),
-                    *GetName(), *SpawnLocation.ToString());
-                continue;
-            }
+            //if (bVisibleToPlayer)
+            //{
+            //    UE_LOG(LogTemp, Log, TEXT("[%s] Skip spawn: player can see location (%s)"),
+            //        *GetName(), *SpawnLocation.ToString());
+            //    continue;
+            //}
 
             FRotator SpawnRot = bSpawnActorRandomRotation
                 ? FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f)

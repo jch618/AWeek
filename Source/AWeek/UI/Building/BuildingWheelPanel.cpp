@@ -183,7 +183,7 @@ void UBuildingWheelPanel::ActiveWheel()
 	const FAWeekBuildingData* Row = Handle.GetRow<FAWeekBuildingData>(TEXT("MyBuildingWidget"));*/
 	UWidget* Widget = NotionSwitcher->GetWidgetAtIndex(Index);
 	UBuildingNotionPanel* NotionPanel = Cast<UBuildingNotionPanel>(Widget);
-	if (!NotionPanel->bTrue){return;}
+	if (NotionPanel->bTrue){return;}
 	if (CheckItem && PreviewObjectClass)
 	{
 		//TODO GridSystem

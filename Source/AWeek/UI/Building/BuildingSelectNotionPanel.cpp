@@ -31,7 +31,14 @@ void UBuildingSelectNotionPanel::UpdateData(const FAWeekBuildingData* Data)
 		}
 		bCreateCheck = true;
 	}
-	UpdateItemCount();	
+	
+	
+	UpdateItemCount();
+	if (bTrue)
+	{
+		UE_LOG(LogTemp, Log, TEXT("true"));
+		
+	}else{UE_LOG(LogTemp, Log, TEXT("False"));}
 }
 
 void UBuildingSelectNotionPanel::ClearData()
@@ -56,6 +63,7 @@ void UBuildingSelectNotionPanel::UpdateItemCount()
 	bCheck = true;
 	for (UBuildCostPill* Pill : Pills)
 	{
+		UE_LOG(LogTemp, Log, TEXT("asddasdfsa"));
 		if (Pill->CheckItem())bTrue = false;
 	}
 	

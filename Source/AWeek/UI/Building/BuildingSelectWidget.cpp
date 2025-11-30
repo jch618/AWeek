@@ -132,9 +132,6 @@ float UBuildingSelectWidget::AngleDegFromSceenCenter(const FGeometry& G)
 	if (vpSize.IsNearlyZero()) return 0.f;
 	
 	
-
-
-	
 	const FVector2D mouseVP = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
 	
 

@@ -56,8 +56,7 @@ public:
 
 	void PreviewObjectRotateL();
 	void PreviewObjectRotateR();
-
-	void OpenCraftingPanel(int32 CraftingLevel);
+	
 	void CloseChestInventory();
 	
 	FORCEINLINE UAWeekInventoryController* GetInventoryController() const { return InventoryController; }

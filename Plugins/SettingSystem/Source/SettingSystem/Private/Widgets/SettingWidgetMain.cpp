@@ -16,6 +16,11 @@ void USettingWidgetMain::NativeConstruct()
 	ChangeDirtyState(false);
 }
 
+UWidget* USettingWidgetMain::NativeGetDesiredFocusTarget() const
+{
+	return Panel;
+}
+
 void USettingWidgetMain::Apply()
 {
 	if (Registry)

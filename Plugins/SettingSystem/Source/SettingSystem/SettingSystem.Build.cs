@@ -25,7 +25,7 @@ public class SettingSystem : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "UMG",
+				"Core", "UMG", "CommonUI"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,7 +38,8 @@ public class SettingSystem : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"PropertyPath", "CommonUI","UMG"
+				"PropertyPath",
+				"CommonInput",
 			}
 			);
 	}

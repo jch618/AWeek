@@ -29,6 +29,8 @@ protected:
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	virtual void OnRemovedFromFocusPath(FFocusEvent InFocusEvent);
 
 public:
 	void SetHPPercent(float CurrentHP, float MaxHP)

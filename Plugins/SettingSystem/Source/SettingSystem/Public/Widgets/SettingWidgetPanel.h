@@ -20,6 +20,7 @@ public:
 	void RefreshSetting(USettingItem* RootSetting);
 
 protected:
+	virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
 	void AppendSettingChild(USettingItem* Setting, TArray<UObject*>& InOutSettings);
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))

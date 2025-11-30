@@ -30,9 +30,9 @@ void UAWeekInteractionWidget::NativeOnInitialized()
 	SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UAWeekInteractionWidget::OnInteractionTargetChanged(const FAWeekInteractableData* InteractableData)
+void UAWeekInteractionWidget::OnInteractionTargetChanged(const FAWeekInteractableData& InteractableData)
 {
-	if (InteractableData)
+	if (!InteractableData.IsEmpty())
 	{
 		SetVisibility(ESlateVisibility::Visible);
 		UpdateWidget(InteractableData);
@@ -43,51 +43,46 @@ void UAWeekInteractionWidget::OnInteractionTargetChanged(const FAWeekInteractabl
 	}
 }
 
-void UAWeekInteractionWidget::UpdateWidget(const FAWeekInteractableData* FInteractableData) const
+void UAWeekInteractionWidget::UpdateWidget(const FAWeekInteractableData& InteractableData) const
 {
-	if (!FInteractableData)
+	if (InteractableData.IsEmpty())
 	{
 		return;
 	}
-	switch (FInteractableData->InteractableType)
+	switch (InteractableData.InteractableType)
 	{
 	case EAWeekInteractableType::Pickup:
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 		KeyPressText->SetText(FText::FromString("Press"));
 
-		if (FInteractableData->Quantity < 2)
+		if (InteractableData.Quantity < 2)
 		{
 			QuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{
 			QuantityText->SetText(FText::Format(NSLOCTEXT("InteractionWidget", "QuantityText", "x{0}"),
-				FInteractableData->Quantity));
+				InteractableData.Quantity));
 			QuantityText->SetVisibility(ESlateVisibility::Visible);
 		}
 		break;
 
-	case EAWeekInteractableType::NonplayerCharacter:
+	case EAWeekInteractableType::CraftingTable:
+	case EAWeekInteractableType::Chest:
+		KeyPressText->SetText(FText::FromString("Press"));
+		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
+		QuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 
 	case EAWeekInteractableType::Device:
 		break;
-
-	case EAWeekInteractableType::Toggle:
-		break;
-
-	case EAWeekInteractableType::Chest:
-		KeyPressText->SetText(FText::FromString("Press"));
-		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-
-		break;
-
+		
 	default:
 		break;
 	}
 
-	ActionText->SetText(FInteractableData->Action);
-	NameText->SetText(FInteractableData->Name);
+	ActionText->SetText(InteractableData.Action);
+	NameText->SetText(InteractableData.Name);
 }
 
 float UAWeekInteractionWidget::UpdateInteractionProgress()

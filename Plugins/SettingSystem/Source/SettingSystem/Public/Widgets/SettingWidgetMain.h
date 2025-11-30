@@ -46,6 +46,8 @@ class SETTINGSYSTEM_API USettingWidgetMain : public UCommonActivatableWidget
 protected:
 	virtual void NativeConstruct() override;
 
+	virtual UWidget* NativeGetDesiredFocusTarget() const override;
+	
 	UFUNCTION(BlueprintCallable)
 	void Apply();
 
@@ -69,6 +71,7 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<USettingRegistry> Registry;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(Blueprintable, meta = (BindWidget))
 	TObjectPtr<USettingWidgetPanel> Panel;
 };
+

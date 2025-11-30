@@ -91,8 +91,8 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 		return;
 	}
 	InventoryHubWidget = Cast<UAWeekInventoryHubWidget>(
-		UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
-			FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventoryHubWidgetClass));
+	UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,
+	FGameplayTag::RequestGameplayTag("UI.Layer.GameMenu"), InventoryHubWidgetClass));
 	
 	switch (DisplayPanel)
 	{
@@ -105,7 +105,7 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 			);
 		break;
 	case EAWeekInventoryHubPanel::Crafting:
-		CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
+		// CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
 		InventoryHubWidget->SwitchToPanel(
 			EAWeekInventoryHubPanel::Crafting,
 			FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
@@ -114,7 +114,7 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 	case EAWeekInventoryHubPanel::PlayerState:
 		break;
 	default:
-		CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
+		// CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
 		InventoryHubWidget->SwitchToPanel(
 			EAWeekInventoryHubPanel::Crafting,
 			FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
@@ -250,11 +250,6 @@ void UAWeekGameUIManager::PreviewObjectRotateR()
 	{
 		
 	}
-}
-
-void UAWeekGameUIManager::OpenCraftingPanel(int32 CraftingLevel)
-{
-	
 }
 
 void UAWeekGameUIManager::CloseChestInventory()

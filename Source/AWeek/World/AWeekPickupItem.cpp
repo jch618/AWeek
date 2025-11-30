@@ -51,13 +51,11 @@ void AAWeekPickupItem::InitializeDrop(TObjectPtr<UAWeekItemBase> ItemToDrop, con
 
 void AAWeekPickupItem::UpdateInteractableData()
 {
-	InstanceInteractableData.InteractableType = EAWeekInteractableType::Pickup;
-	InstanceInteractableData.Action = Item->GetTextData().InteractionText;
-	InstanceInteractableData.Name = Item->GetTextData().Name;
-	InstanceInteractableData.Quantity = Item->GetQuantity();
-	InteractableData = InstanceInteractableData;
+	InteractableData.InteractableType = EAWeekInteractableType::Pickup;
+	InteractableData.Action = Item->GetTextData().InteractionText;
+	InteractableData.Name = Item->GetTextData().Name;
+	InteractableData.Quantity = Item->GetQuantity();
 }
-
 
 void AAWeekPickupItem::BeginFocus()
 {

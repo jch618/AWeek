@@ -28,7 +28,7 @@ class UAWeekInventoryComponent;
 class UAWeekItemBase;
 struct FAWeekInventorySlotData;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnInteractionTargetChanged, const FAWeekInteractableData* InteractableData)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnInteractionTargetChanged, const FAWeekInteractableData& InteractableData)
 
 USTRUCT()
 struct FAWeekInteractionData
@@ -83,6 +83,10 @@ protected:
 	/*--------------HUNGER--------------*/
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UAWeekHungerComponent> mHunger;
+	UPROPERTY(EditAnywhere)
+	float HPGenRatio = 0.5f;
+	UPROPERTY(EditAnywhere)
+	float HPPenaltiyRatio = 1;
 
 	/*--------------SOUND--------------*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -99,9 +103,6 @@ protected:
 	/*--------------SOUNDS--------------*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Sounds, meta = (AllowPrivateAccess = "true"))
 	USoundBase* FireSound;
-
-	/*--------------EVENT--------------*/
-	FGameEventMessageListenerHandle DayChangedHandle;
 
 	/*--------------VARIABLES--------------*/
 	UPROPERTY(VisibleAnywhere)

@@ -49,7 +49,7 @@ TArray<FAWeekItemEntry> FAWeekCraftingRecipeParser::ParseIngredientsString(
     for (const FString& IngredientString : IngredientStrings)
     {
         FAWeekItemEntry Ingredient = ParseItemString(IngredientString, ItemDataTable);
-        if (Ingredient.ItemData.ID != NAME_None) // 유효한 아이템만 추가
+        if (Ingredient.ItemData.ID != NAME_None)
         {
             Ingredients.Add(Ingredient);
         }

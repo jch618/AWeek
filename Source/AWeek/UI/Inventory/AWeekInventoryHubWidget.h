@@ -22,6 +22,7 @@ class AAWeekPlayerCharacter;
 /**
  * 
  */
+
 USTRUCT(BlueprintType)
 struct FAWeekPanelContext
 {
@@ -53,15 +54,16 @@ struct FAWeekPanelContext
 	}
 };
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPanelSwtich, const FAWeekPanelContext& Context);
+
 UCLASS()
 class AWEEK_API UAWeekInventoryHubWidget : public UAWeekActivatableWidget
 {
 	GENERATED_BODY()
 
 public:
-	//================================================================
-	//	FUNCTIONS
-	//================================================================
+	FOnPanelSwtich OnPanelSwtich;
+	
 	void InitializeInventoryHub(TObjectPtr<UAWeekCraftingController> InCraftingController, TObjectPtr<UAWeekPlayerInventoryComponent>
 	                            InPlayerInventoryComponent);
 
@@ -84,17 +86,9 @@ public:
 	void HideCraftingDetailPanel() const;
 	
 protected:
-	//================================================================
-	//	FUNCTIONS
-	//================================================================
-	// virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 	
 private:
-	//================================================================
-	//	PROPERTIES & VARIABLES
-	//================================================================
-
 	/* Widgets */
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAWeekPlayerInventoryPanel> PlayerInventoryPanel;
@@ -134,9 +128,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UAWeekCraftingController> CraftingController;
-	//================================================================
-	//	FUNCTIONS
-	//================================================================
+
 	/* Initialize */
 	void InitializeInventoryPanel() const;
 	void InitializeCraftingPanel();

@@ -35,6 +35,12 @@ void UAWeekHungerComponent::OnRegister()
 	Super::OnRegister();
 }
 
+void UAWeekHungerComponent::OnUnregister()
+{
+	StaminaChangedHandle.Unregister();
+	Super::OnUnregister();
+}
+
 
 // Called every frame
 void UAWeekHungerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

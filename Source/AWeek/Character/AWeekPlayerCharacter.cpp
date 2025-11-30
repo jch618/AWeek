@@ -144,12 +144,12 @@ void AAWeekPlayerCharacter::Tick(float DeltaTime)
 
 	if (mHunger->IsOnHungerState(EHungerState::Healthy))
 	{
-		mDamageSystem->Execute_Heal(this, 5 * DeltaTime);
+		mDamageSystem->Execute_Heal(this, HPGenRatio * DeltaTime);
 	}
 	else if (mHunger->IsOnHungerState(EHungerState::Fainting))
 	{
 		FDamageInfo Info;
-		Info.Amount = 10 * DeltaTime;
+		Info.Amount = HPPenaltiyRatio * DeltaTime;
 		mDamageSystem->Execute_TakeDamage(this, Info);
 	}
 

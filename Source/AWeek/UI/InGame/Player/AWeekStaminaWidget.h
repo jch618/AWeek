@@ -40,6 +40,7 @@ private:
 protected:
 	virtual void NativeConstruct();
 	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
+	virtual void NativeDestruct() override;
 	
 public:
 	void UpdateProgress(float Stamina, bool bDecrease);

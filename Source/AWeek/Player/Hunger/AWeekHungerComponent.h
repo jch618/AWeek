@@ -48,6 +48,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void OnRegister() override;
+	virtual void OnUnregister() override;
 
 public:	
 	// Called every frame

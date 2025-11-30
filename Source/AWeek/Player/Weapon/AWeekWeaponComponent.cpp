@@ -141,12 +141,12 @@ void UAWeekWeaponComponent::ChangeWeaponPos(FName SocketName)
 void UAWeekWeaponComponent::Reload()
 {
 	int32 BulletUsage = mBulletMaxStack - mCurrentBullet;
-	if (mWeaponKey == FName("Rifle") && mOwner->GetPlayerInventoryComponent()->TryRemoveAmountOfItem(FName("test_004"), BulletUsage))
+	if (mWeaponKey == FName("Rifle") && mOwner->GetPlayerInventoryComponent()->TryRemoveAmountOfItem(FName("Ammo"), BulletUsage))
 	{
 		mCurrentBullet = mBulletMaxStack;
 		bOutOfBullet = false;
 	}
-	else if (mWeaponKey == FName("Pistol") && mOwner->GetPlayerInventoryComponent()->TryRemoveAmountOfItem(FName("test_005"), BulletUsage))
+	else if (mWeaponKey == FName("Pistol") && mOwner->GetPlayerInventoryComponent()->TryRemoveAmountOfItem(FName("Ammo"), BulletUsage))
 	{
 		mCurrentBullet = mBulletMaxStack;
 		bOutOfBullet = false;

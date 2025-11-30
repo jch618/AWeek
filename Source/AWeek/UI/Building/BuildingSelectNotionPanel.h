@@ -34,6 +34,8 @@ protected:
 	UCommonHierarchicalScrollBox* HierBox;
 
 
+	
+	
 	void UpdateItemCount();
 	void ApplyText(FString BuildingText);
 	void CreateCostPill(const FAWeekCost Cost);

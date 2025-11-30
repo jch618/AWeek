@@ -3,6 +3,7 @@
 
 #include "AWeek/UI/Building/BuildingWheelPanel.h"
 
+#include "BuildingSelectNotionPanel.h"
 #include "Components/CanvasPanel.h"
 #include "AWeek/Data/AWeekBuildingData.h"
 #include "AWeek/UI/Building/BuildingSelectWidget.h"
@@ -184,6 +185,7 @@ void UBuildingWheelPanel::ActiveWheel()
 	UWidget* Widget = NotionSwitcher->GetWidgetAtIndex(Index);
 	UBuildingNotionPanel* NotionPanel = Cast<UBuildingNotionPanel>(Widget);
 	if (NotionPanel->bTrue){return;}
+	SelectNotionPanel = NotionPanel;
 	if (CheckItem && PreviewObjectClass)
 	{
 		//TODO GridSystem
@@ -262,7 +264,11 @@ void UBuildingWheelPanel::DeactivatedPanel()
 
 void UBuildingWheelPanel::RemoveItem()
 {
-	
+	if (SelectNotionPanel)
+	{
+		if (UBuildingSelectNotionPanel* SelectPanel = Cast<UBuildingSelectNotionPanel>(SelectNotionPanel))
+			SelectPanel->RemoveItem();
+	}
 }
 
 

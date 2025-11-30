@@ -15,6 +15,7 @@
 class UCommonActivatableWidgetSwitcher;
 class UCommonLazyImage;
 class UBuildingSelectWidget;
+class UBuildingNotionPanel;
 struct FAWeekBuildingData;
 class UCanvasPanel;
 class APreviewObject;
@@ -59,6 +60,8 @@ protected:
 	
 	UPROPERTY(meta=(BindWidget))
 	UCommonLazyImage* BuildingSelectWheel;
+	UPROPERTY()
+	UBuildingNotionPanel* SelectNotionPanel;
 
 	UMaterialInstanceDynamic* WheelMID;
 

@@ -17,7 +17,7 @@ void ABaseEnemy::PossessedBy(AController* NewController)
 }
 
 void ABaseEnemy::BeginPlay()
-{
+{ 
     Super::BeginPlay();
 
     m_AnimInstance = Cast<UAWeekCharacterAnimInstance>(GetMesh()->GetAnimInstance());

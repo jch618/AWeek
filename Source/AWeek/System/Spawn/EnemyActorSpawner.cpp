@@ -41,6 +41,12 @@ void AEnemyActorSpawner::BeginPlay()
         });
 }
 
+void AEnemyActorSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    DayChangedListenerHandle.Unregister();
+    Super::EndPlay(EndPlayReason);
+}
+
 void AEnemyActorSpawner::OnDayChanged(const FDayChangedMessage& Msg)
 {
     if (Msg.bIsDay)

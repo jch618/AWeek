@@ -17,7 +17,7 @@ class AWEEK_API UAWeekInteractionWidget : public UAWeekActivatableWidget
 	GENERATED_BODY()
 public:
 	UAWeekInteractionWidget();
-	void UpdateWidget(const FAWeekInteractableData* FInteractableData) const;
+	void UpdateWidget(const FAWeekInteractableData& FInteractableData) const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction Widget | Interactable Data")
@@ -42,5 +42,5 @@ protected:
 	float UpdateInteractionProgress();
 
 	virtual void NativeOnInitialized() override;
-	void OnInteractionTargetChanged(const FAWeekInteractableData* InteractableData);
+	void OnInteractionTargetChanged(const FAWeekInteractableData& InteractableData);
 };

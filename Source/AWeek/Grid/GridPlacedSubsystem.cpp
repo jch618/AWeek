@@ -185,10 +185,10 @@ void UGridPlacedSubsystem::ActiveBuildingGrid(bool bCheck)
     {
         BuildingArea->ActiveArea(bCheck);
     }
-    for (AGridPlacedActor* Actor : PlacedActors)
+    /*for (AGridPlacedActor* Actor : PlacedActors)
     {
         Actor->ChangeGridView(bCheck);
-    }
+    }*/
 }
 
 void UGridPlacedSubsystem::RemoveActor(AGridPlacedActor* Actor)

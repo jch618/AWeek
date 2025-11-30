@@ -26,6 +26,7 @@ public:
 	void BeginInteract() override;
 	void EndInteract() override;
 	void Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter) override;
+	FORCEINLINE virtual const FAWeekInteractableData& GetInteractableData() const override { return InteractableData; }
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Crafting Table | Initialization")
@@ -36,6 +37,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Crafting Table | Initialization")
 	float CraftingTableExitRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Crafting Table | Initialization")
+	FAWeekInteractableData InteractableData;
 
 	UFUNCTION()
 	void OnCraftingTableRadiusExit(UPrimitiveComponent* OverlappedComponent,

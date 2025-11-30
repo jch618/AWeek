@@ -16,12 +16,11 @@ UAWeekCraftingComponent::UAWeekCraftingComponent() : CurrentCraftingLevel(0)
 void UAWeekCraftingComponent::InitializeCraftingComponent()
 {
 	LoadAndCacheRecipes();
-	// LoadCraftingRecipeData();
-	// CacheCraftingRecipes();
-	
+
 	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwner());
 	PlayerInventoryComponent = PlayerCharacter->GetPlayerInventoryComponent();
 
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	OnCraftingFinished.AddUObject(this, &UAWeekCraftingComponent::UpdateInventoryCounts);
 }
 
@@ -71,18 +70,7 @@ bool UAWeekCraftingComponent::TryConsumeIngredients(const TArray<FAWeekItemEntry
 {
 	for (const FAWeekItemEntry& IngredientItemEntry : IngredientItemEntries)
 	{
-		if (PlayerInventoryComponent->TryRemoveAmountOfItem(IngredientItemEntry.ItemData.ID, IngredientItemEntry.Quantity))
-		{
-			// if (InventoryItemCounts.Contains(IngredientItemEntry.ItemData.ID))
-			// {
-			// 	InventoryItemCounts[IngredientItemEntry.ItemData.ID] -= IngredientItemEntry.Quantity;
-			// }
-			// else
-			// {
-			// 	return false;
-			// }
-		}
-		else
+		if (!PlayerInventoryComponent->TryRemoveAmountOfItem(IngredientItemEntry.ItemData.ID, IngredientItemEntry.Quantity))
 		{
 			return false;
 		}
@@ -125,8 +113,7 @@ void UAWeekCraftingComponent::LoadAndCacheRecipes()
 			CachedRecipe.IngredientItemEntries,
 			ItemDataTable
 		);
-
-		// RequiredCraftingLevel 설정
+		
 		CachedRecipe.RequiredCraftingLevel = CSVRecipe->RequiredCraftingLevel;
 		CachedRecipe.bIsCacheValid = true;
 
@@ -230,6 +217,7 @@ bool UAWeekCraftingComponent::CanCraft(int32 RecipeIndex)
 
 void UAWeekCraftingComponent::UpdateInventoryCounts()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	if (PlayerInventoryComponent)
 	{
 		InventoryItemCounts = PlayerInventoryComponent->GetInventoryItemCounts();

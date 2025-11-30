@@ -25,6 +25,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void HandleInit();
 protected:
+	virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	UWidget* GetDesiredGamepadWidget();
+	
 	UPROPERTY(Transient)
 	TObjectPtr<USettingItem> Setting;
 

@@ -25,7 +25,6 @@ void UAWeekInventoryHubWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	HideCraftingDetailPanel();
-
 }
 
 void UAWeekInventoryHubWidget::InitializeInventoryHub(TObjectPtr<UAWeekCraftingController> InCraftingController,
@@ -150,6 +149,7 @@ void UAWeekInventoryHubWidget::ActivatePanel(EAWeekInventoryHubPanel Panel, cons
 		PanelSwitcher->SetActiveWidget(ChestInventoryPanel);
 		break;
 	case EAWeekInventoryHubPanel::Crafting:
+		CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
 		CraftingListPanel->RefreshCraftingList();
 		PanelSwitcher->SetActiveWidget(CraftingListPanel);
 		break;
@@ -231,7 +231,8 @@ void UAWeekInventoryHubWidget::InitializeCraftingPanel()
 		CraftingDetailPanel->InitializeCraftingDetailPanel();
 		CraftingDetailPanel->SetCraftingComponent(CraftingController->GetCraftingComponent());
 		CraftingDetailPanel->OnCraftButtonLeftClicked.AddUObject(this, &UAWeekInventoryHubWidget::OnCraftButtonLeftClicked);
-		
+
+		// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 		CraftingController->GetCraftingComponent()->OnCraftingFinished.AddUObject(
 			CraftingListPanel, &UAWeekCraftingListPanel::RefreshCraftingList);
 		CraftingController->GetCraftingComponent()->OnCraftingFinished.AddUObject(

@@ -12,10 +12,9 @@ UENUM()
 enum class EAWeekInteractableType : uint8
 {
 	Pickup UMETA(DisplayName = "Pickup"),
-	NonplayerCharacter UMETA(DisplayName = "NonplayerCharacter"),
-	Device UMETA(DisplayName = "Device"),
-	Toggle UMETA(DisplayName = "Toggle"),
-	Chest UMETA(DisplayName = "Chest")
+	CraftingTable UMETA(DisplayName = "CraftingTable"),
+	Chest UMETA(DisplayName = "Chest"),
+	Device UMETA(DisplayName = "Device")
 };
 USTRUCT()
 struct FAWeekInteractableData
@@ -28,26 +27,26 @@ struct FAWeekInteractableData
 		Action(FText::GetEmpty()),
 		Quantity(0),
 		InteractionDuration(0.0f)
-	{
-
-	}
-
-	UPROPERTY(EditInstanceOnly)
+	{ }
+	
+	UPROPERTY(EditDefaultsOnly)
 	EAWeekInteractableType InteractableType;
 
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditDefaultsOnly)
 	FText Name;
 
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditDefaultsOnly)
 	FText Action;
 
 	// used only for pickups
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditDefaultsOnly)
 	int8 Quantity;
 
 	// used for things like valves, doors, etc. that require an interaction timer
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditDefaultsOnly)
 	float InteractionDuration;
+
+	bool IsEmpty() const { return Name.IsEmpty(); }
 };
 
 // This class does not need to be modified.
@@ -68,6 +67,6 @@ public:
 	virtual void BeginInteract();
 	virtual void EndInteract();
 	virtual void Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter);
-
-	FAWeekInteractableData InteractableData;
+	
+	virtual const FAWeekInteractableData& GetInteractableData() const = 0;
 };

@@ -43,8 +43,16 @@ protected:
 	//LineTrace channel 
 	UPROPERTY(EditAnywhere, Category="Turret|Trace")
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
+
+	UPROPERTY(EditAnywhere, Category="Flame|Damage")
+	float DamagePerTick = 20.f;
+
+	// 몇 초 간격으로 데미지 1틱을 줄지 (0.2초마다 한 번)
+	UPROPERTY(EditAnywhere, Category="Flame|Damage")
+	float DamageInterval = 0.2f;
 	
-	FTimerHandle TraceTimerHandle;
+	
+	FTimerHandle FlameDamageTimerhandle;
 
 	UPROPERTY(EditAnywhere, Category="Turret")
 	float RotateSpeed = 5.f;
@@ -57,6 +65,30 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Turret")
 	bool bYawOnly = true;
+
+	UPROPERTY()
+	TSet<AActor*> ActorsInDamageBox;
+
+	UFUNCTION()
+	void DamageBoxTimer();
+
+	UFUNCTION()
+	void OnDamageBoxBeginOverlap(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
+
+	UFUNCTION()
+	void OnDamageBoxEndOverlap(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+	);
 
 
 	//FlameFX

@@ -16,30 +16,24 @@ class AWEEK_API AAWeekPickupItem : public AActor, public IAWeekInteractionInterf
 	GENERATED_BODY()
 
 public:
-	//================================================================
-	//	PROPERTIES & VARIABLES
-	//================================================================
-
-
-	//================================================================
-	//	FUNCTIONS
-	//================================================================
 	AAWeekPickupItem();
 
 	void InitializePickupItem(const int32 InQuantity);
-
 	void InitializeDrop(TObjectPtr<UAWeekItemBase> ItemToDrop, const int32 InQuantity);
 
-	FORCEINLINE TObjectPtr<UAWeekItemBase> GetItemData() { return Item; }
+protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
+public:
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
+	virtual void Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter) override;
+	virtual FORCEINLINE const FAWeekInteractableData& GetInteractableData() const override { return InteractableData; }
+	
+	FORCEINLINE TObjectPtr<UAWeekItemBase> GetItemData() { return Item; }
 
 protected:
-	//================================================================
-	//	PROPERTIES & VARIABLES
-	//================================================================
-
 	UPROPERTY(VisibleAnywhere, Category = "Pickup | Components")
 	TObjectPtr<UStaticMeshComponent> PickupMesh;
 
@@ -49,20 +43,12 @@ protected:
 	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Initialization")
 	int32 ItemQuantity;
 
-	UPROPERTY(VisibleInstanceOnly, Category = "Pickup | Interaction")
-	FAWeekInteractableData InstanceInteractableData;
-
 	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Initialization")
 	FDataTableRowHandle ItemRowHandle;
 
-
-	//================================================================
-	//	FUNCTIONS
-	//================================================================
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter) override;
+	UPROPERTY(EditDefaultsOnly, Category = "Pickup")
+	FAWeekInteractableData InteractableData;
+	
 	void UpdateInteractableData();
 	void TakePickup(const TObjectPtr<AAWeekPlayerCharacter> Taker);
 

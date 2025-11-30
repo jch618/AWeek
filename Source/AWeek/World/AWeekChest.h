@@ -21,18 +21,23 @@ class AWEEK_API AAWeekChest : public AActor, public IAWeekInteractionInterface
 
 public:
 	AAWeekChest();
-	
-	FORCEINLINE UAWeekInventoryComponent* GetInventoryComponent() const { return InventoryComponent;}
+
+protected:
+	void BeginPlay() override;
+
+public:
 	void BeginFocus() override;
 	void EndFocus() override;
 	void BeginInteract() override;
 	void EndInteract() override;
 	void Interact(TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter) override;
-
+	FORCEINLINE virtual const FAWeekInteractableData& GetInteractableData() const override { return InteractableData; }
+	FORCEINLINE UAWeekInventoryComponent* GetInventoryComponent() const { return InventoryComponent;}
+	
 protected:
-	//================================================================
-	//	PROPERTIES & VARIABLES
-	//================================================================
+	UPROPERTY(EditDefaultsOnly, Category = "Chest")
+	FAWeekInteractableData InteractableData;
+	
 	UPROPERTY(VisibleAnywhere, Category = "Chest")
 	TObjectPtr<AAWeekPlayerCharacter> PlayerCharacter;
 
@@ -48,10 +53,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Chest")
 	float ChestExitRadius;
 	
-	//================================================================
-	//	FUNCTIONS
-	//================================================================
-	void BeginPlay() override;
 	
 	UFUNCTION()
 	void OnChestRadiusExit(UPrimitiveComponent* OverlappedComponent,

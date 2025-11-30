@@ -1,4 +1,4 @@
-﻿RowName,CraftedItem,IngredientItems,RequiredCraftingLevel
+RowName,CraftedItem,IngredientItems,RequiredCraftingLevel
 WoodenPlank,WoodenPlank:4,WoodLog:1,0
 BoxOfNails,BoxOfNails:1,ScrapMetal:1,0
 ScrapCloth,ScrapCloth:2,LeatherScrap:1,0
@@ -6,12 +6,14 @@ SmallFirstAidKit,SmallFirstAidKit:1,"ScrapCloth:2, MakeshiftAlcohol:1",0
 WoodenBat,WoodenBat:1,"WoodenPlank:2, BoxOfNails:1, DuctTape:1",0
 IronPipes,IronPipes:2,ScrapMetal:2,0
 RefinedMetalBundle,RefinedMetalBundle:1,ScrapMetal:3,1
-Ammo,Ammo:16,"RefinedMetalBundle:1, BoxOfNails:1",1
+Ammo,Ammo:12,"RefinedMetalBundle:1, BoxOfNails:1",1
+Rifle_1,Rifle_1:1,"WoodenPlank:4, IronPipes:2, RefinedMetalBundle:2",1
 CarBattery,CarBattery:1,"ScrapElectronics:2, RefinedMetalBundle:1, ScrapMetal:2",1
 AdvancedMedicalCrate,AdvancedMedicalCrate:1,"SmallFirstAidKit:3, RefinedMetalBundle:1",1
-Rifle_0,Rifle_0:1,"RefinedMetalBundle:4, IronPipes:2, ScrapElectronics:1",1
-TacticalCarbine,TacticalCarbine:1,"RefinedMetalBundle:3, IronPipes:2, ScrapElectronics:2, DuctTape:2",1
+Rifle_3,Rifle_3:1,"RefinedMetalBundle:4, IronPipes:2, ScrapElectronics:1",1
+Rifle_4,Rifle_4:1,"RefinedMetalBundle:3, IronPipes:2, ScrapElectronics:2, DuctTape:2",1
 Rope,Rope:1,ScrapCloth:3,0
 MakeshiftAlcohol,MakeshiftAlcohol:1,OrangeSoda:2,0
 Pistol,Pistol:1,"RefinedMetalBundle:1, IronPipes:1, BoxOfNails:1",1
-Rifle_1,Rifle_1:1,"WoodenPlank:3, IronPipes:1, BoxOfNails:2",1
+Rifle_0,Rifle_0:1,"WoodenPlank:3, IronPipes:1, BoxOfNails:2",1
+Rifle_2,Rifle_2:1,"RefinedMetalBundle:4, WoodLog:1, ScrapElectronics:1",1

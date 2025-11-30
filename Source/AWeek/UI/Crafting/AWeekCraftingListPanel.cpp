@@ -23,6 +23,10 @@ void UAWeekCraftingListPanel::RefreshCraftingList()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 	AAWeekPlayerCharacter* PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwningPlayerPawn());
+	if (!PlayerCharacter)
+	{
+		return;
+	}
 	CraftingComponent = PlayerCharacter->GetCraftingComponent();
 	if (IsValid(CraftingComponent) && GridPanel)
 	{

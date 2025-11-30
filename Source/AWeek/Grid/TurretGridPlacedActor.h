@@ -45,6 +45,9 @@ protected:
 	
 	FTimerHandle TraceTimerHandle;
 
+	UPROPERTY(EditAnywhere, Category="Turret|Trace")
+	float DamagePerTick = 20.f;
+
 	UPROPERTY(EditAnywhere, Category="Turret")
 	float RotateSpeed = 5.f;
 

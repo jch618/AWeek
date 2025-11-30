@@ -89,6 +89,13 @@ void UAWeekStaminaWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTim
 	}
 }
 
+void UAWeekStaminaWidget::NativeDestruct()
+{
+	StaminaChangedHandle.Unregister();
+
+	Super::NativeDestruct();
+}
+
 void UAWeekStaminaWidget::UpdateProgress(float Stamina, bool bDecrease)
 {
 	Progress->SetPercent(Stamina / 100);

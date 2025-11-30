@@ -34,3 +34,18 @@ void UAWeekPlayerStateWidget::NativeConstruct()
 		}
 	);
 }
+
+void UAWeekPlayerStateWidget::NativeDestruct()
+{
+	HPChangedHandle.Unregister();
+	HungerChangedHandle.Unregister();
+
+	UE_LOG(LogTemp, Warning, TEXT("NativeDestruct"))
+	Super::NativeDestruct();
+}
+
+void UAWeekPlayerStateWidget::OnRemovedFromFocusPath(FFocusEvent InFocusEvent)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnRemovedFromFocusPath"))
+	Super::OnRemovedFromFocusPath(InFocusEvent);
+}

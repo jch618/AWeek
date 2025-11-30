@@ -64,7 +64,7 @@ void UBuildingSelectNotionPanel::UpdateItemCount()
 	for (UBuildCostPill* Pill : Pills)
 	{
 		UE_LOG(LogTemp, Log, TEXT("asddasdfsa"));
-		if (Pill->CheckItem())bTrue = false;
+		if (!Pill->CheckItem())bTrue = false;
 	}
 	
 }

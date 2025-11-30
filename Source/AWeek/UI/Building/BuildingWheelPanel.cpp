@@ -258,7 +258,7 @@ void UBuildingWheelPanel::ActivePanel()
 
 void UBuildingWheelPanel::DeactivatedPanel()
 {
-	
+	NotionSwitcher->SetActiveWidgetIndex(0);
 }
 
 

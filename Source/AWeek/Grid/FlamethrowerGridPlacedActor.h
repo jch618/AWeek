@@ -10,7 +10,7 @@
  * 
  */
 class USceneComponent;
-class USphereComponent;
+class UBoxComponent;
 class UNiagaraComponent;
 class UNiagaraSystem;
 UCLASS()
@@ -33,7 +33,7 @@ protected:
 	USceneComponent* YawPivot;
 
 	UPROPERTY(EditAnywhere)
-	USphereComponent* DetectCapsule;
+	UBoxComponent* DetectCapsule;
 
 	UPROPERTY(EditAnywhere, Category="Turret")
 	TSubclassOf<AActor> TargetClass;

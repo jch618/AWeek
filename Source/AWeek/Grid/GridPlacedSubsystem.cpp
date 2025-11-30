@@ -10,6 +10,8 @@
 #include "AWeek/UI/Building/PreviewObjectWidget.h"
 #include "BuildingArea.h"
 
+
+static constexpr ECollisionChannel ECC_PreviewTC = ECC_GameTraceChannel11;
 void UGridPlacedSubsystem::StartPlacement(TSubclassOf<APreviewObject> PreviewClass, APlayerController* ForPC, UBuildingWheelPanel* CraftPanel)
 {
     if (GridWidgetClass == nullptr)

@@ -21,7 +21,9 @@
 
 void UBuildingSelectWidget::NativeOnDeactivated()
 {
+	WidgetSwitcher->SetActiveWidgetIndex(0);
 	Super::NativeOnDeactivated();
+	
 }
 
 void UBuildingSelectWidget::NativeConstruct()

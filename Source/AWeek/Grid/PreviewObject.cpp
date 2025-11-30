@@ -211,42 +211,35 @@ void APreviewObject::SyncBoxComponentToBoxMesh()
 
 void APreviewObject::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
-	if (OtherComp->GetCollisionProfileName() == FName(TEXT("BuildingArea")))
+	//TODO Check Overlapped Object
+	/*UE_LOG(LogTemp, Log, TEXT("a"));
+	if (BlockObjects.Num() == 0)
 	{
-		
-		//TODO Check Overlapped Object
-		if (BlockObjects.Num() == 0)
-		{
-			BoxMesh->SetMaterial(0, TrueMaterial);
-			bCanPlace = true;
-		}
+		UE_LOG(LogTemp, Log, TEXT("b"));
+		BoxMesh->SetMaterial(0, TrueMaterial);
+		bCanPlace = true;
 	}else
 	{
-		BoxMesh->SetMaterial(0, FalseMaterial);
-		BlockObjects.Add(OtherComp);
-		bCanPlace = false;
-	}
+		
+	}*/
+	
+	UE_LOG(LogTemp, Log, TEXT("c"));
+	BoxMesh->SetMaterial(0, FalseMaterial);
+	BlockObjects.Add(OtherComp);
+	bCanPlace = false;
 }
 
 void APreviewObject::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	
-	if (OtherComp->GetCollisionProfileName() == FName(TEXT("BuildingArea")))
-	{
-		bCanPlace = false;
-		BoxMesh->SetMaterial(0, FalseMaterial);
-	}else
+	/*//TODO Check Overlapped Object
+	BlockObjects.Remove(OtherComp);
+	if (BlockObjects.Num() == 0)
 	{
 		
-		//TODO Check Overlapped Object
-		BlockObjects.Remove(OtherComp);
-		if (BlockObjects.Num() == 0)
-		{
-			BoxMesh->SetMaterial(0, TrueMaterial);
-			bCanPlace = true;
-		}
-	}
+	}*/
+	BoxMesh->SetMaterial(0, TrueMaterial);
+	bCanPlace = true;
 }
 
 

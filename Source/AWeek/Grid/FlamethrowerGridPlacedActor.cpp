@@ -4,6 +4,7 @@
 #include "AWeek/Grid/FlamethrowerGridPlacedActor.h"
 
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
 
@@ -27,7 +28,7 @@ AFlamethrowerGridPlacedActor::AFlamethrowerGridPlacedActor()
 	DamageBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DamageBox"));
 	DamageBox->SetupAttachment(YawPivot);
 
-	DetectCapsule = CreateDefaultSubobject<USphereComponent>(TEXT("DetectCapsule"));
+	DetectCapsule = CreateDefaultSubobject<UBoxComponent>(TEXT("DetectCapsule"));
 	DetectCapsule->SetupAttachment(Root);
 	DetectCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	DetectCapsule->SetCollisionResponseToAllChannels(ECR_Ignore);

@@ -153,7 +153,7 @@ bool UAWeekPakourComponent::TryVault()
 	float GroundHeight = mOwner->GetMesh()->GetComponentLocation().Z;
 	float WallHeight = mFirstWallHit.Location.Z - GroundHeight;
 
-	if (WallHeight > 40 && WallHeight < 90)
+	if (WallHeight > 30 && WallHeight < 110)
 	{
 		SetVaultMotionWarping();
 		mOwner->VaultStart();

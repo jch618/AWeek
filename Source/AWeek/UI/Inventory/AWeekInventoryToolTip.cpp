@@ -23,6 +23,8 @@ void UAWeekInventoryToolTip::InitializeToolTip(const FAWeekItemData& ItemData, c
 	switch (ItemData.ItemType)
 	{
 	case EAWeekItemType::Weapon:
+		ItemType->SetText(FText::FromString("Weapon"));
+		DamageValue->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 
 	case EAWeekItemType::Consumable:

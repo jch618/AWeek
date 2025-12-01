@@ -84,6 +84,14 @@ void UBuildingWheelPanel::NativeConstruct()
 
 	
 }
+
+/*void UBuildingWheelPanel::NativeOnActivated()
+{
+	Super::NativeOnActivated();
+
+	UE_LOG(LogTemp, Log, TEXT("wiwiwiwiwiwiwiwi"));
+}*/
+
 void UBuildingWheelPanel::NativeOnDeactivated()
 {
 	Super::NativeOnDeactivated();
@@ -182,6 +190,7 @@ void UBuildingWheelPanel::ActiveWheel()
 	}
 		
 	const FAWeekBuildingData* Row = Handle.GetRow<FAWeekBuildingData>(TEXT("MyBuildingWidget"));*/
+	UE_LOG(LogTemp, Log,TEXT("asdf"));
 	UWidget* Widget = NotionSwitcher->GetWidgetAtIndex(Index);
 	UBuildingNotionPanel* NotionPanel = Cast<UBuildingNotionPanel>(Widget);
 	if (!NotionPanel->bTrue){return;}

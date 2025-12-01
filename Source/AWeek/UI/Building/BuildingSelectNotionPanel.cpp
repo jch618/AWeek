@@ -61,12 +61,13 @@ void UBuildingSelectNotionPanel::RemoveItem()
 void UBuildingSelectNotionPanel::UpdateItemCount()
 {
 	bCheck = true;
+	bTrue = true;
 	for (UBuildCostPill* Pill : Pills)
 	{
 		UE_LOG(LogTemp, Log, TEXT("asddasdfsa"));
-		if (!Pill->CheckItem())bTrue = false;
+		if (!Pill->CheckItem()){bTrue = false; bCheck = false;}
 	}
-	
+	//if (bCheck) bTrue = true;
 }
 
 void UBuildingSelectNotionPanel::ApplyText(FString BuildingText_)

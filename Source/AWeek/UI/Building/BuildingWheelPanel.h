@@ -44,6 +44,7 @@ protected:
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeOnDeactivated() override;
+	//virtual void NativeOnActivated() override;
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> CanvasPanel;

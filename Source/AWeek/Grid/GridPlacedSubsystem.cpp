@@ -11,13 +11,29 @@
 #include "BuildingArea.h"
 
 
-static constexpr ECollisionChannel ECC_PreviewTC = ECC_GameTraceChannel11;
+
+
+UGridPlacedSubsystem::UGridPlacedSubsystem()
+{
+    static ConstructorHelpers::FClassFinder<UAWeekActivatableWidget> GridUIBPClass(
+        TEXT("/Game/Grid/GridUI/WBP_PreviewObjectWidget.WBP_PreviewObjectWidget_C"));
+
+    if (GridUIBPClass.Succeeded())
+    {
+        GridWidgetClass = GridUIBPClass.Class;
+    }
+}
+
+
+
 void UGridPlacedSubsystem::StartPlacement(TSubclassOf<APreviewObject> PreviewClass, APlayerController* ForPC, UBuildingWheelPanel* CraftPanel)
 {
     if (GridWidgetClass == nullptr)
     {
         static const TCHAR* GridUIPath = TEXT("/Game/Grid/GridUI/WBP_PreviewObjectWidget.WBP_PreviewObjectWidget_C");
-        GridWidgetClass = TSoftClassPtr<UPreviewObjectWidget>(FSoftClassPath(GridUIPath));
+        //GridWidgetClass = TSoftClassPtr<UPreviewObjectWidget>(FSoftClassPath(GridUIPath));
+        
+        
     }
     if (!PreviewClass)
     {
@@ -47,9 +63,9 @@ void UGridPlacedSubsystem::StartPlacement(TSubclassOf<APreviewObject> PreviewCla
     UE_LOG(LogTemp, Log, TEXT("Preview Object5"));
     ActiveBuildingGrid(true);
     //UIWidget 스폰
-    if (UClass* Cls = GridWidgetClass.LoadSynchronous())   
+    if (*GridWidgetClass != nullptr)   
     {
-        EnsureGridUIShown(ForPC, Cls);                    
+        EnsureGridUIShown(ForPC, GridWidgetClass);                    
     }
     else
     {
@@ -160,7 +176,7 @@ void UGridPlacedSubsystem::Tick(float DeltaTime)
     UpdatePreview();
 }
 
-void UGridPlacedSubsystem::EnsureGridUIShown(APlayerController* PC, TSubclassOf<UPreviewObjectWidget> GridUIClass)
+void UGridPlacedSubsystem::EnsureGridUIShown(APlayerController* PC, TSubclassOf<UAWeekActivatableWidget> GridUIClass)
 {
     
     if (!PC) return;

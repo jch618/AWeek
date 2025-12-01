@@ -23,6 +23,9 @@ class AWEEK_API UGridPlacedSubsystem : public UWorldSubsystem, public FTickableG
 {
 	GENERATED_BODY()
 public:
+	UGridPlacedSubsystem();
+
+	
 	// 진입/종료
 	UFUNCTION(BlueprintCallable) void StartPlacement(TSubclassOf<APreviewObject> PreviewClass, APlayerController* ForPC, UBuildingWheelPanel* Panel);
 	UFUNCTION(BlueprintCallable) void StopPlacement();
@@ -55,9 +58,11 @@ private:
 	TWeakObjectPtr<APreviewObject> PreviewActor;
 	TWeakObjectPtr<AGridPlacedActor> ParentUnderCursor;
 
-	TSoftClassPtr<UAWeekActivatableWidget> GridWidgetClass;
+	//TSoftClassPtr<UAWeekActivatableWidget> GridWidgetClass;
+	TSubclassOf<UAWeekActivatableWidget> GridWidgetClass;
+	
 
-	void EnsureGridUIShown(APlayerController* PC, TSubclassOf<UPreviewObjectWidget> GridUIClass);
+	void EnsureGridUIShown(APlayerController* PC, TSubclassOf<UAWeekActivatableWidget> GridUIClass);
 	void HideGridUI();
 	TWeakObjectPtr<UAWeekActivatableWidget> GridUI;
 	TWeakObjectPtr<UBuildingWheelPanel> BuildingCraftPanel;

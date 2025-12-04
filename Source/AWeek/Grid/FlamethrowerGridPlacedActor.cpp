@@ -413,9 +413,6 @@ void AFlamethrowerGridPlacedActor::DamageBoxTimer()
 		IDamageAble::Execute_TakeDamage(Target, DamageInfo);
 	}
 
-
-
-
 	
 }
 

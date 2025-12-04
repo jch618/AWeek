@@ -169,17 +169,19 @@ bool APreviewObject::PlaceActor(AGridPlacedActor* ParentGridPlacedActor)
 		PlacedActor->SetActive(true);
 	}else{return false;}
 	return true;*/
-	UE_LOG(LogTemp, Log,TEXT("1"));
+	
 	if (bCanPlace)
 	{
-		UE_LOG(LogTemp, Log,TEXT("2"));
+		
 		//UE_LOG(LogTemp, Log, TEXT("place Actor bCanPlace is %s"), bCanPlace ? TEXT("true") : TEXT("false"));
 		AGridPlacedActor* ChildPlacedActor = GetWorld()->SpawnActor<AGridPlacedActor>(BuildToPlace, GetActorLocation(), GetActorRotation());
 		if (ParentGridPlacedActor)
 		{
-			UE_LOG(LogTemp, Log, TEXT("Parent GridPlacedActor TEST Parent name is %s"), *ParentGridPlacedActor->GetName());
-			UE_LOG(LogTemp, Log, TEXT("Child GridPlacedActor name is %s"), *ChildPlacedActor->GetName());
+			
 			ParentGridPlacedActor->BuildActor(ChildPlacedActor);
+		}else
+		{
+			UE_LOG(LogTemp, Log, TEXT("GridplacedActor is Null!"));
 		}
 		UWorld* World = GetWorld();
 		//WorldSubsystem 생기면 다시 하기
@@ -232,14 +234,14 @@ void APreviewObject::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AAct
 void APreviewObject::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	
-	/*//TODO Check Overlapped Object
+	//TODO Check Overlapped Object
 	BlockObjects.Remove(OtherComp);
 	if (BlockObjects.Num() == 0)
 	{
-		
-	}*/
-	BoxMesh->SetMaterial(0, TrueMaterial);
-	bCanPlace = true;
+		BoxMesh->SetMaterial(0, TrueMaterial);
+		bCanPlace = true;
+	}
+	
 }
 
 

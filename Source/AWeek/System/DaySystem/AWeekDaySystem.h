@@ -40,6 +40,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DaySystem")
     float SunIntensity = 4.f;
 
-private:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DaySystem")
+    int32 WinDay;
+
+protected:
     void UpdateLighting();
+    UFUNCTION(BlueprintImplementableEvent) 
+    void Win();
+
 };

@@ -25,6 +25,9 @@ void AAWeekDaySystem::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    if (Day == WinDay)
+        return;
+
     UpdateLighting();
     float DayProgress = (DeltaTime / DayLengthInSeconds) * 24.f;
     TimeOfDay += DayProgress;
@@ -41,6 +44,18 @@ void AAWeekDaySystem::UpdateLighting()
 
         if (bIsDay)
             Day++;
+
+        if (Day == WinDay)
+        {
+            FTimerHandle TimerHandle_Win;
+            GetWorld()->GetTimerManager().SetTimer(
+                TimerHandle_Win,
+                this,
+                &AAWeekDaySystem::Win,
+                3.0f,      
+                false 
+            );
+        }
 
         FDayChangedMessage Msg;
         Msg.bIsDay = bIsDay;

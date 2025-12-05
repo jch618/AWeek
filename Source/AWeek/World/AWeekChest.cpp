@@ -13,7 +13,7 @@ AAWeekChest::AAWeekChest() : ChestExitRadius(250.0f)
 	PrimaryActorTick.bCanEverTick = false;
 
 	ChestMesh = CreateDefaultSubobject<UStaticMeshComponent>("ChestMesh");
-	// SetRootComponent(ChestMesh);
+	SetRootComponent(ChestMesh);
 
 	InventoryComponent = CreateDefaultSubobject<UAWeekInventoryComponent>("ChestInventory");
 

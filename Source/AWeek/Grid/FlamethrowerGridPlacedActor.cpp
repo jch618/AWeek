@@ -82,6 +82,7 @@ void AFlamethrowerGridPlacedActor::Tick(float DeltaTime)
 
 	//지금 매 tick 마다 Overlap 확인하는 코드임
 	//최적화 ㄱㅊ?
+	if (!bActive)return;
 	TArray<AActor*> Overlaps;
 	if (TargetClass)
 		DetectCapsule->GetOverlappingActors(Overlaps, TargetClass);
@@ -291,6 +292,7 @@ void AFlamethrowerGridPlacedActor::UpdateDamageVolume(float EffectiveLength)
 void AFlamethrowerGridPlacedActor::StartFlame()
 {
 	bIsFiring = true;
+	if (!bActive){return;}
 	/*if (FlameFX)
 	{
 		FlameFX->Activate();
@@ -370,6 +372,7 @@ void AFlamethrowerGridPlacedActor::DamageBoxTimer()
 {
 	if (!bIsFiring)
 		return;
+	if (!bActive){return;}
 	if (ActorsInDamageBox.Num() == 0)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[DamageBox] 현재 들어온 Actor 없음"));
@@ -411,8 +414,16 @@ void AFlamethrowerGridPlacedActor::DamageBoxTimer()
 		DamageInfo.HitInfo.BoneName     = NAME_None;
 
 		IDamageAble::Execute_TakeDamage(Target, DamageInfo);
-	}
 
+		
+	}
+	TurretHealth -= 5.f;
+	if (TurretHealth <= 0.f)
+	{
+		EndFlame();
+		BrokeStructure();
+		UE_LOG(LogTemp, Log, TEXT("Building Broke!!!"));
+	}
 	
 }
 

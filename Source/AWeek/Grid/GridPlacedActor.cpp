@@ -8,6 +8,9 @@
 #include "GeometryCollection/GeometryCollectionObject.h"
 #include "TimerManager.h"
 #include "Field/FieldSystemObjects.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
 
 FTimerHandle TimerHandle2;
 
@@ -64,7 +67,13 @@ void AGridPlacedActor::BeginPlay()
 	{
 		GeometryCollection->SetSimulatePhysics(false);
 	}
-
+	if (bRemoveTimer)
+	{
+		GetWorldTimerManager().SetTimer(TimerHandler,
+			this, &AGridPlacedActor::BrokeStructure,
+			TimerHealth,
+			false);
+	}
 
 	//Fracture 작동 테스트
 	
@@ -204,7 +213,53 @@ void AGridPlacedActor::BrokeStructure()
 	const FVector Origin = GeoComponent->GetComponentLocation();
 	GeoComponent->AddRadialImpulse(Origin, 300.f, 1200.f, ERadialImpulseFalloff::RIF_Linear, true);*/
 
-	GetWorldTimerManager().SetTimer(TimerHandle2, this, &AGridPlacedActor::CleanupAfterBreak, 3.0f, false);
+	if (NiagaraSystem && GetWorld())
+	{
+		// 월드 위치에서 그냥 스폰 (한 번짜리 이펙트용)
+		
+		UNiagaraComponent* FX = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			NiagaraSystem,
+			Origin,
+			GeoComponent->GetComponentRotation()
+		);
+		if (FX)
+		{
+			FX->SetAutoDestroy(true);   
+		}
+
+		FTimerHandle TempHandle;
+		FTimerDelegate Del;
+
+		Del.BindLambda([FX]()
+		{
+			if (IsValid(FX))
+			{
+				FX->DestroyComponent();
+			}
+		});
+
+		GetWorld()->GetTimerManager().SetTimer(
+		TempHandle,
+		Del,
+		9.0f,
+		false
+		);
+		// 만약 GeoComponent에 붙이고 싶으면 이걸 대신 사용:
+		/*
+		UNiagaraFunctionLibrary::SpawnSystemAttached(
+			BreakNiagara,
+			GeoComponent,
+			NAME_None,                  // 붙일 소켓 이름이 있으면 여기
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::KeepRelativeOffset,
+			true                        // AutoDestroy
+		);
+		*/
+	}
+
+	GetWorldTimerManager().SetTimer(TimerHandle2, this, &AGridPlacedActor::CleanupAfterBreak, 10.0f, false);
 
 	
 }
@@ -229,6 +284,9 @@ void AGridPlacedActor::CleanupAfterBreak()
 	GeoComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Destroy();
 }
+
+
+
 
 FVector AGridPlacedActor::GetLinkWorldPosition()
 {

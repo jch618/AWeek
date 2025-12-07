@@ -41,6 +41,7 @@ void ATrapGridPlacedActor::BeginPlay()
 
 void ATrapGridPlacedActor::DamageBoxTimer()
 {
+	if (!bActive){return;}
 	if (ActorsInDamageBox.Num() == 0)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[DamageBox] 현재 들어온 Actor 없음"));
@@ -82,6 +83,13 @@ void ATrapGridPlacedActor::DamageBoxTimer()
 		DamageInfo.HitInfo.BoneName     = NAME_None;*/
 
 		IDamageAble::Execute_TakeDamage(Target, DamageInfo);
+
+		TrapHealth -= 5.f;
+		if (TrapHealth <= 0.f)
+		{
+			BrokeStructure();
+			UE_LOG(LogTemp, Log, TEXT("Building Broke!!!"));
+		}
 	}
 }
 

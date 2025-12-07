@@ -11,6 +11,9 @@
  */
 class USceneComponent;
 class USphereComponent;
+class UNiagaraComponent;
+class UAudioComponent;
+class USoundBase;
 UCLASS()
 class AWEEK_API ATurretGridPlacedActor : public AGridPlacedActor
 {
@@ -32,6 +35,15 @@ protected:
 	USceneComponent* YawPivot;
 
 	UPROPERTY(EditAnywhere)
+	UNiagaraComponent* MuzzelFlashFXL;
+	UPROPERTY(EditAnywhere)
+	UNiagaraComponent* MuzzelFlashFXR;
+	UPROPERTY(EditAnywhere)
+	UAudioComponent* MuzzleSound;
+	UPROPERTY(EditAnywhere)
+	USoundBase* SoundBase;
+
+	UPROPERTY(EditAnywhere)
 	USphereComponent* DetectCapsule;
 
 	UPROPERTY(EditAnywhere, Category="Turret")
@@ -50,6 +62,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Turret")
 	float RotateSpeed = 5.f;
+	UPROPERTY(EditAnywhere, Category="Turret")
+	float TurretHealth = 100.f;
 
 	UPROPERTY(EditAnywhere, Category="Turret|Trace")
 	float TraceInterval = 0.5f;

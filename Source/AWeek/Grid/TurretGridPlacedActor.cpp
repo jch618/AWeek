@@ -8,6 +8,10 @@
 #include "AWeek/System/DamageInfo.h"
 #include "AWeek/System/DamageHitInfo.h"
 #include "AWeek/System/IDamageAble.h"
+#include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 
 static constexpr ECollisionChannel ECC_GunTrace = ECC_GameTraceChannel13;
 
@@ -21,6 +25,16 @@ ATurretGridPlacedActor::ATurretGridPlacedActor()
 	
 	TurretHead = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretHead"));
 	TurretHead->SetupAttachment(YawPivot);
+
+	MuzzelFlashFXL = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MuzzleFlashVFXL"));
+	MuzzelFlashFXL->SetupAttachment(YawPivot);
+	MuzzelFlashFXR = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MuzzleFlashVFXR"));
+	MuzzelFlashFXR->SetupAttachment(YawPivot);
+
+	MuzzleSound = CreateDefaultSubobject<UAudioComponent>(TEXT("MuzzleSoundComponent"));
+	MuzzleSound->SetupAttachment(YawPivot);
+	MuzzleSound->bAutoActivate = false;
+	MuzzleSound->SetVolumeMultiplier(0.1f);
 
 	DetectCapsule = CreateDefaultSubobject<USphereComponent>(TEXT("DetectCapsule"));
 	DetectCapsule->SetupAttachment(Root);
@@ -58,6 +72,7 @@ void ATurretGridPlacedActor::Tick(float DeltaTime)
 
 	//지금 매 tick 마다 Overlap 확인하는 코드임
 	//최적화 ㄱㅊ?
+	if (!bActive){return;}
 	TArray<AActor*> Overlaps;
 	if (TargetClass)
 		DetectCapsule->GetOverlappingActors(Overlaps, TargetClass);
@@ -103,13 +118,15 @@ void ATurretGridPlacedActor::Tick(float DeltaTime)
 
 void ATurretGridPlacedActor::TurretLineTrace()
 {
+	if (!bActive){return;}
 	UWorld* World = GetWorld();
     if (!World || !YawPivot)
     {
         return;
     }
 
-    const FVector Start   = YawPivot->GetComponentLocation();
+	FVector Start   = YawPivot->GetComponentLocation();
+	Start.Z += 30.f;
     const FVector Forward = YawPivot->GetForwardVector();
     const FVector End     = Start + Forward * TraceDistance;
 
@@ -172,6 +189,17 @@ void ATurretGridPlacedActor::TurretLineTrace()
         return;
     }
 
+	if (MuzzelFlashFXL && MuzzelFlashFXR)
+	{
+		MuzzelFlashFXL->Activate(true);
+		MuzzelFlashFXR->Activate(true);
+	}
+	if (MuzzleSound)
+	{
+		MuzzleSound->Play(0.f);
+		//MuzzleSound->FadeOut(0.3f, 0.f);
+	}
+
     // 🔹 3) 여기까지 들어오면 진짜 데미지 줌
     FDamageInfo DamageInfo;
     DamageInfo.Amount = DamagePerTick;
@@ -192,6 +220,12 @@ void ATurretGridPlacedActor::TurretLineTrace()
         *HitActor->GetName());
 
     IDamageAble::Execute_TakeDamage(HitActor, DamageInfo);
+	TurretHealth -= 5.f;
+	if (TurretHealth <= 0.f)
+	{
+		BrokeStructure();
+		UE_LOG(LogTemp, Log, TEXT("Building Broke!!!"));
+	}
 	
 	/*UWorld* World = GetWorld();
     if (!World || !YawPivot)

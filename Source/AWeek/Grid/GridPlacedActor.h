@@ -12,6 +12,8 @@
 
 class UGeometryCollection;
 class UGeometryCollectionComponent;
+class UNiagaraSystem;
+
 UCLASS()
 class AWEEK_API AGridPlacedActor : public AActor, public IDamageAble
 {
@@ -72,6 +74,14 @@ protected:
 		return A / FMath::Max(B, KINDA_SMALL_NUMBER);
 	}
 
+	UPROPERTY(EditAnywhere, Category="VFX")
+	UNiagaraSystem* NiagaraSystem;
+	UPROPERTY(EditAnywhere, Category="VFX")
+	bool bRemoveTimer = false;
+	UPROPERTY(EditAnywhere, Category="VFX")
+	float TimerHealth = 100.f;
+	FTimerHandle TimerHandler;
+
 	static void MatchBoxToMesh(UBoxComponent* BoxComponent_, UStaticMeshComponent* BoxMesh_);
 
 	UFUNCTION(BlueprintCallable, Category="Building|Fracture" /*, meta=(BlueprintAuthorityOnly="true")*/)
@@ -80,6 +90,7 @@ protected:
 	
 	void Rebuild();
 	void CleanupAfterBreak();
+
 
 	//나중에 옮기기
 	float GridSize = 100.f;

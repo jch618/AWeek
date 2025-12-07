@@ -25,6 +25,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Trap|Damage")
 	float DamagePerTick = 2.f;
 
+	UPROPERTY(EditAnywhere, Category="Trap")
+	float TrapHealth = 100.f;
+
 
 	UPROPERTY()
 	TSet<AActor*> ActorsInDamageBox;

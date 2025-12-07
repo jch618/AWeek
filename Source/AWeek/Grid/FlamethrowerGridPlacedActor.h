@@ -37,6 +37,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Turret")
 	TSubclassOf<AActor> TargetClass;
+
+	UPROPERTY(EditAnywhere, Category="Turret|Trace")
+	float TurretHealth = 100.f;
 	//GunRange
 	UPROPERTY(EditAnywhere, Category="Turret|Trace")
 	float TraceDistance = 1500.f;

@@ -31,6 +31,12 @@ void UAWeekInventoryHubWidget::InitializeInventoryHub(TObjectPtr<UAWeekCraftingC
 	const TObjectPtr<UAWeekPlayerInventoryComponent> InPlayerInventoryComponent)
 {
 	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
+
+	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwningPlayerPawn());
+	if (!PlayerCharacter)
+	{
+		return;
+	}
 	
 	if (InCraftingController)
 	{
@@ -38,27 +44,30 @@ void UAWeekInventoryHubWidget::InitializeInventoryHub(TObjectPtr<UAWeekCraftingC
 		InitializeCraftingPanel();
 	}
 
-	PlayerCharacter = Cast<AAWeekPlayerCharacter>(GetOwningPlayerPawn());
 	if (InPlayerInventoryComponent)
 	{
 		InitializeInventoryPanel();
 	}
-	
+
 	// Initialize buttons
 	if (ChestPanelButton)
 	{
-		ChestPanelButton->OnClicked().AddLambda([this]()
-		{
-			SwitchToPanel(EAWeekInventoryHubPanel::Chest, FAWeekPanelContext());
-		});
+		ChestPanelButton->OnClicked().AddLambda(
+			[this]()
+			{
+				SwitchToPanel(EAWeekInventoryHubPanel::Chest, FAWeekPanelContext());
+			}
+		);
 	}
 	if (CraftingListPanel)
 	{
-		CraftingPanelButton->OnClicked().AddLambda([this]()
-		{
-			SwitchToPanel(EAWeekInventoryHubPanel::Crafting, FAWeekPanelContext());
-		});
-	}	
+		CraftingPanelButton->OnClicked().AddLambda(
+			[this]()
+			{
+				SwitchToPanel(EAWeekInventoryHubPanel::Crafting, FAWeekPanelContext());
+			}
+		);
+	}
 }
 
 void UAWeekInventoryHubWidget::OnRecipeSelected(int32 RecipeIndex, bool bIsCraftable)
@@ -75,7 +84,7 @@ void UAWeekInventoryHubWidget::OnRecipeSelected(int32 RecipeIndex, bool bIsCraft
 void UAWeekInventoryHubWidget::OnCraftButtonLeftClicked(int32 RecipeIndex) const
 {
 	// UE_LOG(LogTemp, Warning, TEXT("%s: Recipe Index: %d"), *FString(__FUNCTION__), RecipeIndex);
-    
+
 	if (CraftingController)
 	{
 		FCraftingResult CraftingResult = CraftingController->TryCraftRecipe(RecipeIndex);
@@ -91,7 +100,8 @@ void UAWeekInventoryHubWidget::OnCraftButtonLeftClicked(int32 RecipeIndex) const
 }
 
 
-void UAWeekInventoryHubWidget::SwitchToPanel(EAWeekInventoryHubPanel TargetPanel, const FAWeekPanelContext& PanelContext)
+void UAWeekInventoryHubWidget::SwitchToPanel(EAWeekInventoryHubPanel TargetPanel,
+	const FAWeekPanelContext& PanelContext)
 {
 	if (CurrentPanel == TargetPanel)
 	{
@@ -185,12 +195,13 @@ void UAWeekInventoryHubWidget::UpdatePanelButtons()
 		ChestPanelButton->SetVisibility(IsChestOpen() ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 		ChestPanelButton->SetIsSelected(CurrentPanel == EAWeekInventoryHubPanel::Chest);
 	}
-	
+
 	if (CraftingPanelButton)
 	{
 		CraftingPanelButton->SetIsSelected(CurrentPanel == EAWeekInventoryHubPanel::Crafting);
-	}	
+	}
 }
+
 void UAWeekInventoryHubWidget::CloseChestInventory()
 {
 	if (!IsChestOpen())
@@ -222,7 +233,7 @@ void UAWeekInventoryHubWidget::InitializeInventoryPanel() const
 
 void UAWeekInventoryHubWidget::InitializeCraftingPanel()
 {
-	if (CraftingListPanel && CraftingDetailPanel && CraftingController)
+	if (CraftingListPanel && CraftingDetailPanel && CraftingController && PlayerCharacter && PlayerCharacter->GetPlayerInventoryComponent())
 	{
 		CraftingListPanel->OnRecipeSelected.AddUObject(this, &UAWeekInventoryHubWidget::OnRecipeSelected);
 		CraftingListPanel->SetCraftingComponent(CraftingController->GetCraftingComponent());
@@ -230,14 +241,38 @@ void UAWeekInventoryHubWidget::InitializeCraftingPanel()
 
 		CraftingDetailPanel->InitializeCraftingDetailPanel();
 		CraftingDetailPanel->SetCraftingComponent(CraftingController->GetCraftingComponent());
-		CraftingDetailPanel->OnCraftButtonLeftClicked.AddUObject(this, &UAWeekInventoryHubWidget::OnCraftButtonLeftClicked);
+		CraftingDetailPanel->OnCraftButtonLeftClicked.AddUObject(
+			this,
+			&UAWeekInventoryHubWidget::OnCraftButtonLeftClicked
+		);
 
 		// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
 		CraftingController->GetCraftingComponent()->OnCraftingFinished.AddUObject(
-			CraftingListPanel, &UAWeekCraftingListPanel::RefreshCraftingList);
+			CraftingListPanel,
+			&UAWeekCraftingListPanel::RefreshCraftingList
+		);
 		CraftingController->GetCraftingComponent()->OnCraftingFinished.AddUObject(
-			CraftingDetailPanel, &UAWeekCraftingDetailPanel::UpdateCraftButton);
+			CraftingDetailPanel,
+			&UAWeekCraftingDetailPanel::UpdateCraftButton
+		);
 		CraftingController->GetCraftingComponent()->OnCraftingLevelChanged.AddUObject(
-			CraftingListPanel, &UAWeekCraftingListPanel::RefreshCraftingList);
+			CraftingListPanel,
+			&UAWeekCraftingListPanel::RefreshCraftingList
+		);
+		
+		PlayerCharacter->GetPlayerInventoryComponent()->OnTrashCanItemDiscarded.AddUObject(
+			PlayerCharacter->GetCraftingComponent(),
+			&UAWeekCraftingComponent::UpdateInventoryCounts
+		);
+		
+		PlayerCharacter->GetPlayerInventoryComponent()->OnTrashCanItemDiscarded.AddUObject(
+			CraftingListPanel,
+			&UAWeekCraftingListPanel::RefreshCraftingList
+		);
+		
+		PlayerCharacter->GetPlayerInventoryComponent()->OnTrashCanItemDiscarded.AddUObject(
+			CraftingDetailPanel,
+			&UAWeekCraftingDetailPanel::UpdateCraftButton
+		);
 	}
 }

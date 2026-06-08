@@ -48,8 +48,8 @@ public:
 
 	void SetCraftingLevel(int32 InCraftingLevel);
 	
-
 	void UpdateInventoryCounts();
+	
 protected:
 	//================================================================
 	//	PROPERTIES & VARIABLES
@@ -87,6 +87,4 @@ protected:
 	
 private:
 	void LoadAndCacheRecipes();
-	void CacheCraftingRecipes();
-	void LoadCraftingRecipeData();
 };

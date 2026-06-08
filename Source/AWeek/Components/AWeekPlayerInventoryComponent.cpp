@@ -92,6 +92,7 @@ void UAWeekPlayerInventoryComponent::ClearTrashCanSlot()
 	if (IsValidItemSlotIndex(TrashCanSlotIndex))
 	{
 		ClearItemSlot(InventoryContents[TrashCanSlotIndex]);
+		OnTrashCanItemDiscarded.Broadcast();
 	}
 }
 

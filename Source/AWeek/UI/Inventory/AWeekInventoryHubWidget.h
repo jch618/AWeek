@@ -62,8 +62,6 @@ class AWEEK_API UAWeekInventoryHubWidget : public UAWeekActivatableWidget
 	GENERATED_BODY()
 
 public:
-	FOnPanelSwtich OnPanelSwtich;
-	
 	void InitializeInventoryHub(TObjectPtr<UAWeekCraftingController> InCraftingController, TObjectPtr<UAWeekPlayerInventoryComponent>
 	                            InPlayerInventoryComponent);
 
@@ -104,10 +102,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAWeekCraftingDetailPanel> CraftingDetailPanel;
-
-	// UPROPERTY(meta = (BindWidget))
-	// TObjectPtr<UUserWidget> EmptyWidget;
-
+	
 	/* Panel */
 	UPROPERTY(VisibleAnywhere, Category = "Inventory Hub")
 	EAWeekInventoryHubPanel CurrentPanel;

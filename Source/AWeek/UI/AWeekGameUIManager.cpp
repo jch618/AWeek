@@ -102,14 +102,14 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 		InventoryHubWidget->SwitchToPanel(
 			EAWeekInventoryHubPanel::Chest,
 			FAWeekPanelContext::ForChest(PlayerCharacter->GetChestInventoryComponent())
-			);
+		);
 		break;
 	case EAWeekInventoryHubPanel::Crafting:
 		// CraftingController->GetCraftingComponent()->UpdateInventoryCounts();
 		InventoryHubWidget->SwitchToPanel(
 			EAWeekInventoryHubPanel::Crafting,
 			FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
-			);
+		);
 		break;
 	case EAWeekInventoryHubPanel::PlayerState:
 		break;
@@ -118,7 +118,7 @@ void UAWeekGameUIManager::OpenInventoryHub(EAWeekInventoryHubPanel DisplayPanel)
 		InventoryHubWidget->SwitchToPanel(
 			EAWeekInventoryHubPanel::Crafting,
 			FAWeekPanelContext::ForCrafting(CraftingController->GetCraftingComponent())
-			);
+		);
 		break;
 	}
 }
@@ -254,7 +254,6 @@ void UAWeekGameUIManager::PreviewObjectRotateR()
 
 void UAWeekGameUIManager::CloseChestInventory()
 {
-	PlayerCharacter->SetChestInventoryComponent(nullptr);
 	if (InventoryController->IsHoldingItem())
 	{
 		if (InventoryController->GetHeldItem()->GetSourceInventory() == PlayerCharacter->GetChestInventoryComponent())
@@ -262,5 +261,6 @@ void UAWeekGameUIManager::CloseChestInventory()
 			InventoryController->ReturnHeldItemToInventory();
 		}
 	}
+	PlayerCharacter->SetChestInventoryComponent(nullptr);
 	InventoryHubWidget->CloseChestInventory();
 }

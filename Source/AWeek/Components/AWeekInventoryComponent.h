@@ -210,5 +210,5 @@ protected:
 	virtual int AddNewItem(UAWeekItemBase* Item, const int32 AmountToAdd, int32 TargetIndex = -1);
 private:
 	void SetItemQuantity(FAWeekInventorySlotData& ItemSlot, const int32 Quantity);
-	void UpdateInventoryTotalWeight(int32 DeltaWeight);
+	void UpdateInventoryTotalWeight(float DeltaWeight);
 };

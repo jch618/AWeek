@@ -466,7 +466,7 @@ int32 UAWeekInventoryComponent::FindFirstEmptySlot()
 	return -1;
 }
 
-void UAWeekInventoryComponent::UpdateInventoryTotalWeight(int32 DeltaWeight)
+void UAWeekInventoryComponent::UpdateInventoryTotalWeight(float DeltaWeight)
 {
 	bool bIsEncumbered = InventoryTotalWeight > InventoryWeightCapacity;
 	InventoryTotalWeight += DeltaWeight;

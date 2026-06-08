@@ -7,6 +7,7 @@
 #include "AWeek/Components/AWeekInventoryComponent.h"
 #include "AWeekPlayerInventoryComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnTrashCanItemDiscarded);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHotbarSelectionChanged, int32 PreviousIndex, int32 NewIndex);
 class UAWeekItemTrashCanSlot;
 /**
@@ -18,6 +19,7 @@ class AWEEK_API UAWeekPlayerInventoryComponent : public UAWeekInventoryComponent
 	GENERATED_BODY()
 
 public:
+	FOnTrashCanItemDiscarded OnTrashCanItemDiscarded;
 	FOnHotbarSelectionChanged OnHotbarSelectionChanged;
 	
 	UAWeekPlayerInventoryComponent();

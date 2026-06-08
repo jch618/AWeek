@@ -24,25 +24,6 @@ void UAWeekCraftingComponent::InitializeCraftingComponent()
 	OnCraftingFinished.AddUObject(this, &UAWeekCraftingComponent::UpdateInventoryCounts);
 }
 
-void UAWeekCraftingComponent::LoadCraftingRecipeData()
-{
-	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	if (IsValid(CraftingRecipeTable))
-	{
-		// Access all the rows in the data table
-		TArray<FAWeekItemCraftingRecipe*> CraftingRecipePointers;
-		CraftingRecipeTable->GetAllRows<FAWeekItemCraftingRecipe>(FString(), CraftingRecipePointers);
-
-		for (const FAWeekItemCraftingRecipe* Recipe : CraftingRecipePointers)
-		{
-			if (Recipe)
-			{
-				CraftingRecipes.Add(*Recipe);
-			}
-		}
-	}
-}
-
 bool UAWeekCraftingComponent::TryCraftRecipe(int32 RecipeIndex)
 {
 	// UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
@@ -122,46 +103,6 @@ void UAWeekCraftingComponent::LoadAndCacheRecipes()
 
 	UE_LOG(LogTemp, Log, TEXT("Loaded %d crafting recipes"), CachedCraftingRecipes.Num());
 
-}
-
-void UAWeekCraftingComponent::CacheCraftingRecipes()
-{
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *FString(__FUNCTION__));
-	if (IsValid(CraftingRecipeTable))
-	{
-		// Access all the rows in the data table
-		TArray<FAWeekItemCraftingRecipe*> CraftingRecipePointers;
-		CraftingRecipeTable->GetAllRows<FAWeekItemCraftingRecipe>(FString(), CraftingRecipePointers);
-		for (const FAWeekItemCraftingRecipe* Recipe : CraftingRecipePointers)
-		{
-			if (Recipe)
-			{
-				FAWeekCachedCraftingRecipe CachedCraftingRecipe;
-				
-				const FAWeekItemData* CraftedItemData = Recipe->CraftedItem.GetRow<FAWeekItemData>(Recipe->CraftedItem.RowName.ToString());
-				FAWeekItemEntry CraftedItemEntry(*CraftedItemData, Recipe->CraftedAmount);
-				
-				TArray<FAWeekItemEntry> IngredientItemEntries;
-				for (const FAWeekRequiredIngredientItem& IngredientItem : Recipe->IngredientItems)
-				{
-					const FAWeekItemData* IngredientItemData = IngredientItem.ItemHandle.GetRow<FAWeekItemData>(IngredientItem.ItemHandle.RowName.ToString());
-					IngredientItemEntries.Add(FAWeekItemEntry(*IngredientItemData, IngredientItem.RequiredQuantity));
-				}
-				
-				CachedCraftingRecipe.OriginalRecipe = *Recipe;
-				CachedCraftingRecipe.CraftedItemEntry = CraftedItemEntry;
-				CachedCraftingRecipe.IngredientItemEntries = IngredientItemEntries;
-				CachedCraftingRecipe.RequiredCraftingLevel = Recipe->CraftingLevel;
-				CachedCraftingRecipe.bIsCacheValid = true;
-
-				CachedCraftingRecipes.Add(CachedCraftingRecipe);
-			}
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: Crafting Table is Invalid!"), *FString(__FUNCTION__));
-	}
 }
 
 bool UAWeekCraftingComponent::CanCraft(const FAWeekItemCraftingRecipe& CraftingRecipe)

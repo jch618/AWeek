@@ -43,21 +43,6 @@ public:
 	void HandleItemSlotRightClick(int32 ClickedItemSlotIndex, const TObjectPtr<UAWeekInventoryComponent> OwningInventory);
 	void HandleItemSlotShiftLeftClick(const FAWeekInventorySlotData& ClickedItemSlot) const;
 	void HandleItemSlotControlLeftClick(int32 ClickedItemSlotIndex, const TObjectPtr<UAWeekInventoryComponent> OwningInventory);
-	
-	//================================================================
-	//	PROPERTIES & VARIABLES
-	//================================================================
-
-	
-protected:
-	//================================================================
-	//	FUNCTIONS
-	//================================================================
-	
-	//================================================================
-	//	PROPERTIES & VARIABLES
-	//================================================================
-
 
 private:
 	//================================================================

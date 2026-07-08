@@ -1,78 +1,243 @@
-# < A W e e k >
+# AWeek
 
---- 
-### 0. 소개
-이 파일은 AWeek 프로젝트 실행 시 필요한 정보와 조작법, 진행 조건 등을 안내합니다.
-언리얼 버전과 함께 참고할 내용을 포함합니다.
+> **Unreal Engine 5 / C++** 기반 서바이벌 게임 프로젝트
+> 인벤토리 · 크래프팅 · 루팅 · 상호작용 시스템 및 UI 아키텍처 담당
 
-깃허브 링크:
-https://github.com/KMU-UE5/AWeek
-
-사용 언리얼 엔진 버전: 5.5.4
-
---- 
-### 1. 실행 방법
-구글드라이브에서 다운받은 파일을 압축 해제하시고,
-"A Week.exe"를 실행하시면 게임이 시작됩니다.
-
---- 
-### 2. 조작법
-
-W, A, S, D : 이동
-마우스 좌클릭 : 공격
-스페이스바 : 점프
-왼쪽 쉬프트 : 달리기
-마우스 우클릭 : 줌
-F : 아이템 사용
-E : 상호작용
-B : Building UI 열기/닫기
-Tab : 인벤토리 열기/닫기
-
-인벤토리 조작(슬롯 상호작용)
-우클릭 : 아이템 1개 집기
-Shift + 좌클릭 : 인벤토리 ↔ 상자 간 이동
-Ctrl + 좌클릭 : 인벤토리 → 휴지통 이동
-
---- 
-### 3. 승리 및 패배 조건
-
-승리 조건 : 7일간 생존
-패배 조건 : 플레이어 HP가 0이 됨
+팀 프로젝트로 진행 중이며, 이 문서는 제가 설계·구현한 시스템을 정리한 것입니다.
+(플레이어 캐릭터 / 무기 시스템 등은 팀원 담당)
 
 ---
-### 4. 참고 사항
 
-하루는 현실 기준 2분 30초입니다.
+## 담당 시스템 개요
 
-밤에는 좀비의 감지 능력 및 능력치가 상승합니다.
-
-좀비 처치 시 일정 확률로 상자가 드랍되며, 내부에서 음식과 제작 재료를 얻을 수 있습니다.
-
-함정, 터렛등을 설치해서 생존 확률을 높일 수 있습니다.
-
-상호작용 가능한 물체: 상자, 작업대
-· 상자: 가까이에서 E 키 → 내용물 확인
-· 작업대: E 키 → 확장 크래프팅 창 활성화 (멀어지면 자동 종료)
-
-인벤토리의 우측 하단 ‘쓰레기통 슬롯’에 아이템이 있을 때, 다른 아이템을 그 위에 놓으면 기존 아이템이 삭제.
-
-인벤토리 최하단 "Weight"를 통해 소지 중량을 확인할 수 있으며, 최대중량을 넘으면 플레이어 속도 감소.
-
-맵 곳곳에 파쿠르 오브젝트가 있으며, 달리면 볼트 액션이 발동되고 벽타기는 점프키로 수행합니다.
-
-플레이어는 허기시스템이 존재하며 이는 좌측 상단 UI로 확인할 수 있습니다.
-허기 상태별 효과
-포만 (80~100%) : 체력 재생 최대
-충분 (30~80%) : 체력 재생 속도 감소
-굶주림 (10~30%) : 달리기 및 파쿠르 제한
-위험 (10% 이하) : 체력이 지속적으로 감소
-
-게임오버 시 "이름 입력 후" Continue 버튼을 눌러야 다음 단계로 진행됩니다.
+| 시스템 | 핵심 키워드 |
+|---|---|
+| [Interaction System](#1-interaction-system) | 인터페이스 다형성, 주기적 LineTrace, 델리게이트 UI 연동 |
+| [Inventory System](#2-inventory-system) | 컴포넌트 상속 계층, 스택 분배, 결과 패턴, 슬롯 단위 갱신 |
+| [Crafting System](#3-crafting-system) | CSV DataTable 캐싱, 수량 캐시 기반 판정, 레벨 해금 |
+| [Loot System](#4-loot-system) | 확률 기반 랜덤 드롭, DataTable 루트 테이블, 정적 스폰 팩토리 |
+| [Item System](#5-item-system) | UObject 아이템, 정적 팩토리, Outer 기반 메모리 관리 |
+| [UI Architecture](#6-ui-architecture) | MVC + Facade/Mediator, Controller 레이어, Common UI, 드래그 앤 드롭 |
 
 ---
-### 5. 활용 에셋 정보
-프로젝트에서 사용된 에셋 정보는 아래 페이지에서 확인할 수 있습니다.
-(브라우저에 복사하여 열기)
-https://www.notion.so/2b1fad82004d8077a7b6e3abe71363f4
+
+## 아키텍처
+
+UI와 게임플레이 로직의 결합을 줄이기 위해 **MVC + Facade + Mediator** 구조를 적용했습니다.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  UAWeekGameUIManager (GameInstance Subsystem)            │
+│  - Facade / Mediator: 위젯 생명주기 & Controller 소유    │
+│  ├── InventoryController  ── 슬롯 입력 처리, HeldItem    │
+│  └── CraftingController   ── 제작 검증 & 실행 위임       │
+└──────────────┬──────────────────────────────────────────┘
+               │ (Controller가 UI ↔ Component 사이 번역)
+┌──────────────┴──────────────────────────────────────────┐
+│  Components (데이터 & 로직 소유)                          │
+│  ├── PlayerInventoryComponent ─ OnSlotUpdated ─► Panel   │
+│  ├── CraftingComponent ─ OnCraftingFinished ─► UI 갱신   │
+│  └── (Interaction) ─ OnInteractionTargetChanged ─► HUD   │
+└─────────────────────────────────────────────────────────┘
+```
+
+- **Widget**: 입력 이벤트를 Controller에 위임할 뿐 데이터를 직접 조작하지 않음
+- **Controller**: UI 입력을 Component 조작으로 번역, UI 전용 상태(HeldItem) 소유
+- **Component**: 인벤토리/크래프팅 데이터와 규칙을 소유, 델리게이트로 변경 통지
 
 ---
+
+## 1. Interaction System
+
+플레이어와 월드 오브젝트(상자, 픽업 아이템, 제작대 등)의 상호작용 흐름.
+
+**인터페이스 기반 다형성 (`IAWeekInteractionInterface`)**
+- `BeginFocus` / `EndFocus` / `BeginInteract` / `EndInteract` / `Interact` 가상 함수 정의
+- `AAWeekChest`, `AAWeekPickupItem`, `AAWeekCraftingTable` 등이 인터페이스를 구현해 오브젝트 종류 확장에 열려 있는 구조
+- `FAWeekInteractableData` 구조체로 타입 / 이름 / 행동 텍스트 / 상호작용 지속시간 등 메타데이터 표현
+
+**주기적 LineTrace 감지 (`PerformInteractionCheck`)**
+- 매 프레임이 아닌 `InteractionCheckFrequency` 주기로 LineTrace를 수행해 비용 절감
+- `TScriptInterface<IAWeekInteractionInterface>`로 현재 타겟을 타입 안전하게 보관
+- 지속 상호작용(밸브 등)을 위해 `FTimerHandle` 기반 홀드 인터랙션 지원
+
+**델리게이트 기반 UI 통지**
+- `FOnInteractionTargetChanged` 멀티캐스트 델리게이트로 타겟 변경 시 HUD 위젯에 데이터 전달
+- 게임플레이 코드가 UI 위젯을 직접 참조하지 않도록 분리
+
+**인터페이스 기반 다형성** ([AWeekInteractionInterface.h](https://github.com/jch618/AWeek/blob/7bcbad48ec7dc65459340c0ff18f87afb3e42294/Source/AWeek/Interfaces/AWeekInteractionInterface.h#L1-L72))
+- `BeginFocus` / `EndFocus` / `Interact` 가상 함수 정의
+
+---
+
+## 2. Inventory System
+
+슬롯 배열 기반 인벤토리. 상속 계층으로 플레이어 전용 기능을 확장했습니다.
+
+**컴포넌트 상속 계층**
+```
+UAWeekInventoryComponent            ← 상자 등 범용 인벤토리
+└── UAWeekPlayerInventoryComponent  ← HotBar / TrashCan 확장
+```
+- 기반 클래스: `TArray<FAWeekInventorySlotData>` 슬롯 관리, 무게/슬롯 용량, 스택 처리
+- 파생 클래스: **HotBar와 TrashCan 슬롯을 별도 컨테이너 없이 동일한 배열의 인덱스 범위로 통합 관리** — 슬롯 이동/스왑 로직을 재사용하면서 특수 슬롯 규칙만 오버라이드(`AddNewItem`, `ClearItemSlot`)
+
+**아이템 추가 결과 패턴 (`FAWeekItemAddResult`)**
+- `NoItemAdded` / `PartialAmountItemAdded` / `AllItemAdded` 3단계 결과 + 사용자 메시지
+- 정적 팩토리(`AddedNone` / `AddedPartial` / `AddedAll`)로 결과 생성 표준화
+- 호출자가 부분 추가(인벤토리 가득 참 등)를 명확히 처리 가능
+
+**스택 분배 알고리즘 (`HandleStackableItems`)**
+1. `FindNextPartialStack`으로 기존 부분 스택 탐색
+2. `CalculateNumberForFullStack`으로 채울 수 있는 만큼 기존 스택에 분배
+3. 남은 수량은 빈 슬롯에 새 스택 생성
+4. 각 단계에서 실제 추가된 수량을 반환해 결과 패턴과 연결
+
+([`HandleStackableItems`](https://github.com/jch618/AWeek/blob/eb17e412b71b770538610c2e2dbba1651d5f4ed8/Source/AWeek/Components/AWeekInventoryComponent.cpp#L185-L252))
+([`HandleAddItem`](https://github.com/KMU-UE5/AWeek/blob/eb17e412b71b770538610c2e2dbba1651d5f4ed8/Source/AWeek/Components/AWeekInventoryComponent.cpp#L271-L313))
+
+**무게 & 과부하 시스템**
+- `UpdateInventoryTotalWeight(float Delta)` 단일 경로로 무게 변경을 집중
+- 과부하 상태 전이 시에만 `FOnEncumberedStatusChanged` 브로드캐스트 → 캐릭터 이동속도 디버프 적용
+
+**슬롯 단위 부분 갱신**
+- 전체 패널 재구성 대신 `FOnSlotUpdated(const FAWeekInventorySlotData&)`로 **변경된 슬롯만** UI 갱신
+- `FOnTrashCanItemDiscarded`, `FOnHotbarSelectionChanged` 등 목적별 델리게이트 분리
+
+**인벤토리 간 이동**
+- `TransferItem`: 대상 인벤토리의 `HandleAddItem` 결과에 따라 소스 슬롯 정리 (부분 이동 대응)
+- Shift+클릭으로 플레이어 ↔ 상자 인벤토리 간 빠른 이동
+
+---
+
+## 3. Crafting System
+
+CSV DataTable 레시피를 캐싱하고 인벤토리 수량 캐시로 제작 가능 여부를 판단합니다.
+
+**CSV → 런타임 캐시 변환 파이프라인**
+```
+FAWeekItemCraftingRecipeCSV (CSV Row, 재료는 문자열)
+        │  FAWeekCraftingRecipeParser::ConvertRecipe
+        ▼
+FAWeekCachedCraftingRecipe (FAWeekItemEntry 배열로 변환 완료)
+```
+- CSV/Excel 편집 편의를 위해 **재료 목록을 단일 문자열 컬럼**으로 저장하고 정적 파서로 파싱
+- BeginPlay 시 1회 변환·캐싱하여 런타임 중 DataTable 재조회 제거
+- 중첩 `TArray` 구조 대신 평탄한 Row 구조를 택해 CSV 상호운용성 확보
+
+**수량 캐시 기반 제작 판정**
+- `TMap<FName, int32> InventoryItemCounts`로 아이템 ID별 보유 수량 캐시 유지
+- 제작 완료(`OnCraftingFinished`) 시 캐시 갱신 → `CanCraft`가 O(재료 수)로 동작
+
+([`LoadAndCacheRecipe`](https://github.com/jch618/AWeek/blob/eb17e412b71b770538610c2e2dbba1651d5f4ed8/Source/AWeek/Components/AWeekCraftingComponent.cpp#L67-L106))
+([AWeekItemCraftingRecipe.h](https://github.com/jch618/AWeek/blob/eb17e412b71b770538610c2e2dbba1651d5f4ed8/Source/AWeek/Data/AWeekItemCraftingRecipe.h#L1-L89))
+
+**CraftingLevel 해금 시스템**
+- 제작대 레벨에 따라 `RequiredCraftingLevel` 조건을 만족하는 레시피만 노출
+- 레벨 변경 시 `OnCraftingLevelChanged` 브로드캐스트로 목록 UI 자동 갱신
+
+**제작 결과 패턴 (`FCraftingResult` / `ECraftingFailureReason`)**
+- `Success` / `InvalidRecipe` / `InsufficientMaterials` / `InventoryFull` / `ComponentNotInitialized`
+- 실패 사유를 구분해 UI에 구체적인 피드백 제공
+
+---
+
+## 4. Loot System
+
+처치/파괴 등 이벤트에 따라 스폰되는 루트 상자와 확률 기반 아이템 생성.
+
+**루트 테이블 데이터 구조 (`FAWeekLootItemData`)**
+- `FAWeekLootItemEntry`: 아이템 핸들 + 최소/최대 수량 + 드롭 확률(0–100%)
+- `MinItemsToDrop` / `MaxItemsToDrop`으로 상자당 아이템 개수 범위 지정
+- DataTable Row로 관리해 기획 데이터와 코드 분리
+
+**확률 기반 생성 (`GenerateRandomLoot`)**
+- 엔트리별 `DropChance` 판정 → 통과 시 수량 랜덤 롤 → `FAWeekItemEntry` 생성
+- 생성된 아이템은 상자의 `InventoryComponent`에 `HandleAddItem`으로 삽입 (인벤토리 시스템 재사용)
+
+**정적 스폰 팩토리 (`SpawnLootChest`)**
+- 스폰 위치 / 루트 테이블 핸들 / 수명(LifeSpan)을 받아 스폰과 초기화를 한 번에 처리
+- `FTimerHandle` 기반 수명 만료 시 자동 파괴, 파괴 직전 열려 있는 상자 UI를 안전하게 닫음
+
+([`GenerateRandomLoot`](https://github.com/jch618/AWeek/blob/eb17e412b71b770538610c2e2dbba1651d5f4ed8/Source/AWeek/World/AWeekLootChest.cpp#L107-L154))
+
+
+---
+
+## 5. Item System
+
+**UObject 기반 아이템 (`UAWeekItemBase`)**
+- `FAWeekItemData`를 private 멤버로 보유하고 접근자로 노출 — 필드 중복 없이 단일 출처 유지
+- `FAWeekItemData`는 Text / Numeric / Asset / Consumable 데이터를 하위 구조체로 분리한 DataTable Row
+
+**정적 팩토리 + Outer 기반 메모리 관리**
+- `CreateFromData(ItemData, Quantity, Outer)` / `CreateFromRowHandle(RowHandle, Quantity, Outer)`
+- 생성 주체(인벤토리 / 크래프팅 컴포넌트 등)를 `Outer`로 지정해 UObject GC 수명을 명확히 관리
+
+**Copy / Pickup 플래그**
+- `bIsCopy` / `bIsPickup` 플래그로 아이템 출처를 추적
+- 인벤토리 간 이동·분할 시 필요할 때만 `CreateItemCopy` 수행, 여러 인벤토리가 동일 포인터를 공유하는 문제 방지
+
+**타입별 파생 (`AWeekConsumableItem`, `AWeekWeaponItem`)**
+- `UseItem(PlayerCharacter)` 가상 함수를 오버라이드해 소비/장착 동작 분기
+- 아이템이 캐릭터의 래퍼 함수를 거치지 않고 `FindComponentByClass`로 필요한 컴포넌트에 직접 접근 — Character는 얇은 컨테이너로 유지
+
+([AWeekItemBase.h](https://github.com/jch618/AWeek/blob/main/Source/AWeek/Items/AWeekItemBase.h))
+([AWeekItemBase.h](https://github.com/jch618/AWeek/blob/main/Source/AWeek/Items/AWeekItemBase.cpp))
+
+---
+
+## 6. UI Architecture
+
+**GameInstance Subsystem 기반 UI Manager (`UAWeekGameUIManager`)**
+- 레벨 전환과 무관한 수명 보장, 위젯 클래스/인스턴스와 Controller를 중앙에서 소유
+- 개별 위젯이 서로를 직접 참조하지 않고 UIManager를 경유 (Mediator)
+
+**Controller 레이어**
+- `UAWeekInventoryController`: 좌클릭(집기/놓기/스왑), 우클릭(1개씩), Shift+클릭(인벤토리 간 이동), Ctrl+클릭(버리기) — 4종 슬롯 입력을 한 곳에서 처리
+- `UAWeekCraftingController`: `ValidateCrafting`으로 사전 검증 후 Component에 실행 위임
+- UI 전용 상태인 **HeldItem(드래그 중인 아이템)을 Controller가 소유** — 인벤토리 데이터가 아닌 일시적 UI 상태이므로 Component가 아닌 Controller 책임으로 설계
+
+([AWeekInventoryController.cpp](https://github.com/jch618/AWeek/blob/main/Source/AWeek/UI/Controller/AWeekInventoryController.h))
+([AWeekInventoryController.cpp](https://github.com/jch618/AWeek/blob/main/Source/AWeek/UI/Controller/AWeekInventoryController.cpp))
+
+**드래그 앤 드롭 (`UAWeekHeldItem` / `UAWeekHeldItemVisual`)**
+- 데이터(아이템, 소스 인벤토리, 소스 슬롯)와 비주얼(커서 추적 위젯)을 분리
+- 병합(`MergeItem`) 시 수용 가능한 수량만 합치고 나머지는 계속 들고 있는 부분 병합 지원
+- 드롭 실패 시 `ReturnHeldItemToInventory`로 원위치 복원
+
+**Inventory Hub — 패널 통합 위젯 (`UAWeekInventoryHubWidget`)**
+- 플레이어 인벤토리 패널 + `UCommonActivatableWidgetSwitcher`(상자 / 크래프팅 패널) 조합
+- `FAWeekPanelContext` 정적 팩토리(`ForChest` / `ForCrafting`)로 패널 전환에 필요한 데이터를 타입 안전하게 전달
+- 델리게이트 체인: `CraftingItemSlot → ListPanel → HubWidget → DetailPanel`로 레시피 선택 전파 — 슬롯 통신에 `RecipeIndex`를 전달해 위젯 간 데이터 참조 결합 최소화
+
+([AWeekInventoryHubWidget.h](https://github.com/jch618/AWeek/blob/main/Source/AWeek/UI/Inventory/AWeekInventoryHubWidget.h))
+([AWeekInventoryHubWidget.h](https://github.com/jch618/AWeek/blob/main/Source/AWeek/UI/Inventory/AWeekInventoryHubWidget.cpp))
+
+**Common UI (Lyra 스타일)**
+- `UAWeekActivatableWidget`을 공통 베이스로 위젯 스택 기반 활성화/포커스 관리
+- `BindWidget` / `BindWidgetOptional`로 Blueprint 위젯과 C++ 결합
+
+---
+
+## 프로젝트 구조
+
+```
+Source/AWeek/
+├── Components/        # Inventory, PlayerInventory, Crafting, Loot 컴포넌트
+├── Data/              # ItemData, CraftingRecipe, LootItemData, UIDataAsset
+├── Items/             # ItemBase, ConsumableItem, WeaponItem
+├── Interfaces/        # InteractionInterface
+├── World/             # Chest, LootChest, PickupItem, CraftingTable
+└── UI/
+    ├── Controller/    # InventoryController, CraftingController
+    ├── Inventory/     # HubWidget, Panel, ItemSlot, HotBar, HeldItem
+    └── Crafting/      # ListPanel, DetailPanel, MainPanel, ItemSlot
+```
+
+## 기술 스택
+
+- **Engine**: Unreal Engine 5 (C++)
+- **UI**: Common UI (`UCommonActivatableWidgetSwitcher`, ActivatableWidget 스택)
+- **Data**: DataTable (CSV import), DataAsset
+- **패턴**: MVC, Facade, Mediator, Static Factory, Result Object, Observer(Delegate)
